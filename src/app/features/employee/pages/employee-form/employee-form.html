@@ -1,0 +1,394 @@
+<!-- employee-form.html — handles both Create and Edit -->
+<div class="form-page">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <button class="back-btn" (click)="cancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <div>
+      <h1 class="page-title">
+        {{ isEdit() ? 'Edit Employee' : 'Create Employee' }}
+      </h1>
+      <p class="page-sub">
+        @if (isEdit() && employeeCode()) {
+          <span class="emp-code-display">{{ employeeCode() }}</span>
+          · {{ workEmailReadOnly() }}
+        } @else {
+          Fill in the details to add a new employee
+        }
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Loading employee data (edit mode) ─────────────────── -->
+  @if (loadingEmployee()) {
+    <div class="loading-bar">
+      <div class="loading-inner"></div>
+    </div>
+  }
+
+  <!-- ── Alerts ────────────────────────────────────────────── -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>
+      <span>{{ error() }}</span>
+    </div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      <span> Employee {{ isEdit() ? 'updated' : 'created' }} successfully! Redirecting... </span>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="cards-grid">
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- CARD 1 — Personal Information (full width)        -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="card full-width">
+        <div class="card-header">
+          <span class="material-icons">person</span>
+          Personal Information
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <div class="field">
+              <label>First Name <span class="req">*</span></label>
+              <input formControlName="firstName" placeholder="e.g. Ahmed" />
+              @if (isInvalid('firstName')) {
+                <span class="field-error">{{ getError('firstName') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>First Name (Arabic) <span class="req">*</span></label>
+              <input formControlName="firstNameAr" placeholder="e.g. أحمد" dir="rtl" />
+              @if (isInvalid('firstNameAr')) {
+                <span class="field-error">{{ getError('firstNameAr') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Middle Name</label>
+              <input formControlName="middleName" placeholder="Optional" />
+            </div>
+            <div class="field">
+              <label>Middle Name (Arabic)</label>
+              <input formControlName="middleNameAr" placeholder="اختياري" dir="rtl" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Last Name <span class="req">*</span></label>
+              <input formControlName="lastName" placeholder="e.g. Al-Rashidi" />
+              @if (isInvalid('lastName')) {
+                <span class="field-error">{{ getError('lastName') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Last Name (Arabic) <span class="req">*</span></label>
+              <input formControlName="lastNameAr" placeholder="e.g. الراشدي" dir="rtl" />
+              @if (isInvalid('lastNameAr')) {
+                <span class="field-error">{{ getError('lastNameAr') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Date of Birth <span class="req">*</span></label>
+              <input type="date" formControlName="dateOfBirth" />
+              @if (isInvalid('dateOfBirth')) {
+                <span class="field-error">{{ getError('dateOfBirth') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Gender <span class="req">*</span></label>
+              <select formControlName="gender">
+                <option value="">Select gender</option>
+                @for (g of genders; track g) {
+                  <option [value]="g">{{ g.replace('_', ' ') }}</option>
+                }
+              </select>
+              @if (isInvalid('gender')) {
+                <span class="field-error">{{ getError('gender') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Blood Group</label>
+              <select formControlName="bloodGroup">
+                <option value="">Select blood group</option>
+                @for (b of bloodGroups; track b) {
+                  <option [value]="b">{{ b }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>Marital Status</label>
+              <select formControlName="maritalStatus">
+                <option value="">Select status</option>
+                @for (m of maritalStatuses; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Nationality</label>
+              <input formControlName="nationality" placeholder="e.g. Omani" />
+            </div>
+            <div class="field">
+              <label>Religion</label>
+              <input formControlName="religion" placeholder="e.g. Islam" />
+            </div>
+          </div>
+
+          @if (isEdit()) {
+            <div class="field">
+              <label>Profile Photo URL</label>
+              <input formControlName="profilePhotoUrl" placeholder="https://..." />
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- CARD 2 — Contact Details                          -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="card">
+        <div class="card-header">
+          <span class="material-icons">contact_phone</span>
+          Contact Details
+        </div>
+        <div class="card-body">
+          <!-- Work email — readonly in edit mode -->
+          @if (isEdit()) {
+            <div class="field">
+              <label>Work Email</label>
+              <div class="readonly-field">
+                <span class="material-icons readonly-icon">lock</span>
+                <span class="readonly-value">{{ workEmailReadOnly() }}</span>
+              </div>
+              <span class="field-hint">Work email cannot be changed</span>
+            </div>
+          } @else {
+            <div class="field">
+              <label>Work Email <span class="req">*</span></label>
+              <input type="email" formControlName="workEmail" placeholder="name@company.com" />
+              @if (isInvalid('workEmail')) {
+                <span class="field-error">{{ getError('workEmail') }}</span>
+              }
+            </div>
+          }
+
+          <div class="field">
+            <label>Personal Email <span class="req">*</span></label>
+            <input
+              type="email"
+              formControlName="personalEmail"
+              placeholder="personal@example.com"
+            />
+            @if (isInvalid('personalEmail')) {
+              <span class="field-error">{{ getError('personalEmail') }}</span>
+            }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Personal Phone</label>
+              <input formControlName="personalPhone" placeholder="+968 9xxx xxxx" />
+            </div>
+            <div class="field">
+              <label>Work Phone</label>
+              <input formControlName="workPhone" placeholder="+968 2xxx xxxx" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- CARD 3 — Employment Details                       -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="card">
+        <div class="card-header">
+          <span class="material-icons">work</span>
+          Employment Details
+        </div>
+        <div class="card-body">
+          <!-- Department -->
+          <!--
+          <div class="field">
+            <label>Department <span class="req">*</span></label>
+            @if (loadingLookup()) {
+              <select disabled>
+                <option>Loading...</option>
+              </select>
+            } @else {
+              <select formControlName="departmentId">
+                <option value="">Select department</option>
+                @for (d of departments(); track d.id) {
+                  <option [value]="d.id">{{ d.name }}</option>
+                }
+              </select>
+            }
+            @if (isInvalid('departmentId')) {
+              <span class="field-error">{{ getError('departmentId') }}</span>
+            }
+          </div>
+          -->
+          <!-- Designation — filtered by department -->
+          <!-- 
+          <div class="field">
+            <label>Designation</label>
+            @if (loadingLookup()) {
+              <select disabled>
+                <option>Loading...</option>
+              </select>
+            } @else {
+              <select formControlName="designationId">
+                <option value="">Select designation</option>
+                @for (d of filteredDesignations(); track d.id) {
+                  <option [value]="d.id">
+                    {{ d.title }}
+                    @if (d.gradeLevel) {
+                      ({{ d.gradeLevel }})
+                    }
+                  </option>
+                }
+              </select>
+            }
+          </div>
+            -->
+          <div class="field-row">
+            <div class="field">
+              <label>Employment Type <span class="req">*</span></label>
+              <select formControlName="employmentType">
+                @for (t of empTypes; track t) {
+                  <option [value]="t">{{ t.replace('_', ' ') }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>Employment Status <span class="req">*</span></label>
+              <select formControlName="employmentStatus">
+                @for (s of empStatuses; track s) {
+                  <option [value]="s">{{ s.replace('_', ' ') }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Hire Date <span class="req">*</span></label>
+            <input type="date" formControlName="hireDate" />
+            @if (isInvalid('hireDate')) {
+              <span class="field-error">{{ getError('hireDate') }}</span>
+            }
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Probation End Date</label>
+              <input type="date" formControlName="probationEndDate" />
+            </div>
+            <div class="field">
+              <label>Confirmation Date</label>
+              <input type="date" formControlName="confirmationDate" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- CARD 4 — System Access                            -->
+      <!-- Create: full auth fields / Edit: role only        -->
+      <!-- ══════════════════════════════════════════════════ -->
+      <div class="card full-width">
+        <div class="card-header">
+          <span class="material-icons">manage_accounts</span>
+          System Access
+          @if (isEdit()) {
+            <span class="card-hint">Username and password cannot be changed here</span>
+          } @else {
+            <span class="card-hint">Creates login credentials for this employee</span>
+          }
+        </div>
+        <div class="card-body">
+          <div class="field-row">
+            <!-- Role — always editable -->
+            <div class="field">
+              <label>Role <span class="req">*</span></label>
+              <select formControlName="role">
+                @for (r of roles; track r) {
+                  <option [value]="r">{{ r.replace('_', ' ') }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Username — create only -->
+            @if (!isEdit()) {
+              <div class="field">
+                <label>Username <span class="req">*</span></label>
+                <input
+                  formControlName="username"
+                  placeholder="e.g. ahmed.rashidi"
+                  autocomplete="new-password"
+                />
+                @if (isInvalid('username')) {
+                  <span class="field-error">{{ getError('username') }}</span>
+                }
+                <span class="field-hint"> Letters, numbers, dots, hyphens, underscores only </span>
+              </div>
+            }
+          </div>
+
+          <!-- Password — create only -->
+          @if (!isEdit()) {
+            <div class="field" style="max-width: 480px">
+              <label>Password <span class="req">*</span></label>
+              <div class="password-wrap">
+                <input
+                  [type]="hidePassword() ? 'password' : 'text'"
+                  formControlName="password"
+                  placeholder="Minimum 8 characters"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="eye-btn" (click)="togglePassword()">
+                  <span class="material-icons">
+                    {{ hidePassword() ? 'visibility_off' : 'visibility' }}
+                  </span>
+                </button>
+              </div>
+              @if (isInvalid('password')) {
+                <span class="field-error">{{ getError('password') }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- end cards-grid -->
+
+    <!-- ── Form footer ───────────────────────────────────── -->
+    <div class="form-footer">
+      <button type="button" class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button type="submit" class="btn-save" [disabled]="loading()">
+        @if (loading()) {
+          <div class="btn-spinner"></div>
+          <span>{{ isEdit() ? 'Updating...' : 'Saving...' }}</span>
+        } @else {
+          <span class="material-icons">save</span>
+          <span>{{ isEdit() ? 'Update Employee' : 'Create Employee' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

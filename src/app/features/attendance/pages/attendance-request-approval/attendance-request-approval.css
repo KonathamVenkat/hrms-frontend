@@ -1,0 +1,536 @@
+.approval-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Page Header ──────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #4f46e5;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.header-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge-pill mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.pending-pill {
+  background: #fef3c7;
+  color: #92400e;
+}
+.approved-pill {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* ── Filter Card ─────────────────────────────────────────── */
+.filter-card {
+  border-radius: 14px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 4px 0;
+}
+
+.filter-field {
+  min-width: 160px;
+  flex: 1;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 4px;
+}
+
+/* ── Stats Row ───────────────────────────────────────────── */
+.stats-row {
+  display: flex;
+  gap: 12px;
+}
+
+.stat-mini {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  min-width: 160px;
+}
+
+.stat-mini mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px !important;
+}
+
+.stat-mini mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.pending-stat mat-icon {
+  color: #d97706;
+}
+.total-stat mat-icon {
+  color: #4f46e5;
+}
+
+.stat-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1;
+  display: block;
+}
+
+.stat-lbl {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Table Card ──────────────────────────────────────────── */
+.table-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07) !important;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  min-height: 200px;
+  position: relative;
+}
+
+.approval-table {
+  width: 100%;
+}
+
+.approval-table th {
+  background: #f8fafc;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.approval-table td {
+  font-size: 13px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+/* Row highlights */
+.pending-row td {
+  border-left: 3px solid #f59e0b;
+}
+.approved-row td {
+  background: #f0fdf4 !important;
+  border-left: 3px solid #059669;
+}
+.rejected-row td {
+  background: #fff5f5 !important;
+  border-left: 3px solid #ef4444;
+}
+
+/* ── Employee Cell ───────────────────────────────────────── */
+.emp-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.emp-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.emp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.emp-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #111827;
+}
+.emp-code {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ── Ref ID ──────────────────────────────────────────────── */
+.reg-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* ── Date / Time ─────────────────────────────────────────── */
+.date-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.datetime-text {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.time-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.time-chip.in {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.time-chip.out {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+/* ── Reason ──────────────────────────────────────────────── */
+.reason-text {
+  font-size: 13px;
+  color: #374151;
+  cursor: default;
+  line-height: 1.4;
+}
+
+/* ── Status ──────────────────────────────────────────────── */
+.status-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.status-icon {
+  font-size: 13px !important;
+  width: 13px !important;
+  height: 13px !important;
+}
+
+.rejection-note,
+.reviewer-note {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+}
+
+.rejection-note {
+  color: #dc2626;
+}
+.reviewer-note {
+  color: #6b7280;
+}
+
+.note-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* ── Actions ─────────────────────────────────────────────── */
+.action-col {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.action-btn {
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 12px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  white-space: nowrap;
+}
+
+.approve-btn mat-icon,
+.reject-btn mat-icon {
+  font-size: 15px !important;
+  width: 15px !important;
+  height: 15px !important;
+  margin-right: 2px;
+}
+
+.acted-info .acted-at {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.muted {
+  color: #9ca3af;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.empty-cell {
+  text-align: center !important;
+  padding: 60px 0 !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 52px;
+  width: 52px;
+  height: 52px;
+}
+
+.empty-state p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: 13px;
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.center-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 0;
+  gap: 12px;
+  color: #6b7280;
+}
+
+/* ── Reject Dialog (inline, no mat-dialog) ───────────────── */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.dialog-box {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
+}
+
+.dialog-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.dialog-icon.warn {
+  color: #d97706;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dialog-close {
+  color: #6b7280;
+}
+
+.dialog-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dialog-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dialog-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 80px;
+  padding-top: 2px;
+}
+
+.dialog-value {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.reason-value {
+  font-style: italic;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.dialog-divider {
+  margin: 8px 0 !important;
+}
+
+.rejection-field {
+  width: 100%;
+}
+
+.rejection-error {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #dc2626;
+  font-size: 12px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .approval-container {
+    padding: 12px;
+  }
+  .filter-form {
+    flex-direction: column;
+  }
+  .filter-field {
+    width: 100%;
+  }
+  .action-col {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stats-row {
+    flex-wrap: wrap;
+  }
+  .dialog-box {
+    max-width: 100%;
+  }
+}

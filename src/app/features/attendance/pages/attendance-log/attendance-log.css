@@ -1,0 +1,346 @@
+.attendance-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Page Header ─────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #4f46e5;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ── Punch Card ──────────────────────────────────────────── */
+.punch-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.punch-grid {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.punch-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+.punch-divider {
+  height: 80px !important;
+  border-color: #e5e7eb !important;
+}
+
+.punch-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #9ca3af;
+}
+
+.check-in-icon {
+  color: #059669;
+}
+.check-out-icon {
+  color: #dc2626;
+}
+.working-icon {
+  color: #4f46e5;
+}
+
+.punch-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.punch-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.punch-time {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+}
+
+.working-time {
+  color: #4f46e5;
+}
+
+.punch-btn {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  min-width: 110px !important;
+}
+
+.shift-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  margin-top: 8px;
+}
+
+.shift-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+}
+
+.late-badge {
+  margin-left: auto;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Summary Section ─────────────────────────────────────── */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.live-badge {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #059669;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  border-radius: 12px !important;
+  text-align: center;
+  cursor: default;
+}
+
+.stat-card mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 12px !important;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card.present .stat-value {
+  color: #059669;
+}
+.stat-card.absent .stat-value {
+  color: #dc2626;
+}
+.stat-card.late .stat-value {
+  color: #d97706;
+}
+.stat-card.leave .stat-value {
+  color: #7c3aed;
+}
+.stat-card.working .stat-value {
+  color: #2563eb;
+  font-size: 20px;
+}
+.stat-card.overtime .stat-value {
+  color: #0891b2;
+  font-size: 20px;
+}
+
+/* ── Table Card ──────────────────────────────────────────── */
+.table-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.table-card mat-card-header {
+  padding: 16px 20px 0;
+}
+
+.table-card mat-card-title {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  position: relative;
+  min-height: 200px;
+}
+
+.attendance-table {
+  width: 100%;
+}
+
+.attendance-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.attendance-table td {
+  font-size: 14px;
+  color: #374151;
+}
+
+.weekend-row td {
+  background: #f8fafc !important;
+  color: #94a3b8;
+}
+.holiday-row td {
+  background: #f0fdfa !important;
+}
+
+/* ── Status Chip ─────────────────────────────────────────── */
+.status-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.late-text {
+  color: #d97706;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.empty-cell {
+  text-align: center !important;
+  padding: 40px 0 !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.table-spinner {
+  display: block;
+  margin: 60px auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .punch-grid {
+    flex-direction: column;
+  }
+  .punch-divider {
+    display: none;
+  }
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .attendance-container {
+    padding: 12px;
+  }
+}

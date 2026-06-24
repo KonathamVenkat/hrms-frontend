@@ -1,0 +1,197 @@
+<!-- salary-component.component.html -->
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">tune</mat-icon>
+      <div>
+        <h2>Salary Components</h2>
+        <span class="subtitle">Define earning, deduction and statutory components</span>
+      </div>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Component
+    </button>
+  </div>
+
+  <!-- Form Panel -->
+  <mat-card class="form-card" *ngIf="showForm()">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ editingId() ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ editingId() ? 'Edit' : 'New' }} Salary Component
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" class="form-grid">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Component Code</mat-label>
+          <input matInput formControlName="componentCode"
+                 placeholder="e.g. HRA" [readonly]="!!editingId()">
+          <mat-error *ngIf="form.get('componentCode')?.hasError('required')">Required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Component Name (EN)</mat-label>
+          <input matInput formControlName="componentName" placeholder="Housing Allowance">
+          <mat-error *ngIf="form.get('componentName')?.hasError('required')">Required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Component Name (AR)</mat-label>
+          <input matInput formControlName="componentNameAr" dir="rtl">
+          <mat-error *ngIf="form.get('componentNameAr')?.hasError('required')">Required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="componentType">
+            <mat-option *ngFor="let t of componentTypes" [value]="t.value">{{ t.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Calculation Type</mat-label>
+          <mat-select formControlName="calcType">
+            <mat-option *ngFor="let c of calcTypes" [value]="c.value">{{ c.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Default Value / %</mat-label>
+          <input matInput type="number" formControlName="defaultValue" min="0">
+          <mat-hint>Fixed amount or percentage</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sort Order</mat-label>
+          <input matInput type="number" formControlName="sortOrder" min="0">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-col">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description">
+        </mat-form-field>
+
+        <div class="toggle-row">
+          <mat-slide-toggle formControlName="isTaxable" color="primary">
+            Taxable
+          </mat-slide-toggle>
+          <mat-slide-toggle formControlName="isPasiApplicable" color="accent">
+            PASI Applicable
+          </mat-slide-toggle>
+        </div>
+
+      </form>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
+        <mat-spinner *ngIf="saving()" diameter="18"></mat-spinner>
+        <span *ngIf="!saving()"><mat-icon>save</mat-icon> Save</span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-wrapper">
+        <div class="center-spinner" *ngIf="loading()"><mat-spinner diameter="40"></mat-spinner></div>
+
+        <table mat-table [dataSource]="components()" *ngIf="!loading()" class="comp-table">
+
+          <ng-container matColumnDef="sortOrder">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let r">{{ r.sortOrder }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="componentCode">
+            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="code-chip">{{ r.componentCode }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="componentName">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let r">
+              <div class="name-cell">
+                <span class="name-en">{{ r.componentName }}</span>
+                <span class="name-ar">{{ r.componentNameAr }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="componentType">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="type-chip"
+                    [style.background]="getTypeStyle(r.componentType).bg"
+                    [style.color]="getTypeStyle(r.componentType).color">
+                {{ getTypeStyle(r.componentType).label }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="calcType">
+            <th mat-header-cell *matHeaderCellDef>Calc Type</th>
+            <td mat-cell *matCellDef="let r">{{ r.calcTypeLabel }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="defaultValue">
+            <th mat-header-cell *matHeaderCellDef>Default</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="amount">
+                {{ r.calcType === 'FIXED' ? (r.defaultValue | number:'1.3-3') + ' OMR'
+                   : r.defaultValue + '%' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="pasi">
+            <th mat-header-cell *matHeaderCellDef>PASI</th>
+            <td mat-cell *matCellDef="let r">
+              <mat-icon [style.color]="r.isPasiApplicable ? '#059669' : '#cbd5e1'">
+                {{ r.isPasiApplicable ? 'check_circle' : 'remove' }}
+              </mat-icon>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="isActive">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let r">
+              <span class="status-chip"
+                    [style.background]="r.isActive ? '#dcfce7' : '#fee2e2'"
+                    [style.color]="r.isActive ? '#166534' : '#991b1b'">
+                {{ r.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let r">
+              <button mat-icon-button (click)="openEdit(r)" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button
+                      [color]="r.isActive ? 'warn' : 'primary'"
+                      (click)="toggleActive(r)"
+                      [matTooltip]="r.isActive ? 'Deactivate' : 'Activate'">
+                <mat-icon>{{ r.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              [class.inactive-row]="!row.isActive"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

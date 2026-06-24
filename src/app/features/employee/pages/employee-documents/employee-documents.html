@@ -1,0 +1,368 @@
+<div class="docs-section">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="section-header">
+    <div class="header-left">
+      <h2 class="section-title">Documents</h2>
+      <div class="doc-stats">
+        <span class="stat-chip chip-total"> {{ documents().length }} uploaded </span>
+        @if (expiredCount() > 0) {
+          <span class="stat-chip chip-expired">
+            <span class="material-icons">warning</span>
+            {{ expiredCount() }} expired
+          </span>
+        }
+        @if (expiringSoonCount() > 0) {
+          <span class="stat-chip chip-expiring">
+            <span class="material-icons">schedule</span>
+            {{ expiringSoonCount() }} expiring soon
+          </span>
+        }
+        <span class="stat-chip chip-verified">
+          <span class="material-icons">verified</span>
+          {{ verifiedCount() }} verified
+        </span>
+      </div>
+    </div>
+    <button class="btn-upload" (click)="openUpload()">
+      <span class="material-icons">upload_file</span>
+      Upload Document
+    </button>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error() && !showModal() && !showConfirm()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <!-- ── Category filter ────────────────────────────────── -->
+  @if (documents().length > 0) {
+    <div class="filter-bar">
+      <button
+        class="cat-btn"
+        [class.active]="filterCategory() === ''"
+        (click)="filterCategory.set('')"
+      >
+        All
+      </button>
+      @for (cat of categories(); track cat) {
+        <button
+          class="cat-btn"
+          [class.active]="filterCategory() === cat"
+          (click)="filterCategory.set(cat)"
+        >
+          {{ cat }}
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ── Loading ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading documents...</span>
+    </div>
+  }
+
+  <!-- ── Empty state ────────────────────────────────────── -->
+  @if (!loading() && documents().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">folder_open</span>
+      <p>No documents uploaded yet</p>
+      <small>Upload passport, visa, contracts and other documents</small>
+      <button class="btn-upload-sm" (click)="openUpload()">
+        <span class="material-icons">upload_file</span>
+        Upload Document
+      </button>
+    </div>
+  }
+
+  <!-- ── Document cards ─────────────────────────────────── -->
+  @if (!loading() && filteredDocs().length > 0) {
+    <div class="docs-grid">
+      @for (doc of filteredDocs(); track doc.documentId) {
+        <div
+          class="doc-card"
+          [class.card-expired]="doc.isExpired"
+          [class.card-expiring]="doc.isExpiringSoon && !doc.isExpired"
+        >
+          <!-- File icon + type -->
+          <div class="doc-card-top">
+            <div class="file-icon-wrap" [style.color]="getFileIconColor(doc.fileExtension)">
+              <span class="material-icons file-icon">
+                {{ getFileIcon(doc.fileExtension) }}
+              </span>
+              <span class="ext-badge">{{ doc.fileExtension }}</span>
+            </div>
+            <div class="doc-badges">
+              <span class="cat-badge" [ngClass]="getCategoryBadge(doc.category)">
+                {{ doc.category }}
+              </span>
+              @if (doc.isVerified) {
+                <span class="verified-badge">
+                  <span class="material-icons">verified</span>
+                </span>
+              }
+              @if (doc.isExpired) {
+                <span class="expiry-badge badge-expired">Expired</span>
+              } @else if (doc.isExpiringSoon) {
+                <span class="expiry-badge badge-soon">Expiring Soon</span>
+              }
+            </div>
+            <div class="doc-actions">
+              <button class="act-btn btn-download" title="Download" (click)="downloadDocument(doc)">
+                <span class="material-icons">download</span>
+              </button>
+              <button class="act-btn btn-edit" title="Edit" (click)="openEdit(doc)">
+                <span class="material-icons">edit</span>
+              </button>
+              @if (!doc.isVerified) {
+                <button class="act-btn btn-verify" title="Verify" (click)="openVerify(doc)">
+                  <span class="material-icons">verified_user</span>
+                </button>
+              }
+              <button class="act-btn btn-delete" title="Delete" (click)="openDelete(doc)">
+                <span class="material-icons">delete_outline</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Document info -->
+          <div class="doc-info">
+            <p class="doc-name">{{ doc.documentName }}</p>
+            <p class="doc-type">{{ doc.docTypeName }}</p>
+            @if (doc.documentNumber) {
+              <p class="doc-number">
+                <span class="material-icons">tag</span>
+                {{ doc.documentNumber }}
+              </p>
+            }
+          </div>
+
+          <!-- Dates -->
+          @if (doc.issueDate || doc.expiryDate) {
+            <div class="doc-dates">
+              @if (doc.issueDate) {
+                <div class="date-item">
+                  <span class="date-label">Issued</span>
+                  <span class="date-val">{{ doc.issueDate }}</span>
+                </div>
+              }
+              @if (doc.expiryDate) {
+                <div class="date-item">
+                  <span class="date-label">Expires</span>
+                  <span
+                    class="date-val"
+                    [class.text-danger]="doc.isExpired"
+                    [class.text-warn]="doc.isExpiringSoon && !doc.isExpired"
+                  >
+                    {{ doc.expiryDate }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Footer -->
+          <div class="doc-footer">
+            <span class="file-size">{{ doc.fileSizeFormatted }}</span>
+            <span class="upload-date">
+              {{ doc.createdAt | slice: 0 : 10 }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL — Upload / Edit Document                            -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showModal()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          {{ isEditMode() ? 'Edit Document Info' : 'Upload Document' }}
+        </h2>
+        <button class="modal-close" (click)="closeModal()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      @if (error()) {
+        <div class="modal-alert">
+          <span class="material-icons">error_outline</span>{{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="modal-body">
+          <!-- File drop zone (upload only) -->
+          @if (!isEditMode()) {
+            <div
+              class="drop-zone"
+              [class.drag-active]="dragOver()"
+              [class.file-selected]="selectedFile() !== null"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onDrop($event)"
+              (click)="fileInput.click()"
+            >
+              @if (!selectedFile()) {
+                <span class="material-icons drop-icon">upload_file</span>
+                <p class="drop-text">Drag & drop or click to browse</p>
+                <small class="drop-hint">PDF, JPG, PNG, DOC — max 50MB</small>
+              } @else {
+                <div class="selected-file">
+                  <span
+                    class="material-icons"
+                    [style.color]="getFileIconColor(selectedFile()!.name.split('.').pop()!)"
+                  >
+                    {{ getFileIcon(selectedFile()!.name.split('.').pop()!.toUpperCase()) }}
+                  </span>
+                  <div class="selected-info">
+                    <span class="selected-name">{{ selectedFile()!.name }}</span>
+                    <span class="selected-size">{{ formatBytes(selectedFile()!.size) }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="remove-file"
+                    (click)="$event.stopPropagation(); removeFile()"
+                  >
+                    <span class="material-icons">close</span>
+                  </button>
+                </div>
+              }
+
+              <input
+                #fileInput
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                style="display: none"
+                (change)="onFileSelected($event)"
+              />
+            </div>
+          }
+
+          <!-- Document Type -->
+          <div class="field-row">
+            <div class="field">
+              <label>Document Type <span class="req">*</span></label>
+              <select formControlName="docTypeId" [attr.disabled]="isEditMode() ? true : null">
+                <option value="">Select type</option>
+                @for (dt of docTypes(); track dt.docTypeId) {
+                  <option [value]="dt.docTypeId">{{ dt.docTypeName }} ({{ dt.category }})</option>
+                }
+              </select>
+              @if (isInvalid('docTypeId')) {
+                <span class="field-error">{{ getError('docTypeId') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Document Name <span class="req">*</span></label>
+              <input formControlName="documentName" placeholder="e.g. Passport - John Doe" />
+              @if (isInvalid('documentName')) {
+                <span class="field-error">{{ getError('documentName') }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Document number + Issued by -->
+          <div class="field-row">
+            <div class="field">
+              <label>Document Number</label>
+              <input formControlName="documentNumber" placeholder="e.g. A12345678" />
+            </div>
+            <div class="field">
+              <label>Issued By</label>
+              <input formControlName="issuedBy" placeholder="e.g. Royal Oman Police" />
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="field-row">
+            <div class="field">
+              <label>Issue Date</label>
+              <input type="date" formControlName="issueDate" />
+            </div>
+            <div class="field">
+              <label>Expiry Date</label>
+              <input type="date" formControlName="expiryDate" />
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="field">
+            <label>Notes</label>
+            <textarea formControlName="notes" placeholder="Optional notes..." rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <div class="btn-spinner"></div>
+              <span>{{ isEditMode() ? 'Saving...' : 'Uploading...' }}</span>
+            } @else {
+              <span class="material-icons">
+                {{ isEditMode() ? 'save' : 'upload_file' }}
+              </span>
+              <span>{{ isEditMode() ? 'Save Changes' : 'Upload' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CONFIRM DIALOG                                            -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showConfirm()) {
+  <div class="modal-backdrop">
+    <div class="confirm-dialog">
+      <div
+        class="confirm-icon"
+        [class.icon-verify]="confirmType() === 'verify'"
+        [class.icon-warn]="confirmType() === 'delete'"
+      >
+        <span class="material-icons">
+          {{ confirmType() === 'verify' ? 'verified_user' : 'delete_outline' }}
+        </span>
+      </div>
+      <h3 class="confirm-title">
+        {{ confirmType() === 'verify' ? 'Verify Document?' : 'Delete Document?' }}
+      </h3>
+      <p class="confirm-msg">
+        <strong>{{ confirmItem()?.documentName }}</strong>
+        @if (confirmType() === 'verify') {
+          <br /><small>Mark this document as verified by HR.</small>
+        } @else {
+          <br /><small>This document will be removed from the employee profile.</small>
+        }
+      </p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button
+          class="btn-confirm"
+          [class.btn-verify-confirm]="confirmType() === 'verify'"
+          [class.btn-danger]="confirmType() === 'delete'"
+          (click)="confirmAction()"
+        >
+          {{ confirmType() === 'verify' ? 'Verify' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

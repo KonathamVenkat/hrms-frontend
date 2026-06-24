@@ -1,0 +1,297 @@
+<div class="ot-container">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">more_time</mat-icon>
+      <div>
+        <h2>Overtime Request</h2>
+        <span class="subtitle">Log and track your overtime work hours</span>
+      </div>
+    </div>
+    <button mat-flat-button color="primary" (click)="toggleForm()">
+      <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
+      {{ showForm() ? 'Cancel' : 'New OT Request' }}
+    </button>
+  </div>
+
+  <!-- ── Submit Form ─────────────────────────────────────── -->
+  <mat-card class="form-card" *ngIf="showForm()">
+    <mat-card-header>
+      <mat-card-title> <mat-icon>edit_calendar</mat-icon> New Overtime Request </mat-card-title>
+      <mat-card-subtitle>
+        Submit for dates within the last 30 days (or future for Pre-Approved)
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="submitForm" class="ot-form">
+        <div class="form-row">
+          <!-- OT Date -->
+          <mat-form-field appearance="outline" class="field-md">
+            <mat-label>Overtime Date</mat-label>
+            <input
+              matInput
+              [matDatepicker]="otDatePicker"
+              formControlName="otDate"
+              [max]="maxDate"
+              [min]="minDate"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="otDatePicker" />
+            <mat-datepicker #otDatePicker />
+            <mat-error *ngIf="submitForm.get('otDate')?.hasError('required')">
+              Date is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- OT Type -->
+          <mat-form-field appearance="outline" class="field-md">
+            <mat-label>Overtime Type</mat-label>
+            <mat-select formControlName="otType">
+              <mat-option *ngFor="let opt of otTypeOptions" [value]="opt.value">
+                {{ opt.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <!-- Start Time -->
+          <mat-form-field appearance="outline" class="field-sm">
+            <mat-label>Start Time</mat-label>
+            <input matInput type="time" formControlName="startTime" />
+            <mat-icon matSuffix>login</mat-icon>
+            <mat-error *ngIf="submitForm.get('startTime')?.hasError('required')">
+              Start time is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- End Time -->
+          <mat-form-field appearance="outline" class="field-sm">
+            <mat-label>End Time</mat-label>
+            <input matInput type="time" formControlName="endTime" />
+            <mat-icon matSuffix>logout</mat-icon>
+            <mat-error *ngIf="submitForm.get('endTime')?.hasError('required')">
+              End time is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Project Code (optional) -->
+          <mat-form-field appearance="outline" class="field-md">
+            <mat-label>Project Code (optional)</mat-label>
+            <input matInput formControlName="projectCode" placeholder="e.g. PRJ-2026-001" />
+            <mat-icon matSuffix>work</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Reason -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Reason for Overtime</mat-label>
+          <textarea
+            matInput
+            formControlName="reason"
+            rows="3"
+            placeholder="Describe why overtime was required (min 10 characters)"
+          >
+          </textarea>
+          <mat-hint align="end"> {{ submitForm.get('reason')?.value?.length || 0 }}/500 </mat-hint>
+          <mat-error *ngIf="submitForm.get('reason')?.hasError('required')">
+            Reason is required
+          </mat-error>
+          <mat-error *ngIf="submitForm.get('reason')?.hasError('minlength')">
+            Minimum 10 characters required
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">Discard</button>
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="submitting()">
+        <mat-spinner *ngIf="submitting()" diameter="18"></mat-spinner>
+        <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> Submit Request </span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- ── Stats Row ───────────────────────────────────────── -->
+  <div class="stats-row">
+    <mat-card class="stat-card pending-stat">
+      <mat-card-content>
+        <mat-icon>pending</mat-icon>
+        <span class="stat-num">{{ pendingCount() }}</span>
+        <span class="stat-lbl">Pending</span>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="stat-card approved-stat">
+      <mat-card-content>
+        <mat-icon>check_circle</mat-icon>
+        <span class="stat-num">{{ approvedCount() }}</span>
+        <span class="stat-lbl">Approved</span>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="stat-card rejected-stat">
+      <mat-card-content>
+        <mat-icon>cancel</mat-icon>
+        <span class="stat-num">{{ rejectedCount() }}</span>
+        <span class="stat-lbl">Rejected</span>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="stat-card hours-stat">
+      <mat-card-content>
+        <mat-icon>timer</mat-icon>
+        <span class="stat-num sm">{{ totalOtFormatted() }}</span>
+        <span class="stat-lbl">Approved OT</span>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- ── My Requests Table ───────────────────────────────── -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title> <mat-icon>list_alt</mat-icon> My Overtime Requests </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-wrapper">
+        <div class="center-spinner" *ngIf="loading()">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <table mat-table [dataSource]="myRequests()" *ngIf="!loading()" class="ot-table">
+          <!-- OT ID -->
+          <ng-container matColumnDef="otId">
+            <th mat-header-cell *matHeaderCellDef>Ref No.</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="ref-id">{{ row.otId }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Date -->
+          <ng-container matColumnDef="otDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="date-text">{{ row.otDateFormatted }}</span>
+            </td>
+          </ng-container>
+
+          <!-- OT Type -->
+          <ng-container matColumnDef="otType">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let row">
+              <span
+                class="type-chip"
+                [style.background]="getOtTypeStyle(row.otType).bg"
+                [style.color]="getOtTypeStyle(row.otType).color"
+              >
+                {{ getOtTypeStyle(row.otType).label }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Start Time -->
+          <ng-container matColumnDef="startTime">
+            <th mat-header-cell *matHeaderCellDef>Start</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="time-chip in">{{ formatTime(row.startTime) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- End Time -->
+          <ng-container matColumnDef="endTime">
+            <th mat-header-cell *matHeaderCellDef>End</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="time-chip out">{{ formatTime(row.endTime) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Duration -->
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef>Duration</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="duration-badge">{{ row.durationFormatted }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Reason -->
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="reason-text" [matTooltip]="row.reason" matTooltipPosition="above">
+                {{ row.reason.length > 40 ? row.reason.slice(0, 40) + '...' : row.reason }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="status-col">
+                <span
+                  class="status-chip"
+                  [style.background]="getStatusStyle(row.status).bg"
+                  [style.color]="getStatusStyle(row.status).color"
+                >
+                  <mat-icon class="status-icon">
+                    {{ getStatusStyle(row.status).icon }}
+                  </mat-icon>
+                  {{ getStatusStyle(row.status).label }}
+                </span>
+                <span
+                  class="rejection-note"
+                  *ngIf="row.rejectionReason"
+                  [matTooltip]="row.rejectionReason"
+                >
+                  <mat-icon>error_outline</mat-icon>
+                  {{ row.rejectionReason.slice(0, 25) }}...
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button
+                mat-icon-button
+                color="warn"
+                *ngIf="row.status === 'PENDING'"
+                (click)="onCancel(row.otId)"
+                matTooltip="Cancel Request"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.approved-row]="row.status === 'APPROVED'"
+            [class.rejected-row]="row.status === 'REJECTED'"
+          ></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+              <div class="empty-state">
+                <mat-icon>more_time</mat-icon>
+                <p>No overtime requests found</p>
+                <button mat-stroked-button (click)="toggleForm()">Submit your first request</button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalElements()"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

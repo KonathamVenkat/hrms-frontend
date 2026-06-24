@@ -1,0 +1,226 @@
+<!-- leave-apply.html -->
+<div class="apply-page">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <button class="back-btn" (click)="onCancel()">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <div>
+      <h1 class="page-title">Apply for Leave</h1>
+      <p class="page-sub">{{ currentYear }} — Submit a new leave request</p>
+    </div>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      {{ successMsg() }}
+    </div>
+  }
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- ── Loading ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading your leave balances...</span>
+    </div>
+  }
+
+  @if (!loading()) {
+    <div class="apply-layout">
+      <!-- ════════════════════════════════════════════════ -->
+      <!-- LEFT — Form                                     -->
+      <!-- ════════════════════════════════════════════════ -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="material-icons">event_available</span>
+          Leave Request Details
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="form-body">
+          <!-- ── Leave type ─────────────────────────────── -->
+          <div class="field">
+            <label>Leave Type <span class="req">*</span></label>
+
+            @if (balances().length === 0) {
+              <div class="no-balance-warn">
+                <span class="material-icons">warning</span>
+                No leave balances found for {{ currentYear }}. Please contact HR to initialize your
+                balance.
+              </div>
+            } @else {
+              <div class="type-grid">
+                @for (b of balances(); track b.leaveType) {
+                  <label
+                    class="type-card"
+                    [class.type-selected]="ctrl('leaveTypeCode').value === b.leaveType"
+                    [class.type-empty]="b.availableDays <= 0"
+                  >
+                    <input
+                      type="radio"
+                      formControlName="leaveTypeCode"
+                      [value]="b.leaveType"
+                      style="display: none"
+                    />
+                    <div class="type-dot" [style.background]="getTypeColor(b.leaveType)"></div>
+                    <div class="type-info">
+                      <span class="type-name">{{ b.leaveTypeName }}</span>
+                      <span class="type-avail">
+                        {{ b.availableDays.toFixed(1) }} / {{ b.totalDays.toFixed(1) }} days
+                      </span>
+                    </div>
+                    <div class="type-mini-bar">
+                      <div
+                        class="type-mini-fill"
+                        [style.width.%]="
+                          b.totalDays > 0 ? (b.availableDays / b.totalDays) * 100 : 0
+                        "
+                        [style.background]="getBalanceBarColor(b.availableDays, b.totalDays)"
+                      ></div>
+                    </div>
+                  </label>
+                }
+              </div>
+            }
+            @if (isInvalid('leaveTypeCode')) {
+              <span class="field-error">Please select a leave type</span>
+            }
+          </div>
+
+          <!-- ── Date range ─────────────────────────────── -->
+          <div class="field-row">
+            <div class="field">
+              <label>Start Date <span class="req">*</span></label>
+              <input type="date" formControlName="startDate" [min]="getMinDate()" />
+              @if (isInvalid('startDate')) {
+                <span class="field-error">{{ getError('startDate') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>End Date <span class="req">*</span></label>
+              <input
+                type="date"
+                formControlName="endDate"
+                [min]="ctrl('startDate').value || getMinDate()"
+              />
+              @if (isInvalid('endDate')) {
+                <span class="field-error">{{ getError('endDate') }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Date range error -->
+          @if (form.errors?.['dateRange'] && form.touched) {
+            <div class="field-alert">
+              <span class="material-icons">warning</span>
+              {{ form.errors?.['dateRange'] }}
+            </div>
+          }
+
+          <!-- ── Working days preview ───────────────────── -->
+          @if (calculatedDays() > 0) {
+            <div class="days-preview" [class.days-warn]="!isBalanceSufficient()">
+              <div class="days-icon">
+                <span class="material-icons">
+                  {{ isBalanceSufficient() ? 'event_available' : 'event_busy' }}
+                </span>
+              </div>
+              <div class="days-info">
+                <span class="days-count">{{ calculatedDays() }} working days</span>
+                @if (selectedBalance()) {
+                  <span class="days-remaining">
+                    @if (isBalanceSufficient()) {
+                      {{ (selectedBalance()!.availableDays - calculatedDays()).toFixed(1) }}
+                      days remaining after this request
+                    } @else {
+                      ⚠ Insufficient — need {{ calculatedDays() }} days, have
+                      {{ selectedBalance()!.availableDays.toFixed(1) }}
+                    }
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- ── Reason ─────────────────────────────────── -->
+          <div class="field">
+            <label>Reason <span class="req">*</span></label>
+            <textarea
+              formControlName="reason"
+              rows="3"
+              placeholder="Briefly describe the reason for your leave request..."
+            >
+            </textarea>
+            <span class="char-count"> {{ ctrl('reason').value?.length ?? 0 }}/500 </span>
+            @if (isInvalid('reason')) {
+              <span class="field-error">{{ getError('reason') }}</span>
+            }
+          </div>
+
+          <!-- ── Actions ───────────────────────────────── -->
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="submitting() || !isBalanceSufficient() || balances().length === 0"
+            >
+              @if (submitting()) {
+                <div class="btn-spinner"></div>
+                <span>Submitting...</span>
+              } @else {
+                <span class="material-icons">send</span>
+                <span>Submit Request</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ════════════════════════════════════════════════ -->
+      <!-- RIGHT — Balance sidebar                         -->
+      <!-- ════════════════════════════════════════════════ -->
+      <div class="balance-sidebar">
+        <div class="sidebar-header">
+          <span class="material-icons">account_balance_wallet</span>
+          My Leave Balance — {{ currentYear }}
+        </div>
+        <div class="balance-list">
+          @for (b of balances(); track b.leaveType) {
+            <div
+              class="bal-item"
+              [class.bal-selected]="ctrl('leaveTypeCode').value === b.leaveType"
+            >
+              <div class="bal-item-header">
+                <div class="bal-type-dot" [style.background]="getTypeColor(b.leaveType)"></div>
+                <span class="bal-type-name">{{ b.leaveTypeName }}</span>
+                <span class="bal-avail">{{ b.availableDays.toFixed(1) }}d</span>
+              </div>
+              <div class="bal-bar">
+                <div
+                  class="bal-bar-fill"
+                  [style.width.%]="b.totalDays > 0 ? (b.availableDays / b.totalDays) * 100 : 0"
+                  [style.background]="getBalanceBarColor(b.availableDays, b.totalDays)"
+                ></div>
+              </div>
+              <div class="bal-breakdown">
+                <span>Used: {{ b.usedDays.toFixed(1) }}</span>
+                @if (b.pendingDays > 0) {
+                  <span class="pending-text"> Pending: {{ b.pendingDays.toFixed(1) }} </span>
+                }
+                <span>Total: {{ b.totalDays.toFixed(1) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,349 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Document Types</h1>
+      <div class="stat-chips">
+        <span class="chip chip-total">{{ docTypes().length }} Total</span>
+        <span class="chip chip-active">{{ activeCount() }} Active</span>
+        <span class="chip chip-mandatory">{{ mandatoryCount() }} Mandatory</span>
+      </div>
+    </div>
+    <button class="btn-add" (click)="openCreate()">
+      <span class="material-icons">add</span> Add Document Type
+    </button>
+  </div>
+
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error() && !showModal()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <span class="material-icons">search</span>
+      <input
+        type="text"
+        placeholder="Search document types..."
+        [value]="filterText()"
+        (input)="filterText.set($any($event.target).value)"
+      />
+    </div>
+    <select
+      class="filter-select"
+      [value]="filterCat()"
+      (change)="filterCat.set($any($event.target).value)"
+    >
+      <option value="">All Categories</option>
+      @for (c of categories; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+    <div class="tab-filter">
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'all'"
+        (click)="filterActive.set('all')"
+      >
+        All
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'active'"
+        (click)="filterActive.set('active')"
+      >
+        Active
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'inactive'"
+        (click)="filterActive.set('inactive')"
+      >
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading...</span>
+    </div>
+  }
+
+  @if (!loading()) {
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Mandatory</th>
+            <th>Has Expiry</th>
+            <th>Extensions</th>
+            <th>Max Size</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered().length === 0) {
+            <tr>
+              <td colspan="10">
+                <div class="empty-state">
+                  <span class="material-icons">folder_open</span>
+                  <p>No document types found</p>
+                </div>
+              </td>
+            </tr>
+          }
+          @for (dt of filtered(); track dt.docTypeId; let i = $index) {
+            <tr class="data-row" [class.inactive-row]="!dt.isActive">
+              <td class="cell-num">{{ i + 1 }}</td>
+              <td>
+                <span class="code-badge">{{ dt.docTypeCode }}</span>
+              </td>
+              <td>
+                <div class="name-cell">
+                  <span class="name-en">{{ dt.docTypeName }}</span>
+                  <span class="name-ar">{{ dt.docTypeNameAr }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="cat-badge" [ngClass]="getCategoryBadge(dt.category)">
+                  {{ dt.category }}
+                </span>
+              </td>
+              <td class="cell-center">
+                @if (dt.isMandatory) {
+                  <span class="material-icons icon-yes">check_circle</span>
+                } @else {
+                  <span class="material-icons icon-no">cancel</span>
+                }
+              </td>
+              <td class="cell-center">
+                @if (dt.hasExpiry) {
+                  <div class="expiry-info">
+                    <span class="material-icons icon-yes">check_circle</span>
+                    <span class="expiry-days">{{ dt.expiryNoticeDays }}d notice</span>
+                  </div>
+                } @else {
+                  <span class="material-icons icon-no">cancel</span>
+                }
+              </td>
+              <td>
+                <div class="ext-wrap">
+                  @for (ext of getExtensions(dt.allowedExtensions); track ext) {
+                    <span class="ext-badge">{{ ext }}</span>
+                  }
+                </div>
+              </td>
+              <td class="cell-center">
+                <span class="size-badge">{{ dt.maxFileSizeMb }}MB</span>
+              </td>
+              <td>
+                <span
+                  class="status-badge"
+                  [class.status-active]="dt.isActive"
+                  [class.status-inactive]="!dt.isActive"
+                >
+                  <span class="status-dot"></span>{{ dt.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-wrap">
+                  <button class="act-btn btn-edit" (click)="openEdit(dt)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button
+                    class="act-btn"
+                    [class.btn-deactivate]="dt.isActive"
+                    [class.btn-activate]="!dt.isActive"
+                    (click)="openConfirm(dt)"
+                  >
+                    <span class="material-icons">{{
+                      dt.isActive ? 'toggle_off' : 'toggle_on'
+                    }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- MODAL -->
+@if (showModal()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">{{ isEditMode() ? 'Edit Document Type' : 'Add Document Type' }}</h2>
+        <button class="modal-close" (click)="closeModal()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      @if (error()) {
+        <div class="modal-alert">
+          <span class="material-icons">error_outline</span>{{ error() }}
+        </div>
+      }
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="modal-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Code <span class="req">*</span></label>
+              <input formControlName="docTypeCode" placeholder="e.g. NATIONAL_ID" />
+              @if (isInvalid('docTypeCode')) {
+                <span class="field-error">{{ getError('docTypeCode') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Category <span class="req">*</span></label>
+              <select formControlName="category">
+                @for (c of categories; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Name (English) <span class="req">*</span></label>
+              <input formControlName="docTypeName" placeholder="e.g. National ID Card" />
+              @if (isInvalid('docTypeName')) {
+                <span class="field-error">{{ getError('docTypeName') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Name (Arabic) <span class="req">*</span></label>
+              <input formControlName="docTypeNameAr" placeholder="e.g. بطاقة الهوية" dir="rtl" />
+              @if (isInvalid('docTypeNameAr')) {
+                <span class="field-error">{{ getError('docTypeNameAr') }}</span>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea
+              formControlName="description"
+              placeholder="Optional description..."
+              rows="2"
+            ></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Allowed Extensions</label>
+              <input formControlName="allowedExtensions" placeholder="PDF,JPG,PNG" />
+              <span class="field-hint">Comma-separated, uppercase</span>
+            </div>
+            <div class="field">
+              <label>Max File Size (MB)</label>
+              <input type="number" formControlName="maxFileSizeMb" min="1" max="50" />
+              @if (isInvalid('maxFileSizeMb')) {
+                <span class="field-error">{{ getError('maxFileSizeMb') }}</span>
+              }
+            </div>
+          </div>
+          <div class="toggles-row">
+            <label class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Mandatory</span>
+                <span class="toggle-hint">Required for all employees</span>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="isMandatory" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+            <label class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Has Expiry</span>
+                <span class="toggle-hint">Document expires (passport, visa, etc.)</span>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="hasExpiry" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+            @if (isEditMode()) {
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Active</span>
+                  <span class="toggle-hint">Inactive types cannot be uploaded</span>
+                </div>
+                <div class="toggle-wrap">
+                  <input type="checkbox" formControlName="isActive" class="toggle-inp" />
+                  <span class="toggle-slider"></span>
+                </div>
+              </label>
+            }
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Expiry Notice Days</label>
+              <input type="number" formControlName="expiryNoticeDays" min="0" max="365" />
+              <span class="field-hint">Days before expiry to send notification</span>
+            </div>
+            <div class="field">
+              <label>Sort Order</label>
+              <input type="number" formControlName="sortOrder" min="0" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <div class="btn-spinner"></div>
+              <span>Saving...</span>
+            } @else {
+              <span class="material-icons">save</span
+              ><span>{{ isEditMode() ? 'Update' : 'Add Type' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (showConfirm()) {
+  <div class="modal-backdrop">
+    <div class="confirm-dialog">
+      <div
+        class="confirm-icon"
+        [class.icon-warn]="confirmItem()?.isActive"
+        [class.icon-info]="!confirmItem()?.isActive"
+      >
+        <span class="material-icons">folder</span>
+      </div>
+      <h3 class="confirm-title">
+        {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }} Document Type?
+      </h3>
+      <p class="confirm-msg">
+        <strong>{{ confirmItem()?.docTypeName }}</strong>
+      </p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button
+          class="btn-confirm"
+          [class.btn-danger]="confirmItem()?.isActive"
+          [class.btn-success]="!confirmItem()?.isActive"
+          (click)="confirmToggle()"
+        >
+          {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

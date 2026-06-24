@@ -1,0 +1,346 @@
+/* ============================================================
+   EHRMS Sidebar — Polished Icon Rail
+   - Hover-based flyout (no flicker)
+   - Per-module icon colors
+   - Smooth transitions
+   ============================================================ */
+
+/* ── Variables ──────────────────────────────────────────── */
+:host {
+  --rail-width:      56px;
+  --rail-bg:         #ffffff;
+  --rail-border:     #e8edf2;
+  --hover-bg:        #f4f7fa;
+  --flyout-bg:       #ffffff;
+  --flyout-shadow:   0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  --flyout-width:    224px;
+  --text-dark:       #111827;
+  --text-muted:      #6b7280;
+  --radius:          12px;
+  --transition:      0.18s ease;
+}
+
+/* ── Rail container ─────────────────────────────────────── */
+.sidebar-rail {
+  width: var(--rail-width);
+  min-height: 100vh;
+  background: var(--rail-bg);
+  border-right: 1px solid var(--rail-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  z-index: 100;
+  flex-shrink: 0;
+  /* Subtle shadow to lift from content */
+  box-shadow: 1px 0 0 var(--rail-border), 4px 0 16px rgba(0,0,0,0.04);
+}
+
+/* ── Logo ───────────────────────────────────────────────── */
+.rail-logo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  border-bottom: 1px solid var(--rail-border);
+  flex-shrink: 0;
+}
+
+.logo-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.logo-avatar:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(79,70,229,0.45);
+}
+
+/* ── Nav list ───────────────────────────────────────────── */
+.rail-list {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: visible;  /* must be visible for flyout to show */
+  scrollbar-width: none;
+}
+
+.rail-list::-webkit-scrollbar { display: none; }
+
+/* ── Rail item (li) ─────────────────────────────────────── */
+.rail-item {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Left active indicator bar */
+.rail-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 28px;
+  border-radius: 0 4px 4px 0;
+  /* color set inline per module */
+  background: currentColor;
+}
+
+/* ── Icon button ────────────────────────────────────────── */
+.rail-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  outline: none;
+}
+
+/* Hover: soft tinted background */
+.rail-btn:hover {
+  background: var(--hover-bg);
+  transform: scale(1.04);
+}
+
+/* Active: colored background set inline via [style.background] */
+.rail-btn.active {
+  transform: scale(1.06);
+  /* background set inline */
+}
+
+/* Active bar — colored span set inline */
+.active-bar {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── Material icon ──────────────────────────────────────── */
+.rail-icon {
+  font-size: 21px;
+  width: 21px;
+  height: 21px;
+  font-family: 'Material Icons';
+  transition: color var(--transition);
+  /* color set inline per module */
+  user-select: none;
+}
+
+/* ── Hover tooltip ──────────────────────────────────────── */
+.rail-tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  z-index: 9999;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+/* Arrow on tooltip */
+.rail-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #1e293b;
+}
+
+/* Only show tooltip when not hovering a parent with children
+   (flyout handles the label for parent items) */
+.rail-btn:hover .rail-tooltip {
+  opacity: 1;
+}
+
+/* ── Flyout panel ───────────────────────────────────────── */
+.flyout {
+  position: fixed;
+  left: 62px;        /* rail-width + gap */
+  width: var(--flyout-width);
+  background: var(--flyout-bg);
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  box-shadow: var(--flyout-shadow);
+  z-index: 9999;
+  overflow: hidden;
+  /* Smooth slide-in */
+  animation: flyoutIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes flyoutIn {
+  from { opacity: 0; transform: translateX(-10px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0)     scale(1);    }
+}
+
+/* ── Flyout header ──────────────────────────────────────── */
+.flyout-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 2px solid;
+  /* color and border-color set inline */
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.flyout-header-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ── Flyout list ────────────────────────────────────────── */
+.flyout-list {
+  list-style: none;
+  padding: 6px 8px;
+  margin: 0;
+  max-height: 380px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+/* ── Flyout link ────────────────────────────────────────── */
+.flyout-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 9px;
+  transition: background var(--transition), color var(--transition),
+              padding-left var(--transition);
+  font-family: 'Outfit', 'Inter', sans-serif;
+  position: relative;
+}
+
+.flyout-link:hover {
+  background: #f8fafc;
+  color: var(--text-dark);
+  padding-left: 14px;
+}
+
+/* Active state — uses CSS custom properties set inline */
+.flyout-link.active {
+  background: var(--active-bg, #f0fdfa);
+  color: var(--active-color, #0d9488);
+  font-weight: 600;
+  padding-left: 14px;
+}
+
+/* ── Dot indicator for active flyout link ───────────────── */
+.flyout-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  /* background set inline */
+}
+
+.flyout-dot-placeholder {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+}
+
+/* ── Logout button ──────────────────────────────────────── */
+.rail-bottom {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--rail-border);
+  flex-shrink: 0;
+}
+
+.logout-btn .rail-icon { color: #ef4444; }
+
+.logout-btn:hover {
+  background: #fff1f2 !important;
+  transform: scale(1.04);
+}
+
+.logout-btn:hover .rail-icon { color: #dc2626; }
+
+/* ── Loading skeleton ───────────────────────────────────── */
+.rail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.skeleton-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 25%,
+    #e8edf2 50%,
+    #f1f5f9 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+}
+
+@keyframes shimmer {
+  from { background-position:  200% 0; }
+  to   { background-position: -200% 0; }
+}

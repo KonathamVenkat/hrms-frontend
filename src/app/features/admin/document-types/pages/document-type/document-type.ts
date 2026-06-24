@@ -1,0 +1,261 @@
+import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DocumentTypeService } from '../../services/document-type';
+import { DocumentType } from '../../models/document-type';
+
+@Component({
+  selector: 'app-document-types',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './document-type.html',
+  styleUrl: './document-type.css',
+})
+export class DocumentTypes implements OnInit {
+  private fb = inject(FormBuilder);
+  private svc = inject(DocumentTypeService);
+  private destroy = inject(DestroyRef);
+
+  docTypes = signal<DocumentType[]>([]);
+  loading = signal(false);
+  saving = signal(false);
+  error = signal<string | null>(null);
+  successMsg = signal<string | null>(null);
+  showModal = signal(false);
+  isEditMode = signal(false);
+  editingId = signal<number | null>(null);
+  showConfirm = signal(false);
+  confirmItem = signal<DocumentType | null>(null);
+  filterText = signal('');
+  filterCat = signal('');
+  filterActive = signal<'all' | 'active' | 'inactive'>('all');
+
+  readonly categories = [
+    'IDENTITY',
+    'CONTRACT',
+    'EDUCATION',
+    'CERTIFICATE',
+    'MEDICAL',
+    'FINANCIAL',
+    'OTHER',
+  ];
+  readonly activeCount = computed(() => this.docTypes().filter((d) => d.isActive).length);
+  readonly mandatoryCount = computed(
+    () => this.docTypes().filter((d) => d.isMandatory && d.isActive).length,
+  );
+
+  readonly filtered = computed(() => {
+    const text = this.filterText().toLowerCase();
+    const cat = this.filterCat();
+    const status = this.filterActive();
+    return this.docTypes().filter((d) => {
+      const matchText =
+        !text ||
+        d.docTypeName.toLowerCase().includes(text) ||
+        d.docTypeCode.toLowerCase().includes(text);
+      const matchCat = !cat || d.category === cat;
+      const matchStatus = status === 'all' ? true : status === 'active' ? d.isActive : !d.isActive;
+      return matchText && matchCat && matchStatus;
+    });
+  });
+
+  form!: FormGroup;
+
+  ngOnInit(): void {
+    this.buildForm();
+    this.loadDocTypes();
+  }
+
+  private buildForm(): void {
+    this.form = this.fb.group({
+      docTypeCode: [
+        '',
+        [Validators.required, Validators.maxLength(30), Validators.pattern('^[A-Z0-9_]+$')],
+      ],
+      docTypeName: ['', [Validators.required, Validators.maxLength(100)]],
+      docTypeNameAr: ['', [Validators.required, Validators.maxLength(200)]],
+      category: ['OTHER', Validators.required],
+      description: ['', Validators.maxLength(500)],
+      isMandatory: [false],
+      hasExpiry: [false],
+      expiryNoticeDays: [30, [Validators.min(0), Validators.max(365)]],
+      allowedExtensions: ['PDF,JPG,PNG', Validators.maxLength(200)],
+      maxFileSizeMb: [5, [Validators.min(1), Validators.max(50)]],
+      sortOrder: [0, Validators.min(0)],
+      isActive: [true],
+    });
+    this.form
+      .get('docTypeCode')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((v) => {
+        if (v && v !== v.toUpperCase())
+          this.form.get('docTypeCode')?.setValue(v.toUpperCase(), { emitEvent: false });
+      });
+  }
+
+  loadDocTypes(): void {
+    this.loading.set(true);
+    this.svc
+      .getAll()
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroy),
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success) this.docTypes.set(res.data);
+          else this.error.set(res.message);
+        },
+        error: (err) => this.error.set(err?.error?.message || 'Failed to load document types.'),
+      });
+  }
+
+  openCreate(): void {
+    this.isEditMode.set(false);
+    this.editingId.set(null);
+    this.form.reset({
+      docTypeCode: '',
+      docTypeName: '',
+      docTypeNameAr: '',
+      category: 'OTHER',
+      description: '',
+      isMandatory: false,
+      hasExpiry: false,
+      expiryNoticeDays: 30,
+      allowedExtensions: 'PDF,JPG,PNG',
+      maxFileSizeMb: 5,
+      sortOrder: 0,
+      isActive: true,
+    });
+    this.form.get('docTypeCode')?.enable();
+    this.showModal.set(true);
+  }
+
+  openEdit(dt: DocumentType): void {
+    this.isEditMode.set(true);
+    this.editingId.set(dt.docTypeId);
+    this.form.patchValue({ ...dt });
+    this.form.get('docTypeCode')?.disable();
+    this.showModal.set(true);
+  }
+
+  closeModal(): void {
+    this.showModal.set(false);
+    this.error.set(null);
+    this.form.get('docTypeCode')?.enable();
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.saving.set(true);
+    this.error.set(null);
+    const v = this.form.getRawValue();
+    const payload = {
+      ...v,
+      sortOrder: +v.sortOrder,
+      maxFileSizeMb: +v.maxFileSizeMb,
+      expiryNoticeDays: +v.expiryNoticeDays,
+      description: v.description || undefined,
+    };
+
+    const call = this.isEditMode()
+      ? this.svc.update(this.editingId()!, payload)
+      : this.svc.create(payload);
+
+    call.pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.showSuccess(
+            this.isEditMode()
+              ? `"${res.data.docTypeName}" updated`
+              : `"${res.data.docTypeName}" created`,
+          );
+          this.closeModal();
+          this.loadDocTypes();
+        } else this.error.set(res.message);
+      },
+      error: (err) =>
+        this.error.set(
+          err.status === 409
+            ? err?.error?.message || 'Code or name already exists.'
+            : err?.error?.message || 'Operation failed.',
+        ),
+    });
+  }
+
+  openConfirm(dt: DocumentType): void {
+    this.confirmItem.set(dt);
+    this.showConfirm.set(true);
+  }
+  cancelConfirm(): void {
+    this.showConfirm.set(false);
+    this.confirmItem.set(null);
+  }
+
+  confirmToggle(): void {
+    const dt = this.confirmItem();
+    if (!dt) return;
+    const call = dt.isActive ? this.svc.deactivate(dt.docTypeId) : this.svc.activate(dt.docTypeId);
+    call.subscribe({
+      next: () => {
+        this.showSuccess(
+          dt.isActive ? `"${dt.docTypeName}" deactivated` : `"${dt.docTypeName}" activated`,
+        );
+        this.cancelConfirm();
+        this.loadDocTypes();
+      },
+      error: (err) => {
+        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.cancelConfirm();
+      },
+    });
+  }
+
+  ctrl(name: string): AbstractControl {
+    return this.form.get(name)!;
+  }
+  isInvalid(name: string): boolean {
+    const c = this.ctrl(name);
+    return c.invalid && c.touched;
+  }
+  getError(name: string): string {
+    const c = this.ctrl(name);
+    if (!c.errors || !c.touched) return '';
+    if (c.errors['required']) return 'Required';
+    if (c.errors['min']) return `Min: ${c.errors['min'].min}`;
+    if (c.errors['max']) return `Max: ${c.errors['max'].max}`;
+    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
+    if (c.errors['pattern']) return 'Uppercase letters, numbers and underscores only';
+    return 'Invalid';
+  }
+  private showSuccess(msg: string): void {
+    this.successMsg.set(msg);
+    setTimeout(() => this.successMsg.set(null), 3000);
+  }
+  getCategoryBadge(cat: string): string {
+    const map: Record<string, string> = {
+      IDENTITY: 'cat-identity',
+      CONTRACT: 'cat-contract',
+      EDUCATION: 'cat-education',
+      CERTIFICATE: 'cat-cert',
+      MEDICAL: 'cat-medical',
+      FINANCIAL: 'cat-financial',
+      OTHER: 'cat-other',
+    };
+    return map[cat] ?? 'cat-other';
+  }
+  getExtensions(ext: string): string[] {
+    return ext ? ext.split(',').map((e) => e.trim()) : [];
+  }
+}

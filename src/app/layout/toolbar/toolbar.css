@@ -1,0 +1,302 @@
+/* toolbar.css — Horilla-style topbar */
+
+:host {
+  --teal: #13c9b4;
+  --teal-dark: #0aa896;
+  --teal-light: #e8faf8;
+  --border: #e8edf0;
+  --text: #1a2332;
+  --muted: #64748b;
+  --hover-bg: #f4f7f9;
+  --red: #e11d48;
+  --radius: 10px;
+}
+
+/* ── Topbar shell ───────────────────────────── */
+.topbar {
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 12px;
+}
+
+/* ── Brand ──────────────────────────────────── */
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+  font-family: 'Outfit', monospace;
+}
+
+/* ── Right actions ──────────────────────────── */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* ── Clock badge ────────────────────────────── */
+.clock-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--teal-light);
+  border: 1px solid #a7f3e8;
+  border-radius: 20px;
+  padding: 5px 14px;
+  margin-right: 8px;
+  cursor: default;
+}
+
+.clock-icon {
+  font-size: 16px;
+  color: var(--teal);
+  font-family: 'Material Icons';
+}
+
+.clock-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── Icon buttons ───────────────────────────── */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  position: relative;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.icon-btn:hover {
+  background: var(--hover-bg);
+  color: var(--teal);
+}
+
+.icon-btn .material-icons {
+  font-size: 20px;
+}
+
+/* ── Notification badge ─────────────────────── */
+.notif-btn {
+  position: relative;
+}
+
+.notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 20px;
+  background: var(--red);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 1.5px solid white;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Profile wrapper ────────────────────────── */
+.profile-wrap {
+  position: relative;
+  margin-left: 8px;
+}
+
+/* ── Profile trigger button ─────────────────── */
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  transition: background 0.18s;
+}
+
+.profile-trigger:hover {
+  background: var(--hover-bg);
+}
+
+/* Avatar circle */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #13c9b4, #0aa896);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+/* Name + status */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.profile-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+}
+
+.profile-status {
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.profile-status.online {
+  color: #16a34a;
+}
+.profile-status.online .status-dot {
+  background: #16a34a;
+}
+.profile-status.offline {
+  color: var(--muted);
+}
+.profile-status.offline .status-dot {
+  background: #94a3b8;
+}
+
+/* Chevron icon */
+.chevron {
+  font-size: 18px;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.chevron.rotated {
+  transform: rotate(180deg);
+}
+
+/* ── Dropdown menu ──────────────────────────── */
+/* position is set inline via [style.top.px] / [style.right.px]
+   from the component, so the dropdown floats above the dashboard
+   the same way the sidebar flyout does. */
+.profile-dropdown {
+  position: fixed;
+  width: 200px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 9999;
+  overflow: hidden;
+  animation: dropIn 0.18s ease;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown items */
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+
+.dropdown-item .material-icons {
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.dropdown-item:hover {
+  background: var(--hover-bg);
+  color: var(--teal);
+}
+
+.dropdown-item:hover .material-icons {
+  color: var(--teal);
+}
+
+/* Divider */
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* Logout item */
+.dropdown-item.logout {
+  color: var(--red);
+}
+.dropdown-item.logout .material-icons {
+  color: var(--red);
+}
+.dropdown-item.logout:hover {
+  background: #fef2f2;
+  color: var(--red);
+}

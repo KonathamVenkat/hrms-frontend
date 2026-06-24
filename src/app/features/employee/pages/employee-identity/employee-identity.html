@@ -1,0 +1,316 @@
+<div class="identity-section">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="section-header">
+    <div class="header-left">
+      <h2 class="section-title">Identity Information</h2>
+      @if (hasData()) {
+        <span class="chip chip-saved"> <span class="material-icons">verified</span> Saved </span>
+      } @else {
+        <span class="chip chip-empty">Not filled</span>
+      }
+    </div>
+    @if (!editMode()) {
+      <button class="btn-edit-info" (click)="openEdit()">
+        <span class="material-icons">edit</span>
+        {{ hasData() ? 'Edit' : 'Add Info' }}
+      </button>
+    }
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error() && !editMode()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <!-- ── Loading ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading identity information...</span>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- VIEW MODE                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  @if (!loading() && !editMode()) {
+    @if (!hasData()) {
+      <div class="empty-state">
+        <span class="material-icons">badge</span>
+        <p>No identity information added yet</p>
+        <small>Add national ID, passport, visa and work permit details</small>
+        <button class="btn-add-sm" (click)="openEdit()">
+          <span class="material-icons">add</span> Add Identity Info
+        </button>
+      </div>
+    }
+
+    @if (hasData() && identity()) {
+      <div class="identity-grid">
+        <!-- ── National Identity ───────────────────────── -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="material-icons">perm_identity</span>
+            National Identity
+          </div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-label">National ID</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.nationalId) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Tax ID</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.taxId) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Social Security</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.socialSecurityNumber) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Biometric ID</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.biometricId) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Passport ────────────────────────────────── -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <span class="material-icons">book</span>
+            Passport
+          </div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-label">Passport No.</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.passportNumber) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Driving License</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.drivingLicenseNumber) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Visa ────────────────────────────────────── -->
+        <div
+          class="info-card"
+          [class.card-warning]="identity()!.visaExpiringSoon"
+          [class.card-danger]="isExpired(identity()!.visaExpiryDate)"
+        >
+          <div class="info-card-header">
+            <span class="material-icons">flight_takeoff</span>
+            Visa
+            @if (isExpired(identity()!.visaExpiryDate)) {
+              <span class="expiry-tag tag-expired">Expired</span>
+            } @else if (identity()!.visaExpiringSoon) {
+              <span class="expiry-tag tag-soon">Expiring Soon</span>
+            }
+          </div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-label">Visa Number</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.visaNumber) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Visa Type</span>
+              <span class="info-value">
+                {{ getValue(identity()!.visaType) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Issue Date</span>
+              <span class="info-value">
+                {{ formatDate(identity()!.visaIssueDate) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Expiry Date</span>
+              <span
+                class="info-value"
+                [class.text-danger]="isExpired(identity()!.visaExpiryDate)"
+                [class.text-warn]="
+                  identity()!.visaExpiringSoon && !isExpired(identity()!.visaExpiryDate)
+                "
+              >
+                {{ formatDate(identity()!.visaExpiryDate) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Work Permit ────────────────────────────── -->
+        <div
+          class="info-card"
+          [class.card-warning]="identity()!.workPermitExpiringSoon"
+          [class.card-danger]="isExpired(identity()!.workPermitExpiry)"
+        >
+          <div class="info-card-header">
+            <span class="material-icons">assignment</span>
+            Work Permit
+            @if (isExpired(identity()!.workPermitExpiry)) {
+              <span class="expiry-tag tag-expired">Expired</span>
+            } @else if (identity()!.workPermitExpiringSoon) {
+              <span class="expiry-tag tag-soon">Expiring Soon</span>
+            }
+          </div>
+          <div class="info-card-body">
+            <div class="info-row">
+              <span class="info-label">Permit Number</span>
+              <span class="info-value mono">
+                {{ getValue(identity()!.workPermitNumber) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Expiry Date</span>
+              <span
+                class="info-value"
+                [class.text-danger]="isExpired(identity()!.workPermitExpiry)"
+                [class.text-warn]="
+                  identity()!.workPermitExpiringSoon && !isExpired(identity()!.workPermitExpiry)
+                "
+              >
+                {{ formatDate(identity()!.workPermitExpiry) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- EDIT MODE — Inline form (no modal)                    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  @if (!loading() && editMode()) {
+    @if (error()) {
+      <div class="alert alert-error">
+        <span class="material-icons">error_outline</span>{{ error() }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- ── National Identity section ───────────────── -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="material-icons">perm_identity</span>
+          National Identity
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>National ID</label>
+            <input formControlName="nationalId" placeholder="e.g. 92345678" />
+          </div>
+          <div class="field">
+            <label>Tax ID</label>
+            <input formControlName="taxId" placeholder="Tax identification number" />
+          </div>
+          <div class="field">
+            <label>Social Security Number</label>
+            <input formControlName="socialSecurityNumber" placeholder="SSN / IBAN reference" />
+          </div>
+          <div class="field">
+            <label>Biometric ID</label>
+            <input formControlName="biometricId" placeholder="Biometric reference ID" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Passport & License section ──────────────── -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="material-icons">book</span>
+          Passport & License
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Passport Number</label>
+            <input formControlName="passportNumber" placeholder="e.g. A12345678" />
+          </div>
+          <div class="field">
+            <label>Driving License Number</label>
+            <input formControlName="drivingLicenseNumber" placeholder="e.g. OM-DL-12345" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Visa section ─────────────────────────────── -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="material-icons">flight_takeoff</span>
+          Visa
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Visa Number</label>
+            <input formControlName="visaNumber" placeholder="Visa reference number" />
+          </div>
+          <div class="field">
+            <label>Visa Type</label>
+            <input formControlName="visaType" placeholder="e.g. Work Visa, Residence" />
+          </div>
+          <div class="field">
+            <label>Issue Date</label>
+            <input type="date" formControlName="visaIssueDate" />
+          </div>
+          <div class="field">
+            <label>Expiry Date</label>
+            <input type="date" formControlName="visaExpiryDate" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Work Permit section ──────────────────────── -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span class="material-icons">assignment</span>
+          Work Permit
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Work Permit Number</label>
+            <input formControlName="workPermitNumber" placeholder="Work permit reference" />
+          </div>
+          <div class="field">
+            <label>Work Permit Expiry</label>
+            <input type="date" formControlName="workPermitExpiry" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Form actions ─────────────────────────────── -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="cancelEdit()">Cancel</button>
+        <button type="submit" class="btn-save" [disabled]="saving()">
+          @if (saving()) {
+            <div class="btn-spinner"></div>
+            <span>Saving...</span>
+          } @else {
+            <span class="material-icons">save</span>
+            <span>Save Identity Info</span>
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

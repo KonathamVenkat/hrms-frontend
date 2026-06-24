@@ -1,0 +1,373 @@
+<div class="approval-container">
+  <!-- ── Page Header ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">fact_check</mat-icon>
+      <div>
+        <h2>Regularization Approval Queue</h2>
+        <span class="subtitle">Review and act on employee attendance correction requests</span>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge-pill pending-pill">
+        <mat-icon>pending</mat-icon>
+        <span>{{ pendingCount() }} Pending</span>
+      </div>
+      <div class="badge-pill approved-pill" *ngIf="approvedToday() > 0">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ approvedToday() }} Approved Today</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Filter Bar ──────────────────────────────────────── -->
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filter-form">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let opt of statusOptions" [value]="opt.value">
+              {{ opt.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Employee ID</mat-label>
+          <input
+            matInput
+            formControlName="employeeId"
+            placeholder="Enter employee ID"
+            (keyup.enter)="onFilterChange()"
+          />
+          <mat-icon matSuffix>person_search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>From Date</mat-label>
+          <input matInput [matDatepicker]="fromPicker" formControlName="from" />
+          <mat-datepicker-toggle matIconSuffix [for]="fromPicker" />
+          <mat-datepicker #fromPicker />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="toPicker" formControlName="to" />
+          <mat-datepicker-toggle matIconSuffix [for]="toPicker" />
+          <mat-datepicker #toPicker />
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-flat-button color="primary" (click)="onFilterChange()">
+            <mat-icon>search</mat-icon> Search
+          </button>
+          <button mat-stroked-button (click)="onReset()"><mat-icon>refresh</mat-icon> Reset</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ── Quick Stats ─────────────────────────────────────── -->
+  <div class="stats-row">
+    <mat-card class="stat-mini pending-stat">
+      <mat-card-content>
+        <mat-icon>pending_actions</mat-icon>
+        <div>
+          <span class="stat-num">{{ pendingRequests().length }}</span>
+          <span class="stat-lbl">In this view</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="stat-mini total-stat">
+      <mat-card-content>
+        <mat-icon>list_alt</mat-icon>
+        <div>
+          <span class="stat-num">{{ totalElements() }}</span>
+          <span class="stat-lbl">Total Records</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- ── Requests Table ──────────────────────────────────── -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-wrapper">
+        <div class="center-spinner" *ngIf="loading()">
+          <mat-spinner diameter="44"></mat-spinner>
+          <p>Loading requests...</p>
+        </div>
+
+        <table mat-table [dataSource]="requests()" *ngIf="!loading()" class="approval-table">
+          <!-- Reg ID -->
+          <ng-container matColumnDef="regId">
+            <th mat-header-cell *matHeaderCellDef>Ref No.</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="reg-id">{{ row.regId }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Employee -->
+          <ng-container matColumnDef="employeeName">
+            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="emp-cell">
+                <div class="emp-avatar">
+                  {{ row.employeeName.charAt(0).toUpperCase() }}
+                </div>
+                <div class="emp-info">
+                  <span class="emp-name">{{ row.employeeName }}</span>
+                  <span class="emp-code">{{ row.employeeCode }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Attendance Date -->
+          <ng-container matColumnDef="attendanceDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="date-text">{{ row.attendanceDateFormatted }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Requested In -->
+          <ng-container matColumnDef="requestedInTime">
+            <th mat-header-cell *matHeaderCellDef>Check In</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="time-chip in">{{ formatTime(row.requestedInTime) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Requested Out -->
+          <ng-container matColumnDef="requestedOutTime">
+            <th mat-header-cell *matHeaderCellDef>Check Out</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="time-chip out" *ngIf="row.requestedOutTime">
+                {{ formatTime(row.requestedOutTime) }}
+              </span>
+              <span class="muted" *ngIf="!row.requestedOutTime">—</span>
+            </td>
+          </ng-container>
+
+          <!-- Reason -->
+          <ng-container matColumnDef="reason">
+            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <td mat-cell *matCellDef="let row">
+              <span
+                class="reason-text"
+                [matTooltip]="row.reason"
+                matTooltipPosition="above"
+                matTooltipClass="reason-tooltip"
+              >
+                {{ row.reason.length > 45 ? row.reason.slice(0, 45) + '...' : row.reason }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="status-col">
+                <span
+                  class="status-chip"
+                  [style.background]="getStatusStyle(row.status).bg"
+                  [style.color]="getStatusStyle(row.status).color"
+                >
+                  <mat-icon class="status-icon">
+                    {{ getStatusStyle(row.status).icon }}
+                  </mat-icon>
+                  {{ getStatusStyle(row.status).label }}
+                </span>
+                <!-- Rejection reason inline -->
+                <div class="rejection-note" *ngIf="row.rejectionReason">
+                  <mat-icon class="note-icon">error_outline</mat-icon>
+                  <span [matTooltip]="row.rejectionReason">
+                    {{
+                      row.rejectionReason.length > 30
+                        ? row.rejectionReason.slice(0, 30) + '...'
+                        : row.rejectionReason
+                    }}
+                  </span>
+                </div>
+                <!-- Reviewed by -->
+                <div class="reviewer-note" *ngIf="row.reviewedByName">
+                  <mat-icon class="note-icon">person</mat-icon>
+                  <span>{{ row.reviewedByName }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Submitted At -->
+          <ng-container matColumnDef="submittedAt">
+            <th mat-header-cell *matHeaderCellDef>Submitted</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="datetime-text">{{ formatDateTime(row.createdAt) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="action-col" *ngIf="row.status === 'PENDING'">
+                <!-- Approve button -->
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="action-btn approve-btn"
+                  [disabled]="isProcessing(row.regId)"
+                  (click)="onApprove(row)"
+                  matTooltip="Approve this request"
+                >
+                  <mat-spinner *ngIf="isProcessing(row.regId)" diameter="16"></mat-spinner>
+                  <ng-container *ngIf="!isProcessing(row.regId)">
+                    <mat-icon>check</mat-icon> Approve
+                  </ng-container>
+                </button>
+
+                <!-- Reject button -->
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  class="action-btn reject-btn"
+                  [disabled]="isProcessing(row.regId)"
+                  (click)="openRejectDialog(row)"
+                  matTooltip="Reject this request"
+                >
+                  <mat-icon>close</mat-icon> Reject
+                </button>
+              </div>
+
+              <!-- Non-pending: show who acted -->
+              <div class="acted-info" *ngIf="row.status !== 'PENDING'">
+                <span class="acted-at">{{ formatDateTime(row.reviewedAt) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.pending-row]="row.status === 'PENDING'"
+            [class.approved-row]="row.status === 'APPROVED'"
+            [class.rejected-row]="row.status === 'REJECTED'"
+          ></tr>
+
+          <!-- Empty state -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+              <div class="empty-state">
+                <mat-icon>inbox</mat-icon>
+                <p>No regularization requests found</p>
+                <span class="empty-sub">Try changing the filters above</span>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [length]="totalElements()"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+      >
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- ── Reject Confirmation Dialog ──────────────────────── -->
+<div class="dialog-overlay" *ngIf="showRejectDialog()" (click)="closeRejectDialog()">
+  <div class="dialog-box" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <mat-icon class="dialog-icon warn">warning_amber</mat-icon>
+      <h3>Reject Regularization Request</h3>
+      <button mat-icon-button class="dialog-close" (click)="closeRejectDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="dialog-body" *ngIf="rejectingRequest()">
+      <div class="dialog-info-row">
+        <span class="dialog-label">Employee</span>
+        <span class="dialog-value">{{ rejectingRequest()!.employeeName }}</span>
+      </div>
+      <div class="dialog-info-row">
+        <span class="dialog-label">Date</span>
+        <span class="dialog-value">
+          {{ rejectingRequest()!.attendanceDateFormatted }}
+        </span>
+      </div>
+      <div class="dialog-info-row">
+        <span class="dialog-label">Requested</span>
+        <span class="dialog-value">
+          {{ formatTime(rejectingRequest()!.requestedInTime) }}
+          <span *ngIf="rejectingRequest()!.requestedOutTime">
+            → {{ formatTime(rejectingRequest()!.requestedOutTime) }}
+          </span>
+        </span>
+      </div>
+      <div class="dialog-info-row">
+        <span class="dialog-label">Reason</span>
+        <span class="dialog-value reason-value">
+          {{ rejectingRequest()!.reason }}
+        </span>
+      </div>
+
+      <mat-divider class="dialog-divider"></mat-divider>
+
+      <mat-form-field appearance="outline" class="full-width rejection-field">
+        <mat-label>Rejection Reason *</mat-label>
+        <textarea
+          matInput
+          rows="3"
+          [value]="rejectionReason()"
+          (input)="onRejectReasonChange($any($event.target).value)"
+          placeholder="Explain why you are rejecting this request (min 10 characters)"
+        >
+        </textarea>
+        <mat-hint align="end">{{ rejectionReason().length }}/500</mat-hint>
+        <mat-error *ngIf="rejectionError()">{{ rejectionError() }}</mat-error>
+      </mat-form-field>
+
+      <div class="rejection-error" *ngIf="rejectionError()">
+        <mat-icon>error</mat-icon> {{ rejectionError() }}
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="dialog-actions">
+      <button
+        mat-stroked-button
+        (click)="closeRejectDialog()"
+        [disabled]="isProcessing(rejectingRequest()?.regId ?? 0)"
+      >
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        color="warn"
+        (click)="onConfirmReject()"
+        [disabled]="isProcessing(rejectingRequest()?.regId ?? 0)"
+      >
+        <mat-spinner
+          *ngIf="isProcessing(rejectingRequest()?.regId ?? 0)"
+          diameter="18"
+        ></mat-spinner>
+        <span *ngIf="!isProcessing(rejectingRequest()?.regId ?? 0)">
+          <mat-icon>cancel</mat-icon> Confirm Reject
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

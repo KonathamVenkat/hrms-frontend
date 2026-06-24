@@ -1,0 +1,382 @@
+<div class="lb-page">
+  <!-- ── Page Header ──────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Leave Balances</h1>
+      <div class="stat-chips">
+        <span class="chip chip-total">{{ totalBalances() }} records</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Year selector -->
+      <div class="year-nav">
+        <button class="year-btn" (click)="onYearChange(selectedYear() - 1)">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <select
+          class="year-select"
+          [value]="selectedYear()"
+          (change)="onYearChange(+$any($event.target).value)"
+        >
+          @for (y of yearOptions; track y) {
+            <option [value]="y">{{ y }}</option>
+          }
+        </select>
+        <button class="year-btn" (click)="onYearChange(selectedYear() + 1)">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab nav ────────────────────────────────────────────── -->
+  <div class="tab-nav">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'overview'"
+      (click)="activeTab.set('overview')"
+    >
+      <span class="material-icons">dashboard</span>
+      Overview
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'initialize'"
+      (click)="activeTab.set('initialize')"
+    >
+      <span class="material-icons">playlist_add</span>
+      Initialize
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab() === 'adjust'"
+      (click)="activeTab.set('adjust')"
+    >
+      <span class="material-icons">tune</span>
+      Adjust Balance
+    </button>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TAB: OVERVIEW                                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'overview') {
+    @if (loading()) {
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <span>Loading {{ selectedYear() }} balances...</span>
+      </div>
+    }
+
+    @if (!loading() && balances().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">event_busy</span>
+        <p>No leave balances for {{ selectedYear() }}</p>
+        <small>Click "Initialize" tab to create balances for all employees</small>
+        <button class="btn-init-sm" (click)="activeTab.set('initialize')">
+          <span class="material-icons">playlist_add</span>
+          Initialize Now
+        </button>
+      </div>
+    }
+
+    @if (!loading() && groupedByLeaveType().length > 0) {
+      <div class="overview-grid">
+        @for (group of groupedByLeaveType(); track group.leaveType) {
+          <div class="type-card">
+            <!-- Card header -->
+            <div
+              class="type-card-header"
+              [style.border-left]="'4px solid ' + getTypeColor(group.leaveType)"
+            >
+              <div class="type-info">
+                <span class="type-code" [style.color]="getTypeColor(group.leaveType)">
+                  {{ group.leaveType }}
+                </span>
+                <span class="type-name">{{ group.leaveTypeName }}</span>
+              </div>
+              <div class="type-stats">
+                <span class="type-emp-count">{{ group.totalEmps }} employees</span>
+                <span class="type-avg">
+                  avg {{ group.avgAvailable.toFixed(1) }} days available
+                </span>
+              </div>
+            </div>
+
+            <!-- Employee rows (first 5) -->
+            <div class="emp-rows">
+              @for (b of group.items.slice(0, 5); track b.balanceId) {
+                <div class="emp-bal-row">
+                  <span class="emp-id">EMP #{{ b.employeeId }}</span>
+                  <div class="bal-bar-wrap">
+                    <div class="bal-bar">
+                      <div
+                        class="bal-bar-fill"
+                        [style.width.%]="getUsedPercent(b)"
+                        [style.background]="getBarColor(getUsedPercent(b))"
+                      ></div>
+                    </div>
+                    <span class="bal-text">
+                      {{ b.availableDays.toFixed(1) }}/{{ b.totalDays.toFixed(1) }} days
+                    </span>
+                  </div>
+                </div>
+              }
+              @if (group.items.length > 5) {
+                <p class="more-rows">+{{ group.items.length - 5 }} more employees</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TAB: INITIALIZE                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'initialize') {
+    <div class="form-card">
+      <div class="form-card-header">
+        <span class="material-icons">playlist_add</span>
+        Initialize Leave Balances
+      </div>
+
+      <div class="form-card-body">
+        <div class="info-banner">
+          <span class="material-icons">info</span>
+          <div>
+            <strong>What this does:</strong>
+            Creates leave balance records for each active employee based on the default days
+            configured in Leave Types (Admin Config). Run this at the start of each year or when new
+            employees join.
+          </div>
+        </div>
+
+        <form [formGroup]="initForm" (ngSubmit)="onInitialize()" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label>Year <span class="req">*</span></label>
+              <select formControlName="year">
+                @for (y of yearOptions; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+              @if (isInvalid(initForm, 'year')) {
+                <span class="field-error">{{ getError(initForm, 'year') }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="options-grid">
+            <label class="option-item">
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="skipExisting" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+              <div class="option-info">
+                <span class="option-label">Skip Existing</span>
+                <span class="option-hint">
+                  Don't overwrite employees who already have balances for this year
+                </span>
+              </div>
+            </label>
+
+            <label class="option-item">
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="applyCarryForward" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+              <div class="option-info">
+                <span class="option-label">Apply Carry Forward</span>
+                <span class="option-hint">
+                  Add unused annual leave from previous year (up to max carry limit)
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-initialize" [disabled]="initializing()">
+              @if (initializing()) {
+                <div class="btn-spinner"></div>
+                <span>Initializing...</span>
+              } @else {
+                <span class="material-icons">playlist_add</span>
+                <span>Initialize All Employees</span>
+              }
+            </button>
+          </div>
+        </form>
+
+        <!-- ── Initialization result ─────────────────────── -->
+        @if (initResult()) {
+          <div class="result-card" [class.result-error]="initResult()!.errorCount > 0">
+            <div class="result-header">
+              <span class="material-icons">
+                {{ initResult()!.errorCount > 0 ? 'warning' : 'check_circle' }}
+              </span>
+              <strong>Initialization Complete — {{ initResult()!.year }}</strong>
+            </div>
+            <div class="result-stats">
+              <div class="result-stat">
+                <span class="stat-val green">{{ initResult()!.initializedCount }}</span>
+                <span class="stat-lbl">Initialized</span>
+              </div>
+              <div class="result-stat">
+                <span class="stat-val muted">{{ initResult()!.skippedCount }}</span>
+                <span class="stat-lbl">Skipped</span>
+              </div>
+              <div class="result-stat">
+                <span class="stat-val red">{{ initResult()!.errorCount }}</span>
+                <span class="stat-lbl">Errors</span>
+              </div>
+              <div class="result-stat">
+                <span class="stat-val blue">{{ initResult()!.totalEmployees }}</span>
+                <span class="stat-lbl">Total</span>
+              </div>
+            </div>
+            @if (initResult()!.errors.length > 0) {
+              <div class="result-errors">
+                <p class="error-title">Errors:</p>
+                @for (err of initResult()!.errors; track err) {
+                  <p class="error-item">{{ err }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TAB: ADJUST BALANCE                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'adjust') {
+    <div class="form-card">
+      <div class="form-card-header">
+        <span class="material-icons">tune</span>
+        Adjust Leave Balance
+      </div>
+
+      <div class="form-card-body">
+        <div class="info-banner info-banner-warn">
+          <span class="material-icons">warning</span>
+          <div>
+            <strong>Use with caution.</strong>
+            Manual adjustments override the default allocation. All adjustments are logged for audit
+            purposes.
+          </div>
+        </div>
+
+        <form [formGroup]="adjustForm" (ngSubmit)="onAdjust()" novalidate>
+          <!-- Employee ID + Leave Type -->
+          <div class="field-row">
+            <div class="field">
+              <label>Employee ID <span class="req">*</span></label>
+              <input formControlName="employeeId" type="number" placeholder="Enter employee ID" />
+              @if (isInvalid(adjustForm, 'employeeId')) {
+                <span class="field-error">{{ getError(adjustForm, 'employeeId') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Leave Type <span class="req">*</span></label>
+              <select formControlName="leaveTypeCode">
+                <option value="">Select leave type</option>
+                @for (lt of leaveTypes; track lt) {
+                  <option [value]="lt">{{ lt }}</option>
+                }
+              </select>
+              @if (isInvalid(adjustForm, 'leaveTypeCode')) {
+                <span class="field-error">{{ getError(adjustForm, 'leaveTypeCode') }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Year + Adjustment type -->
+          <div class="field-row">
+            <div class="field">
+              <label>Year <span class="req">*</span></label>
+              <select formControlName="year">
+                @for (y of yearOptions; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>Adjustment Type <span class="req">*</span></label>
+              <div class="adj-type-selector">
+                @for (at of adjustmentTypes; track at.value) {
+                  <label
+                    class="adj-type-btn"
+                    [class.adj-selected]="ctrl(adjustForm, 'adjustmentType').value === at.value"
+                  >
+                    <input
+                      type="radio"
+                      formControlName="adjustmentType"
+                      [value]="at.value"
+                      style="display: none"
+                    />
+                    <span class="adj-label">{{ at.label }}</span>
+                    <span class="adj-desc">{{ at.desc }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Days + Reason -->
+          <div class="field-row">
+            <div class="field">
+              <label>Days <span class="req">*</span></label>
+              <input
+                formControlName="days"
+                type="number"
+                min="0.5"
+                max="365"
+                step="0.5"
+                placeholder="e.g. 5"
+              />
+              @if (isInvalid(adjustForm, 'days')) {
+                <span class="field-error">{{ getError(adjustForm, 'days') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Reason <span class="req">*</span></label>
+              <input formControlName="reason" placeholder="e.g. Annual merit grant" />
+              @if (isInvalid(adjustForm, 'reason')) {
+                <span class="field-error">{{ getError(adjustForm, 'reason') }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-adjust" [disabled]="adjusting()">
+              @if (adjusting()) {
+                <div class="btn-spinner"></div>
+                <span>Saving...</span>
+              } @else {
+                <span class="material-icons">tune</span>
+                <span>Apply Adjustment</span>
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,264 @@
+<!-- leave-list.html -->
+<div class="list-page">
+  <!-- ── Page header ────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">My Leave Requests</h1>
+      @if (totalElements() > 0) {
+        <span class="count-badge">{{ totalElements() }}</span>
+      }
+      @if (pendingCount() > 0) {
+        <span class="pending-chip">
+          <span class="material-icons">hourglass_empty</span>
+          {{ pendingCount() }} pending
+        </span>
+      }
+    </div>
+    <button class="btn-apply" (click)="applyNewLeave()">
+      <span class="material-icons">add</span>
+      Apply Leave
+    </button>
+  </div>
+
+  <!-- ── Filter bar ─────────────────────────────────────── -->
+  <div class="filter-bar">
+    <select
+      class="filter-select"
+      [value]="filterStatus()"
+      (change)="filterStatus.set($any($event.target).value); onFilterChange()"
+    >
+      <option value="">All Status</option>
+      <option value="PENDING">Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="REJECTED">Rejected</option>
+      <option value="CANCELLED">Cancelled</option>
+    </select>
+
+    <select
+      class="filter-select"
+      [value]="filterType()"
+      (change)="filterType.set($any($event.target).value); onFilterChange()"
+    >
+      <option value="">All Types</option>
+      @for (lt of leaveTypes; track lt) {
+        <option [value]="lt">{{ lt }}</option>
+      }
+    </select>
+
+    <select
+      class="filter-select"
+      [value]="filterYear()"
+      (change)="filterYear.set(+$any($event.target).value); onFilterChange()"
+    >
+      @for (y of yearOptions; track y) {
+        <option [value]="y">{{ y }}</option>
+      }
+    </select>
+
+    @if (filterStatus() || filterType()) {
+      <button class="btn-clear" (click)="clearFilters()">
+        <span class="material-icons">filter_alt_off</span>
+        Clear
+      </button>
+    }
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <!-- ── Loading ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading leave requests...</span>
+    </div>
+  }
+
+  <!-- ── Empty ──────────────────────────────────────────── -->
+  @if (!loading() && leaves().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">event_busy</span>
+      <p>No leave requests found</p>
+      <small>
+        @if (filterStatus() || filterType()) {
+          Try adjusting your filters
+        } @else {
+          Apply for your first leave below
+        }
+      </small>
+      <button class="btn-apply-sm" (click)="applyNewLeave()">
+        <span class="material-icons">add</span> Apply Leave
+      </button>
+    </div>
+  }
+
+  <!-- ── Leave cards ────────────────────────────────────── -->
+  @if (!loading() && leaves().length > 0) {
+    <div class="leaves-list">
+      @for (leave of leaves(); track leave.leaveReqId) {
+        <div class="leave-card" [class]="'card-' + leave.status.toLowerCase()">
+          <!-- Status color accent -->
+          <div class="card-accent" [style.background]="getTypeColor(leave.leaveTypeCode)"></div>
+
+          <div class="card-content">
+            <!-- ── Top row ─────────────────────────────── -->
+            <div class="card-top">
+              <div class="card-top-left">
+                <span
+                  class="type-badge"
+                  [style.background]="getTypeColor(leave.leaveTypeCode) + '18'"
+                  [style.color]="getTypeColor(leave.leaveTypeCode)"
+                  [style.border]="'1px solid ' + getTypeColor(leave.leaveTypeCode) + '40'"
+                >
+                  {{ leave.leaveTypeName }}
+                </span>
+                @if (leave.isPaid === false) {
+                  <span class="unpaid-tag">Unpaid</span>
+                }
+              </div>
+              <div class="card-top-right">
+                <span class="status-badge" [ngClass]="getStatusClass(leave.status)">
+                  <span class="material-icons status-icon">
+                    {{ getStatusIcon(leave.status) }}
+                  </span>
+                  {{ leave.status }}
+                </span>
+                @if (canCancel(leave)) {
+                  <button
+                    class="btn-cancel-req"
+                    [disabled]="cancelling() === leave.leaveReqId"
+                    (click)="openCancel(leave)"
+                  >
+                    <span class="material-icons">close</span>
+                    Cancel
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- ── Dates ───────────────────────────────── -->
+            <div class="card-dates">
+              <div class="date-block">
+                <span class="date-label">From</span>
+                <span class="date-val">{{ leave.startDate }}</span>
+              </div>
+              <div class="date-arrow">
+                <span class="material-icons">arrow_forward</span>
+              </div>
+              <div class="date-block">
+                <span class="date-label">To</span>
+                <span class="date-val">{{ leave.endDate }}</span>
+              </div>
+              <div class="days-chip">
+                <span class="material-icons">calendar_today</span>
+                {{ leave.totalDays }} day{{ leave.totalDays !== 1 ? 's' : '' }}
+              </div>
+            </div>
+
+            <!-- ── Reason ──────────────────────────────── -->
+            <p class="card-reason">{{ leave.reason }}</p>
+
+            <!-- ── Approval / Rejection info ──────────── -->
+            @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
+              <div class="card-approval">
+                <span class="material-icons">
+                  {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
+                </span>
+                <span>
+                  {{ leave.status === 'APPROVED' ? 'Approved' : 'Rejected' }}
+                  by <strong>{{ leave.approvedBy }}</strong>
+                  @if (leave.approvedAt) {
+                    on {{ leave.approvedAt | slice: 0 : 10 }}
+                  }
+                </span>
+                <!-- remarks = rejectionReason from backend -->
+                @if (leave.remarks) {
+                  <span class="remarks-text">— "{{ leave.remarks }}"</span>
+                }
+              </div>
+            }
+
+            <!-- ── Footer ──────────────────────────────── -->
+            <div class="card-footer">
+              <span class="submitted-date"> Submitted: {{ leave.createdAt | slice: 0 : 10 }} </span>
+              @if (leave.balanceAvailable != null) {
+                <span class="balance-snap">
+                  Balance at request: {{ leave.balanceAvailable | number: '1.1-1' }} days
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Pagination ──────────────────────────────────── -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <span class="pag-info">
+          Showing {{ showingFrom }}–{{ showingTo }} of {{ totalElements() }}
+        </span>
+        <div class="pag-btns">
+          <button
+            class="pag-btn"
+            [disabled]="currentPage() === 0"
+            (click)="onPageChange(currentPage() - 1)"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+          @for (p of pages; track p) {
+            <button
+              class="pag-btn num"
+              [class.active]="p === currentPage()"
+              (click)="onPageChange(p)"
+            >
+              {{ p + 1 }}
+            </button>
+          }
+          <button
+            class="pag-btn"
+            [disabled]="currentPage() === totalPages() - 1"
+            (click)="onPageChange(currentPage() + 1)"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CONFIRM CANCEL DIALOG                                     -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showConfirm()) {
+  <div class="modal-backdrop">
+    <div class="confirm-dialog">
+      <div class="confirm-icon">
+        <span class="material-icons">event_busy</span>
+      </div>
+      <h3 class="confirm-title">Cancel Leave Request?</h3>
+      <div class="confirm-details">
+        <span class="confirm-type">{{ confirmItem()?.leaveTypeName }}</span>
+        <span class="confirm-dates">
+          {{ confirmItem()?.startDate }} → {{ confirmItem()?.endDate }}
+        </span>
+        <span class="confirm-days"> {{ confirmItem()?.totalDays }} day(s) </span>
+      </div>
+      <p class="confirm-msg">The reserved days will be released back to your balance.</p>
+      <div class="confirm-actions">
+        <button class="btn-no" (click)="closeConfirm()">Keep Request</button>
+        <button class="btn-yes" (click)="confirmCancel()">Yes, Cancel It</button>
+      </div>
+    </div>
+  </div>
+}

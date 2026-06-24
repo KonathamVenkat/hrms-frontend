@@ -1,0 +1,15 @@
+<!-- layout/main-layout/main-layout.component.html -->
+<div class="app-shell">
+  <!-- Left icon sidebar (like Horilla's left rail) -->
+  <app-sidebar />
+
+  <!-- Right side: toolbar + page -->
+  <div class="main-area">
+    <app-toolbar />
+
+    <div class="page-content">
+      <router-outlet />
+      <!-- Dashboard loads here -->
+    </div>
+  </div>
+</div>

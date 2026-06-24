@@ -1,0 +1,83 @@
+<!-- toolbar.html — Horilla-style topbar (Angular template) -->
+<header class="topbar">
+  <!-- Brand -->
+  <div class="topbar-brand">
+    <span class="brand-name">EHRMS</span>
+  </div>
+
+  <!-- Actions -->
+  <div class="topbar-actions">
+    <!-- Clock -->
+    <div class="clock-badge" title="Login time">
+      <span class="material-icons clock-icon">login</span>
+      <span class="clock-time">{{ currentTime() }}</span>
+    </div>
+
+    <!-- Dark mode -->
+    <button class="icon-btn" type="button" title="Toggle Dark Mode" (click)="toggleDarkMode()">
+      <span class="material-icons">{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</span>
+    </button>
+
+    <!-- Settings -->
+    <button class="icon-btn" type="button" title="Settings">
+      <span class="material-icons">settings</span>
+    </button>
+
+    <!-- Notifications -->
+    <button class="icon-btn notif-btn" type="button" title="Notifications">
+      <span class="material-icons">notifications</span>
+      <span class="notif-badge">{{ notifCount() }}</span>
+    </button>
+
+    <!-- Language -->
+    <button class="icon-btn" type="button" title="Language">
+      <span class="material-icons">language</span>
+    </button>
+
+    <!-- Calendar -->
+    <button class="icon-btn" type="button" title="Calendar">
+      <span class="material-icons">calendar_month</span>
+    </button>
+
+    <!-- Profile -->
+    <div class="profile-wrap">
+      <button
+        class="profile-trigger"
+        type="button"
+        (click)="toggleProfile($event)"
+        [attr.aria-expanded]="profileOpen()"
+      >
+        <div class="avatar">{{ initials }}</div>
+        <div class="profile-info">
+          <span class="profile-name">{{ user()?.fullName || 'User' }}</span>
+          <span class="profile-status" [class.online]="isOnline()" [class.offline]="!isOnline()">
+            <span class="status-dot"></span>{{ isOnline() ? 'Online' : 'Offline' }}
+          </span>
+        </div>
+        <span class="material-icons chevron" [class.rotated]="profileOpen()">expand_more</span>
+      </button>
+
+      @if (profileOpen()) {
+        <div
+          class="profile-dropdown"
+          [style.top.px]="dropdownTop()"
+          [style.right.px]="dropdownRight()"
+        >
+          <button class="dropdown-item" type="button" (click)="goToProfile()">
+            <span class="material-icons">person</span>My Profile
+          </button>
+          <button class="dropdown-item" type="button" (click)="changeUsername()">
+            <span class="material-icons">badge</span>Change Username
+          </button>
+          <button class="dropdown-item" type="button" (click)="changePassword()">
+            <span class="material-icons">lock</span>Change Password
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item logout" type="button" (click)="logout()">
+            <span class="material-icons">power_settings_new</span>Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

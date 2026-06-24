@@ -1,0 +1,307 @@
+<div class="detail-page">
+  <!-- ── Loading ──────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading employee...</span>
+    </div>
+  }
+
+  <!-- ── Error ─────────────────────────────────────────────── -->
+  @if (error() && !loading()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>
+      <span>{{ error() }}</span>
+      <button class="alert-back" (click)="goBack()">Go Back</button>
+    </div>
+  }
+
+  <!-- ── Content ───────────────────────────────────────────── -->
+  @if (employee() && !loading()) {
+    <div class="content">
+      <!-- ── Profile card ────────────────────────────────── -->
+      <div class="profile-card">
+        <!-- Back button -->
+        <button class="back-btn" (click)="goBack()">
+          <span class="material-icons">arrow_back</span>
+        </button>
+
+        <!-- Avatar + name -->
+        <div class="profile-identity">
+          @if (employee()!.profilePhotoUrl) {
+            <img
+              class="profile-avatar"
+              [src]="employee()!.profilePhotoUrl"
+              [alt]="employee()!.fullNameEn"
+            />
+          } @else {
+            <div class="profile-avatar-text">
+              {{ getInitials(employee()!.fullNameEn) }}
+            </div>
+          }
+
+          <div class="profile-info">
+            <h1 class="profile-name">{{ employee()!.fullNameEn }}</h1>
+            <p class="profile-name-ar">{{ employee()!.fullNameAr }}</p>
+            <div class="profile-meta">
+              <span class="emp-code">{{ employee()!.employeeCode }}</span>
+              @if (employee()!.designationTitle) {
+                <span class="sep">·</span>
+                <span class="designation">{{ employee()!.designationTitle }}</span>
+              }
+              @if (employee()!.gradeLevel) {
+                <span class="grade-badge">{{ employee()!.gradeLevel }}</span>
+              }
+            </div>
+            <div class="profile-dept">
+              @if (employee()!.departmentName) {
+                <span class="material-icons dept-icon">business</span>
+                <span>{{ employee()!.departmentName }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Status + actions -->
+        <div class="profile-actions">
+          <span class="status-badge" [ngClass]="getStatusClass(employee()!.employmentStatus)">
+            <span class="status-dot"></span>
+            {{ getStatusLabel(employee()!.employmentStatus) }}
+          </span>
+          <button class="btn-edit" (click)="editEmployee()">
+            <span class="material-icons">edit</span>
+            Edit
+          </button>
+        </div>
+      </div>
+      <!-- end profile-card -->
+
+      <!-- ── Tab bar ─────────────────────────────────────── -->
+      <div class="detail-tabs">
+        <button
+          class="detail-tab"
+          [class.active]="activeDetailTab() === 'profile'"
+          (click)="activeDetailTab.set('profile')"
+        >
+          <span class="material-icons">person</span>
+          Profile
+        </button>
+        <button
+          class="detail-tab"
+          [class.active]="activeDetailTab() === 'job'"
+          (click)="activeDetailTab.set('job')"
+        >
+          <span class="material-icons">work</span>
+          Job Details
+        </button>
+        <button
+          class="detail-tab"
+          [class.active]="activeDetailTab() === 'addresses'"
+          (click)="activeDetailTab.set('addresses')"
+        >
+          <span class="material-icons">location_on</span>
+          Addresses
+        </button>
+        <button
+          class="detail-tab"
+          [class.active]="activeDetailTab() === 'identity'"
+          (click)="activeDetailTab.set('identity')"
+        >
+          <span class="material-icons">badge</span>
+          Identity
+        </button>
+        <button
+          class="detail-tab"
+          [class.active]="activeDetailTab() === 'documents'"
+          (click)="activeDetailTab.set('documents')"
+        >
+          <span class="material-icons">folder</span> Documents
+        </button>
+      </div>
+      <!-- end tab bar -->
+
+      <!-- ── Profile tab ─────────────────────────────────── -->
+      @if (activeDetailTab() === 'profile') {
+        <div class="cards-grid">
+          <!-- ══ Personal Information ═══════════════════════ -->
+          <div class="info-card">
+            <div class="card-header">
+              <span class="material-icons">person</span>
+              Personal Information
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <span class="info-label">Full Name (EN)</span>
+                <span class="info-value">{{ getValue(employee()!.fullNameEn) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Full Name (AR)</span>
+                <span class="info-value arabic">{{ getValue(employee()!.fullNameAr) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value">{{ formatDate(employee()!.dateOfBirth) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Gender</span>
+                <span class="info-value">{{ getValue(employee()!.gender) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Blood Group</span>
+                <span class="info-value">{{ getValue(employee()!.bloodGroup) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Marital Status</span>
+                <span class="info-value">{{ getValue(employee()!.maritalStatus) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Nationality</span>
+                <span class="info-value">{{ getValue(employee()!.nationality) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Religion</span>
+                <span class="info-value">{{ getValue(employee()!.religion) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ Contact Details ════════════════════════════ -->
+          <div class="info-card">
+            <div class="card-header">
+              <span class="material-icons">contact_phone</span>
+              Contact Details
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <span class="info-label">Work Email</span>
+                <a class="info-value link" [href]="'mailto:' + employee()!.workEmail">
+                  {{ employee()!.workEmail }}
+                </a>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Personal Email</span>
+                <a class="info-value link" [href]="'mailto:' + employee()!.personalEmail">
+                  {{ employee()!.personalEmail }}
+                </a>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Work Phone</span>
+                <span class="info-value">{{ getValue(employee()!.workPhone) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Personal Phone</span>
+                <span class="info-value">{{ getValue(employee()!.personalPhone) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ Employment Details ══════════════════════════ -->
+          <div class="info-card">
+            <div class="card-header">
+              <span class="material-icons">work</span>
+              Employment Summary
+            </div>
+            <div class="card-body">
+              <!--div class="info-row">
+                <span class="info-label">Department</span>
+                <span class="info-value">
+                  {{ getValue(employee()!.departmentName) }}
+                  @if (employee()!.departmentCode) {
+                    <span class="sub-text">({{ employee()!.departmentCode }})</span>
+                  }
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Designation</span>
+                <span class="info-value">
+                  {{ getValue(employee()!.designationTitle) }}
+                  @if (employee()!.gradeLevel) {
+                    <span class="grade-inline">{{ employee()!.gradeLevel }}</span>
+                  }
+                </span>
+              </div-->
+              <div class="info-row">
+                <span class="info-label">Employment Type</span>
+                <span class="info-value">
+                  {{ employee()!.employmentType.replace('_', ' ') }}
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Employment Status</span>
+                <span
+                  class="status-badge small"
+                  [ngClass]="getStatusClass(employee()!.employmentStatus)"
+                >
+                  <span class="status-dot"></span>
+                  {{ getStatusLabel(employee()!.employmentStatus) }}
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Hire Date</span>
+                <span class="info-value">{{ formatDate(employee()!.hireDate) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Probation End Date</span>
+                <span class="info-value">{{ formatDate(employee()!.probationEndDate) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Confirmation Date</span>
+                <span class="info-value">{{ formatDate(employee()!.confirmationDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ Audit Information ═══════════════════════════ -->
+          <div class="info-card">
+            <div class="card-header">
+              <span class="material-icons">history</span>
+              Audit Information
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <span class="info-label">Created By</span>
+                <span class="info-value">{{ getValue(employee()!.createdBy) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Created At</span>
+                <span class="info-value">{{ getValue(employee()!.createdAt) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Updated By</span>
+                <span class="info-value">{{ getValue(employee()!.updatedBy) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Updated At</span>
+                <span class="info-value">{{ getValue(employee()!.updatedAt) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Active</span>
+                <span class="info-value">
+                  {{ employee()!.isActive ? 'Yes' : 'No' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end cards-grid -->
+      }
+
+      <!-- ── Job Details tab ─────────────────────────────── -->
+      @if (activeDetailTab() === 'job') {
+        <app-job-details [employeeId]="employee()!.employeeId" />
+      }
+      <!-- Tab panel — add after job tab -->
+      @if (activeDetailTab() === 'addresses') {
+        <app-employee-addresses [employeeId]="employee()!.employeeId" />
+      }
+      @if (activeDetailTab() === 'identity') {
+        <app-employee-identity [employeeId]="employee()!.employeeId" />
+      }
+      @if (activeDetailTab() === 'documents') {
+        <app-employee-documents [employeeId]="employee()!.employeeId" />
+      }
+    </div>
+    <!-- end content -->
+  }
+</div>
+<!-- end detail-page -->

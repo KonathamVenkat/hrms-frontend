@@ -1,0 +1,306 @@
+<div class="page-container">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">account_tree</mat-icon>
+      <div>
+        <h2>Salary Structures</h2>
+        <span class="subtitle">Build salary packages by combining pay components</span>
+      </div>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Structure
+    </button>
+  </div>
+
+  <!-- ── Create / Edit Form ──────────────────────────────── -->
+  <mat-card class="form-card" *ngIf="showForm()">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ editingId() ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ editingId() ? 'Edit' : 'New' }} Salary Structure
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form">
+        <!-- Structure details -->
+        <div class="structure-details">
+          <mat-form-field appearance="outline">
+            <mat-label>Structure Code</mat-label>
+            <input
+              matInput
+              formControlName="structureCode"
+              placeholder="e.g. GRADE-A"
+              [readonly]="!!editingId()"
+            />
+            <mat-error *ngIf="form.get('structureCode')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Structure Name</mat-label>
+            <input
+              matInput
+              formControlName="structureName"
+              placeholder="e.g. Grade A - Executive Package"
+            />
+            <mat-error *ngIf="form.get('structureName')?.hasError('required')">Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-col">
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description" />
+          </mat-form-field>
+        </div>
+
+        <mat-divider class="form-divider"></mat-divider>
+
+        <!-- Components table -->
+        <div class="items-header">
+          <h3>Pay Components</h3>
+          <button mat-stroked-button type="button" (click)="addComponent()">
+            <mat-icon>add</mat-icon> Add Component
+          </button>
+        </div>
+
+        <div class="items-table-wrap" formArrayName="items">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Component</th>
+                <th>Type</th>
+                <th>Calc Type Override</th>
+                <th>Amount (OMR)</th>
+                <th>Percentage (%)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i">
+                <td class="sort-col">{{ i + 1 }}</td>
+
+                <!-- Component selector -->
+                <td class="comp-col">
+                  <mat-form-field appearance="outline" class="compact-field">
+                    <mat-select
+                      formControlName="componentId"
+                      (selectionChange)="onComponentSelect(i, $event.value)"
+                    >
+                      <mat-option *ngFor="let c of allComponents()" [value]="c.componentId">
+                        {{ c.componentName }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+
+                <!-- Type badge -->
+                <td class="type-col">
+                  <span
+                    class="type-chip"
+                    *ngIf="item.get('componentId')?.value"
+                    [style.background]="
+                      getTypeStyle(getComponentType(item.get('componentId')?.value)).bg
+                    "
+                    [style.color]="
+                      getTypeStyle(getComponentType(item.get('componentId')?.value)).color
+                    "
+                  >
+                    {{ getTypeStyle(getComponentType(item.get('componentId')?.value)).label }}
+                  </span>
+                </td>
+
+                <!-- Calc type override -->
+                <td class="calc-col">
+                  <mat-form-field appearance="outline" class="compact-field">
+                    <mat-select formControlName="calcTypeOverride" placeholder="Use default">
+                      <mat-option [value]="null">Use default</mat-option>
+                      <mat-option *ngFor="let ct of calcTypes" [value]="ct.value">
+                        {{ ct.label }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+
+                <!-- Amount -->
+                <td class="num-col">
+                  <mat-form-field appearance="outline" class="compact-field">
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="amount"
+                      min="0"
+                      placeholder="0.000"
+                    />
+                  </mat-form-field>
+                </td>
+
+                <!-- Percentage -->
+                <td class="num-col">
+                  <mat-form-field appearance="outline" class="compact-field">
+                    <input
+                      matInput
+                      type="number"
+                      formControlName="percentage"
+                      min="0"
+                      max="100"
+                      placeholder="0.00"
+                    />
+                    <span matTextSuffix>%</span>
+                  </mat-form-field>
+                </td>
+
+                <!-- Remove -->
+                <td class="action-col">
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    type="button"
+                    (click)="removeItem(i)"
+                    matTooltip="Remove"
+                  >
+                    <mat-icon>remove_circle_outline</mat-icon>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="itemsArray.length === 0">
+                <td colspan="7" class="empty-items">
+                  No components added. Click "Add Component" to start.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
+        <mat-spinner *ngIf="saving()" diameter="18"></mat-spinner>
+        <span *ngIf="!saving()"><mat-icon>save</mat-icon> Save Structure</span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- ── Structures List ──────────────────────────────────── -->
+  <div class="structures-list" *ngIf="!showForm()">
+    <div class="center-spinner" *ngIf="loading()">
+      <mat-spinner diameter="44"></mat-spinner>
+    </div>
+
+    <mat-accordion *ngIf="!loading()" multi>
+      <mat-expansion-panel
+        *ngFor="let s of structures()"
+        class="structure-panel"
+        [class.inactive-panel]="!s.isActive"
+      >
+        <!-- Panel header -->
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <span class="code-chip">{{ s.structureCode }}</span>
+            <span class="structure-name">{{ s.structureName }}</span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="emp-count">
+              <mat-icon>people</mat-icon> {{ s.employeeCount }} employees
+            </span>
+            <span class="item-count">
+              <mat-icon>list</mat-icon> {{ s.items.length }} components
+            </span>
+            <span
+              class="status-chip"
+              [style.background]="s.isActive ? '#dcfce7' : '#fee2e2'"
+              [style.color]="s.isActive ? '#166534' : '#991b1b'"
+            >
+              {{ s.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <!-- Panel content — component breakdown -->
+        <div class="panel-body">
+          <div class="description" *ngIf="s.description">{{ s.description }}</div>
+
+          <!-- Earnings -->
+          <div class="component-section">
+            <h4 class="section-title earning"><mat-icon>add_circle</mat-icon> Earnings</h4>
+            <div class="comp-rows">
+              <div class="comp-row" *ngFor="let item of filterItems(s.items, 'EARNING')">
+                <span class="comp-name">{{ item.componentName }}</span>
+                <span class="comp-ar">{{ item.componentNameAr }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-value earning-val">
+                  {{
+                    item.effectiveCalcType === 'FIXED'
+                      ? (item.amount | number: '1.3-3') + ' OMR'
+                      : item.percentage + '%'
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deductions -->
+          <div class="component-section" *ngIf="filterItems(s.items, 'DEDUCTION').length > 0">
+            <h4 class="section-title deduction"><mat-icon>remove_circle</mat-icon> Deductions</h4>
+            <div class="comp-rows">
+              <div class="comp-row" *ngFor="let item of filterItems(s.items, 'DEDUCTION')">
+                <span class="comp-name">{{ item.componentName }}</span>
+                <span class="comp-ar">{{ item.componentNameAr }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-value deduction-val">
+                  {{
+                    item.effectiveCalcType === 'FIXED'
+                      ? (item.amount | number: '1.3-3') + ' OMR'
+                      : item.percentage + '%'
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statutory -->
+          <div class="component-section" *ngIf="filterItems(s.items, 'STATUTORY').length > 0">
+            <h4 class="section-title statutory">
+              <mat-icon>account_balance</mat-icon> Statutory (PASI)
+            </h4>
+            <div class="comp-rows">
+              <div class="comp-row" *ngFor="let item of filterItems(s.items, 'STATUTORY')">
+                <span class="comp-name">{{ item.componentName }}</span>
+                <span class="comp-ar">{{ item.componentNameAr }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-value statutory-val">{{ item.percentage }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="panel-actions">
+            <button mat-stroked-button (click)="openEdit(s)"><mat-icon>edit</mat-icon> Edit</button>
+            <button
+              mat-stroked-button
+              [color]="s.isActive ? 'warn' : 'primary'"
+              (click)="toggleActive(s)"
+            >
+              <mat-icon>{{ s.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+              {{ s.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Empty state -->
+    <mat-card class="empty-card" *ngIf="!loading() && structures().length === 0">
+      <mat-card-content class="empty-content">
+        <mat-icon>account_tree</mat-icon>
+        <p>No salary structures defined yet</p>
+        <button mat-flat-button color="primary" (click)="openCreate()">
+          Create First Structure
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

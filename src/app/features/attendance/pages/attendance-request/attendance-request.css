@@ -1,0 +1,237 @@
+/* attendance-request.component.css */
+
+.request-container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon {
+  font-size: 36px; width: 36px; height: 36px;
+  color: #4f46e5;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 22px; font-weight: 700; color: #111827;
+}
+
+.subtitle { font-size: 13px; color: #6b7280; }
+
+/* ── Form Card ───────────────────────────────────────────── */
+.form-card {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.12) !important;
+  border: 1px solid #e0e7ff !important;
+}
+
+.form-card mat-card-header {
+  padding: 20px 20px 0;
+}
+
+.form-card mat-card-title {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+.request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 0 0;
+}
+
+.full-width  { width: 100%; }
+.half-width  { flex: 1; min-width: 200px; }
+
+.time-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── Stats Row ───────────────────────────────────────────── */
+.stats-row {
+  display: flex;
+  gap: 12px;
+}
+
+.mini-stat {
+  flex: 1;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+
+.mini-stat mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px !important;
+}
+
+.mini-stat mat-icon {
+  font-size: 28px; width: 28px; height: 28px;
+}
+
+.mini-num {
+  font-size: 28px; font-weight: 700; line-height: 1;
+}
+
+.mini-label {
+  font-size: 12px; color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mini-stat.pending  mat-icon,
+.mini-stat.pending  .mini-num { color: #d97706; }
+.mini-stat.approved mat-icon,
+.mini-stat.approved .mini-num { color: #059669; }
+.mini-stat.rejected mat-icon,
+.mini-stat.rejected .mini-num { color: #dc2626; }
+
+/* ── Table Card ──────────────────────────────────────────── */
+.table-card {
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07) !important;
+}
+
+.table-card mat-card-header { padding: 16px 20px 0; }
+
+.table-card mat-card-title {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: #111827 !important;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  min-height: 160px;
+  position: relative;
+}
+
+.req-table {
+  width: 100%;
+}
+
+.req-table th {
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.req-table td { font-size: 14px; color: #374151; }
+
+.approved-row td { background: #f0fdf4 !important; }
+.rejected-row td { background: #fff5f5 !important; }
+
+/* ── Status Chip ─────────────────────────────────────────── */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ── Time chips ──────────────────────────────────────────── */
+.time-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-chip.in  { background: #dbeafe; color: #1e40af; }
+.time-chip.out { background: #fce7f3; color: #9d174d; }
+
+/* ── Rejection reason ────────────────────────────────────── */
+.rejection-reason {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #dc2626;
+}
+
+.info-icon {
+  font-size: 13px !important;
+  width: 13px !important;
+  height: 13px !important;
+}
+
+.reason-text { cursor: default; }
+
+.reviewer { font-size: 13px; color: #374151; font-weight: 500; }
+
+.muted { color: #9ca3af; font-size: 13px; }
+
+/* ── Empty State ─────────────────────────────────────────── */
+.empty-cell { text-align: center !important; padding: 48px 0 !important; }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 48px; width: 48px; height: 48px;
+}
+
+/* ── Spinner ─────────────────────────────────────────────── */
+.center-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .request-container { padding: 12px; }
+  .stats-row         { flex-wrap: wrap; }
+  .mini-stat         { min-width: 120px; }
+  .time-row          { flex-direction: column; }
+}

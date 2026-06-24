@@ -1,0 +1,179 @@
+<!-- attendance-summary.component.html -->
+
+<div class="summary-container">
+
+  <!-- ── Page Header ─────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="header-icon">bar_chart</mat-icon>
+      <div>
+        <h2>Attendance Summary</h2>
+        <span class="subtitle">Monthly attendance overview and trends</span>
+      </div>
+    </div>
+
+    <!-- Month/Year Filter -->
+    <div class="filter-bar">
+      <form [formGroup]="filterForm" class="filter-form">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Month</mat-label>
+          <mat-select formControlName="month" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let m of months" [value]="m.value">
+              {{ m.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Year</mat-label>
+          <mat-select formControlName="year" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Loading Spinner ─────────────────────────────────── -->
+  <div class="center-spinner" *ngIf="loading()">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!loading() && mySummary()">
+
+    <!-- ── Summary Stats Cards ───────────────────────────── -->
+    <div class="stats-grid">
+
+      <!-- Attendance % card -->
+      <mat-card class="stat-card highlight-card">
+        <mat-card-content>
+          <div class="pct-circle" [style.border-color]="attendanceColor()">
+            <span class="pct-value" [style.color]="attendanceColor()">
+              {{ formatPct(mySummary()!.attendancePercentage) }}
+            </span>
+            <span class="pct-label">Attendance</span>
+          </div>
+          <div class="stat-detail">
+            <span class="month-name">{{ mySummary()!.monthLabel }}</span>
+            <span class="live-pill" *ngIf="mySummary()!.isCurrentMonth">● Live</span>
+          </div>
+          <mat-progress-bar
+            [mode]="'determinate'"
+            [value]="mySummary()!.attendancePercentage"
+            [color]="getProgressColor(mySummary()!.attendancePercentage)"
+            class="att-bar">
+          </mat-progress-bar>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Present -->
+      <mat-card class="stat-card present-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">check_circle</mat-icon>
+          <span class="stat-num">{{ mySummary()!.presentDays }}</span>
+          <span class="stat-lbl">Present Days</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Absent -->
+      <mat-card class="stat-card absent-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">cancel</mat-icon>
+          <span class="stat-num">{{ mySummary()!.absentDays }}</span>
+          <span class="stat-lbl">Absent Days</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Late -->
+      <mat-card class="stat-card late-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">schedule</mat-icon>
+          <span class="stat-num">{{ mySummary()!.lateDays }}</span>
+          <span class="stat-lbl">Late Days</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Half Days -->
+      <mat-card class="stat-card half-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">brightness_5</mat-icon>
+          <span class="stat-num">{{ mySummary()!.halfDays }}</span>
+          <span class="stat-lbl">Half Days</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Leave -->
+      <mat-card class="stat-card leave-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">beach_access</mat-icon>
+          <span class="stat-num">{{ mySummary()!.leaveDays }}</span>
+          <span class="stat-lbl">Leave Days</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Working Hours -->
+      <mat-card class="stat-card hours-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">work_history</mat-icon>
+          <span class="stat-num sm">{{ mySummary()!.totalWorkingHours }}</span>
+          <span class="stat-lbl">Working Hours</span>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Overtime -->
+      <mat-card class="stat-card ot-card">
+        <mat-card-content>
+          <mat-icon class="card-icon">more_time</mat-icon>
+          <span class="stat-num sm">{{ mySummary()!.totalOvertimeHours }}</span>
+          <span class="stat-lbl">Overtime</span>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- ── Yearly Trend Table ─────────────────────────────── -->
+    <mat-card class="trend-card" *ngIf="yearlySummary().length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>trending_up</mat-icon>
+          Yearly Trend — {{ filterForm.value.year }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="trend-grid">
+          <div
+            *ngFor="let s of yearlySummary()"
+            class="trend-month"
+            [class.current]="s.isCurrentMonth">
+            <span class="trend-month-label">
+              {{ s.monthLabel.split(' ')[0].slice(0,3) }}
+            </span>
+            <div class="trend-bar-wrap">
+              <div
+                class="trend-bar"
+                [style.height.%]="s.attendancePercentage"
+                [style.background]="s.attendancePercentage >= 90
+                  ? '#059669' : s.attendancePercentage >= 75
+                  ? '#d97706' : '#dc2626'">
+              </div>
+            </div>
+            <span class="trend-pct">{{ formatPct(s.attendancePercentage) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </ng-container>
+
+  <!-- ── Empty State ──────────────────────────────────────── -->
+  <mat-card class="empty-card" *ngIf="!loading() && !mySummary()">
+    <mat-card-content class="empty-content">
+      <mat-icon class="empty-icon">event_busy</mat-icon>
+      <p>No attendance data found for the selected period.</p>
+      <button mat-stroked-button (click)="loadMySummary()">
+        <mat-icon>refresh</mat-icon> Refresh
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+</div>

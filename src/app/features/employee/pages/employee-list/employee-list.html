@@ -1,0 +1,230 @@
+<div class="emp-page">
+  <!-- ── Page Header ──────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Employees</h1>
+      @if (totalElements() > 0) {
+        <span class="count-badge">{{ totalElements() }}</span>
+      }
+    </div>
+    <button class="btn-create" (click)="createEmployee()">
+      <span class="material-icons">add</span>
+      Create Employee
+    </button>
+  </div>
+
+  <!-- ── Filter Bar ───────────────────────────────────────── -->
+  <div class="filter-bar">
+    <!-- Search -->
+    <div class="search-wrap">
+      <span class="material-icons">search</span>
+      <input
+        type="text"
+        placeholder="Search by name, code, email..."
+        [value]="filter().search"
+        (input)="filter.update((f) => ({ ...f, search: $any($event.target).value }))"
+        (keyup.enter)="onSearch()"
+      />
+      @if (filter().search) {
+        <button
+          class="clear-icon"
+          (click)="filter.update((f) => ({ ...f, search: '' })); onSearch()"
+        >
+          <span class="material-icons">close</span>
+        </button>
+      }
+    </div>
+
+    <!-- Department filter -->
+    <select
+      [value]="filter().departmentId ?? ''"
+      (change)="
+        filter.update((f) => ({
+          ...f,
+          departmentId: $any($event.target).value ? +$any($event.target).value : null,
+        }));
+        onFilterChange()
+      "
+      class="filter-select"
+    >
+      <option value="">All Departments</option>
+      @for (d of departments(); track d.id) {
+        <option [value]="d.id">{{ d.name }}</option>
+      }
+    </select>
+
+    <!-- Employment Type filter -->
+    <select
+      [value]="filter().employmentType"
+      (change)="
+        filter.update((f) => ({ ...f, employmentType: $any($event.target).value }));
+        onFilterChange()
+      "
+      class="filter-select"
+    >
+      <option value="">All Types</option>
+      @for (t of employmentTypes; track t) {
+        <option [value]="t">{{ t.replace('_', ' ') }}</option>
+      }
+    </select>
+
+    <!-- Status filter -->
+    <select
+      [value]="filter().employmentStatus"
+      (change)="
+        filter.update((f) => ({ ...f, employmentStatus: $any($event.target).value }));
+        onFilterChange()
+      "
+      class="filter-select"
+    >
+      <option value="">All Status</option>
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ s.replace('_', ' ') }}</option>
+      }
+    </select>
+
+    <!-- Clear filters -->
+    @if (
+      filter().search ||
+      filter().departmentId ||
+      filter().employmentType ||
+      filter().employmentStatus
+    ) {
+      <button class="btn-clear" (click)="clearFilters()">
+        <span class="material-icons">filter_alt_off</span>
+        Clear
+      </button>
+    }
+  </div>
+
+  <!-- ── Table Card ───────────────────────────────────────── -->
+  <div class="table-card">
+    @if (loading()) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <span>Loading employees...</span>
+      </div>
+    }
+
+    <div class="table-wrap">
+      <table class="emp-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Type</th>
+            <th>Hire Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (employees().length === 0 && !loading()) {
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <span class="material-icons">people_outline</span>
+                  <p>No employees found</p>
+                  <small>Try adjusting your filters or create a new employee</small>
+                  <button class="btn-create-sm" (click)="createEmployee()">
+                    <span class="material-icons">add</span> Create Employee
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+
+          @for (emp of employees(); track emp.employeeId) {
+            <tr class="emp-row" (click)="viewEmployee(emp.employeeId)">
+              <!-- Employee name + avatar -->
+              <td>
+                <div class="emp-cell">
+                  <div class="emp-avatar">{{ getInitials(emp.fullNameEn) }}</div>
+                  <div class="emp-info">
+                    <span class="emp-name">{{ emp.fullNameEn }}</span>
+                    <span class="emp-code">{{ emp.employeeCode }}</span>
+                    <span class="emp-email">{{ emp.workEmail }}</span>
+                    <!-- ✅ was emp.email -->
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="dept-text">{{ emp.departmentName || '—' }}</span>
+                <!-- ✅ was emp.department -->
+              </td>
+
+              <td>{{ emp.designationTitle || '—' }}</td>
+              <!-- ✅ was emp.designation -->
+
+              <td>
+                <span class="type-badge" [ngClass]="getTypeClass(emp.employmentType)">
+                  {{ emp.employmentType.replace('_', ' ') }}
+                </span>
+              </td>
+
+              <td>{{ emp.hireDate | date: 'dd MMM yyyy' }}</td>
+              <!-- ✅ was emp.joiningDate -->
+
+              <td>
+                <span class="status-badge" [ngClass]="getStatusClass(emp.employmentStatus)">
+                  <!-- ✅ was emp.status -->
+                  <span class="status-dot"></span>
+                  {{ emp.employmentStatus }}
+                  <!-- ✅ was emp.status -->
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td (click)="$event.stopPropagation()">
+                <div class="action-wrap">
+                  <button class="act-btn view" title="View" (click)="viewEmployee(emp.employeeId)">
+                    <span class="material-icons">visibility</span>
+                  </button>
+                  <button class="act-btn edit" title="Edit" (click)="editEmployee(emp.employeeId)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Pagination ──────────────────────────────────────── -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <span class="pag-info">
+          Showing {{ showingFrom() }}–{{ showingTo() }} of {{ totalElements() }} employees
+        </span>
+        <div class="pag-btns">
+          <button
+            class="pag-btn"
+            [disabled]="currentPage() === 0"
+            (click)="onPageChange(currentPage() - 1)"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+          @for (p of pages(); track p) {
+            <button
+              class="pag-btn num"
+              [class.active]="p === currentPage()"
+              (click)="onPageChange(p)"
+            >
+              {{ p + 1 }}
+            </button>
+          }
+          <button
+            class="pag-btn"
+            [disabled]="currentPage() === totalPages() - 1"
+            (click)="onPageChange(currentPage() + 1)"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

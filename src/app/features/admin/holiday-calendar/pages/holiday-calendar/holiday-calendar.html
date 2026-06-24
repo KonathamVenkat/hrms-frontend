@@ -1,0 +1,362 @@
+<div class="admin-page">
+  <!-- ── Page Header ──────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Holiday Calendar</h1>
+      <div class="stat-chips">
+        <span class="chip chip-total">{{ totalActive() }} Active</span>
+        <span class="chip chip-public">{{ publicCount() }} Public</span>
+        <span class="chip chip-religious">{{ religiousCount() }} Religious</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Year selector -->
+      <div class="year-nav">
+        <button class="year-btn" (click)="onYearChange(selectedYear() - 1)">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <select
+          class="year-select"
+          [value]="selectedYear()"
+          (change)="onYearChange(+$any($event.target).value)"
+        >
+          @for (y of yearOptions; track y) {
+            <option [value]="y">{{ y }}</option>
+          }
+        </select>
+        <button class="year-btn" (click)="onYearChange(selectedYear() + 1)">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+      <button class="btn-add" (click)="openCreate()">
+        <span class="material-icons">add</span>
+        Add Holiday
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>
+      {{ successMsg() }}
+    </div>
+  }
+  @if (error() && !showModal()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- ── Filter Bar ─────────────────────────────────────────── -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <span class="material-icons">search</span>
+      <input
+        type="text"
+        placeholder="Search holidays..."
+        [value]="filterText()"
+        (input)="filterText.set($any($event.target).value)"
+      />
+      @if (filterText()) {
+        <button class="clear-btn" (click)="filterText.set('')">
+          <span class="material-icons">close</span>
+        </button>
+      }
+    </div>
+
+    <select
+      class="filter-select"
+      [value]="filterType()"
+      (change)="filterType.set($any($event.target).value)"
+    >
+      <option value="">All Types</option>
+      @for (t of holidayTypes; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+
+    <div class="tab-filter">
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'all'"
+        (click)="filterActive.set('all')"
+      >
+        All
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'active'"
+        (click)="filterActive.set('active')"
+      >
+        Active
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="filterActive() === 'inactive'"
+        (click)="filterActive.set('inactive')"
+      >
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading holidays for {{ selectedYear() }}...</span>
+    </div>
+  }
+
+  <!-- ── Empty state ───────────────────────────────────────── -->
+  @if (!loading() && filteredHolidays().length === 0) {
+    <div class="empty-card">
+      <span class="material-icons">event_busy</span>
+      <p>No holidays found for {{ selectedYear() }}</p>
+      <small>Add holidays using the button above</small>
+      <button class="btn-add-sm" (click)="openCreate()">
+        <span class="material-icons">add</span> Add Holiday
+      </button>
+    </div>
+  }
+
+  <!-- ── Month Groups ───────────────────────────────────────── -->
+  @if (!loading() && monthGroups().length > 0) {
+    <div class="months-wrap">
+      @for (group of monthGroups(); track group.month) {
+        <div class="month-card">
+          <!-- Month header -->
+          <div class="month-header">
+            <span class="month-name">{{ group.month }}</span>
+            <span class="month-count">{{ group.items.length }} holidays</span>
+          </div>
+
+          <!-- Holidays in this month -->
+          <div class="holiday-list">
+            @for (h of group.items; track h.holidayId) {
+              <div class="holiday-row" [class.inactive-row]="!h.isActive">
+                <!-- Date block -->
+                <div class="date-block">
+                  <span class="date-day">
+                    {{ h.holidayDate | slice: 8 : 10 }}
+                  </span>
+                  <span class="date-dow">{{ getDayOfWeek(h.holidayDate) }}</span>
+                </div>
+
+                <!-- Holiday info -->
+                <div class="holiday-info">
+                  <div class="holiday-names">
+                    <span class="h-name-en">{{ h.holidayName }}</span>
+                    <span class="h-name-ar">{{ h.holidayNameAr }}</span>
+                  </div>
+                  <div class="holiday-meta">
+                    <span class="type-badge" [ngClass]="getTypeBadgeClass(h.holidayType)">
+                      {{ h.holidayType }}
+                    </span>
+                    @if (h.isRecurring) {
+                      <span class="recurring-badge">
+                        <span class="material-icons">event_repeat</span>
+                        Recurring
+                      </span>
+                    }
+                    @if (h.description) {
+                      <span class="h-desc">{{ h.description }}</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Status -->
+                <div class="holiday-status">
+                  <span
+                    class="status-badge"
+                    [class.status-active]="h.isActive"
+                    [class.status-inactive]="!h.isActive"
+                  >
+                    <span class="status-dot"></span>
+                    {{ h.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+
+                <!-- Actions -->
+                <div class="holiday-actions">
+                  <button class="act-btn btn-edit" title="Edit" (click)="openEdit(h)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button
+                    class="act-btn"
+                    [class.btn-deactivate]="h.isActive"
+                    [class.btn-activate]="!h.isActive"
+                    [title]="h.isActive ? 'Deactivate' : 'Activate'"
+                    (click)="openConfirm(h)"
+                  >
+                    <span class="material-icons">
+                      {{ h.isActive ? 'toggle_off' : 'toggle_on' }}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL — Add / Edit Holiday                                -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showModal()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          {{ isEditMode() ? 'Edit Holiday' : 'Add Holiday' }}
+        </h2>
+        <button class="modal-close" (click)="closeModal()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      @if (error()) {
+        <div class="modal-alert">
+          <span class="material-icons">error_outline</span>
+          {{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="modal-body">
+          <!-- Names -->
+          <div class="field-row">
+            <div class="field">
+              <label>Holiday Name (English) <span class="req">*</span></label>
+              <input formControlName="holidayName" placeholder="e.g. National Day" />
+              @if (isInvalid('holidayName')) {
+                <span class="field-error">{{ getError('holidayName') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Holiday Name (Arabic) <span class="req">*</span></label>
+              <input formControlName="holidayNameAr" placeholder="e.g. العيد الوطني" dir="rtl" />
+              @if (isInvalid('holidayNameAr')) {
+                <span class="field-error">{{ getError('holidayNameAr') }}</span>
+              }
+            </div>
+          </div>
+
+          <!-- Date + Type -->
+          <div class="field-row">
+            <div class="field">
+              <label>Holiday Date <span class="req">*</span></label>
+              <input type="date" formControlName="holidayDate" />
+              @if (isInvalid('holidayDate')) {
+                <span class="field-error">{{ getError('holidayDate') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Holiday Type <span class="req">*</span></label>
+              <select formControlName="holidayType">
+                @for (t of holidayTypes; track t) {
+                  <option [value]="t">{{ t }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="field">
+            <label>Description</label>
+            <textarea
+              formControlName="description"
+              placeholder="Optional description..."
+              rows="2"
+            ></textarea>
+          </div>
+
+          <!-- Toggles -->
+          <div class="toggles-row">
+            <label class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Recurring Yearly</span>
+                <span class="toggle-hint">Repeats on same date every year</span>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="isRecurring" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+
+            @if (isEditMode()) {
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="toggle-label">Active</span>
+                  <span class="toggle-hint">Inactive holidays are excluded from calculations</span>
+                </div>
+                <div class="toggle-wrap">
+                  <input type="checkbox" formControlName="isActive" class="toggle-inp" />
+                  <span class="toggle-slider"></span>
+                </div>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <div class="btn-spinner"></div>
+              <span>Saving...</span>
+            } @else {
+              <span class="material-icons">save</span>
+              <span>{{ isEditMode() ? 'Update' : 'Add Holiday' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CONFIRM DIALOG                                            -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showConfirm()) {
+  <div class="modal-backdrop">
+    <div class="confirm-dialog">
+      <div
+        class="confirm-icon"
+        [class.icon-warn]="confirmTarget()?.isActive"
+        [class.icon-info]="!confirmTarget()?.isActive"
+      >
+        <span class="material-icons">event_busy</span>
+      </div>
+      <h3 class="confirm-title">
+        {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }} Holiday?
+      </h3>
+      <p class="confirm-msg">
+        <strong>{{ confirmTarget()?.holidayName }}</strong>
+        ({{ formatDate(confirmTarget()?.holidayDate ?? '') }})
+        @if (confirmTarget()?.isActive) {
+          will be excluded from leave calculations.
+        } @else {
+          will be included in leave calculations.
+        }
+      </p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button
+          class="btn-confirm"
+          [class.btn-danger]="confirmTarget()?.isActive"
+          [class.btn-success]="!confirmTarget()?.isActive"
+          (click)="confirmToggle()"
+        >
+          {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

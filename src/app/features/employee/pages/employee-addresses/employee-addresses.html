@@ -1,0 +1,287 @@
+<div class="addr-section">
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <div class="section-header">
+    <div class="header-left">
+      <h2 class="section-title">Addresses</h2>
+      <span class="addr-count">{{ activeAddresses().length }} / 4 types</span>
+    </div>
+    <button class="btn-add" (click)="openAdd()" [disabled]="activeAddresses().length >= 4">
+      <span class="material-icons">add</span>
+      Add Address
+    </button>
+  </div>
+
+  <!-- ── Alerts ─────────────────────────────────────────── -->
+  @if (successMsg()) {
+    <div class="alert alert-success">
+      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (error() && !showModal() && !showConfirm()) {
+    <div class="alert alert-error">
+      <span class="material-icons">error_outline</span>{{ error() }}
+    </div>
+  }
+
+  <!-- ── Loading ────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <span>Loading addresses...</span>
+    </div>
+  }
+
+  <!-- ── Empty state ────────────────────────────────────── -->
+  @if (!loading() && activeAddresses().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">location_off</span>
+      <p>No addresses added yet</p>
+      <small>Add at least one address for this employee</small>
+      <button class="btn-add-sm" (click)="openAdd()">
+        <span class="material-icons">add</span> Add Address
+      </button>
+    </div>
+  }
+
+  <!-- ── Active address cards ───────────────────────────── -->
+  @if (!loading() && activeAddresses().length > 0) {
+    <div class="addresses-grid">
+      @for (addr of activeAddresses(); track addr.employeeAddressesId) {
+        <div class="addr-card" [class.primary-card]="addr.isPrimary">
+          <!-- Card header -->
+          <div class="addr-card-header">
+            <div class="addr-type-wrap">
+              <span class="material-icons type-icon">{{ getTypeIcon(addr.addressType) }}</span>
+              <span class="addr-type-badge" [ngClass]="getTypeBadge(addr.addressType)">
+                {{ addr.addressType }}
+              </span>
+              @if (addr.isPrimary) {
+                <span class="primary-badge">
+                  <span class="material-icons">star</span>
+                  Primary
+                </span>
+              }
+            </div>
+            <div class="card-actions">
+              @if (!addr.isPrimary) {
+                <button
+                  class="act-btn btn-star"
+                  title="Set as Primary"
+                  (click)="openSetPrimary(addr)"
+                >
+                  <span class="material-icons">star_outline</span>
+                </button>
+              }
+              <button class="act-btn btn-edit" title="Edit" (click)="openEdit(addr)">
+                <span class="material-icons">edit</span>
+              </button>
+              <button class="act-btn btn-delete" title="Remove" (click)="openDelete(addr)">
+                <span class="material-icons">delete_outline</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Address body -->
+          <div class="addr-card-body">
+            <div class="addr-line addr-main">{{ addr.addressLine1 }}</div>
+            @if (addr.addressLine2) {
+              <div class="addr-line">{{ addr.addressLine2 }}</div>
+            }
+            <div class="addr-line city-line">
+              {{ addr.city }}
+              @if (addr.stateProvince) {
+                , {{ addr.stateProvince }}
+              }
+              @if (addr.postalCode) {
+                – {{ addr.postalCode }}
+              }
+            </div>
+            <div class="addr-line country-line">
+              <span class="material-icons country-icon">flag</span>
+              {{ addr.country }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Inactive addresses (collapsed) ────────────────── -->
+  @if (!loading() && inactiveAddresses().length > 0) {
+    <div class="inactive-section">
+      <p class="inactive-label">
+        <span class="material-icons">history</span>
+        {{ inactiveAddresses().length }} inactive address(es)
+      </p>
+    </div>
+  }
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MODAL — Add / Edit Address                               -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showModal()) {
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          {{ isEditMode() ? 'Edit Address' : 'Add Address' }}
+        </h2>
+        <button class="modal-close" (click)="closeModal()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      @if (error()) {
+        <div class="modal-alert">
+          <span class="material-icons">error_outline</span>{{ error() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="modal-body">
+          <!-- Address type -->
+          <div class="field">
+            <label>Address Type <span class="req">*</span></label>
+            <div class="type-selector">
+              @for (type of addressTypes; track type) {
+                <button
+                  type="button"
+                  class="type-btn"
+                  [class.type-selected]="ctrl('addressType').value === type"
+                  [class.type-disabled]="isTypeUsed(type)"
+                  [disabled]="isTypeUsed(type)"
+                  (click)="ctrl('addressType').setValue(type)"
+                >
+                  <span class="material-icons">{{ getTypeIcon(type) }}</span>
+                  {{ type }}
+                  @if (isTypeUsed(type)) {
+                    <span class="used-tag">Added</span>
+                  }
+                </button>
+              }
+            </div>
+            @if (isInvalid('addressType')) {
+              <span class="field-error">{{ getError('addressType') }}</span>
+            }
+          </div>
+
+          <!-- Address lines -->
+          <div class="field">
+            <label>Address Line 1 <span class="req">*</span></label>
+            <input formControlName="addressLine1" placeholder="Street, building, area..." />
+            @if (isInvalid('addressLine1')) {
+              <span class="field-error">{{ getError('addressLine1') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label>Address Line 2</label>
+            <input formControlName="addressLine2" placeholder="Apartment, floor, unit (optional)" />
+          </div>
+
+          <!-- City + State -->
+          <div class="field-row">
+            <div class="field">
+              <label>City <span class="req">*</span></label>
+              <input formControlName="city" placeholder="e.g. Muscat" />
+              @if (isInvalid('city')) {
+                <span class="field-error">{{ getError('city') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>State / Province</label>
+              <input formControlName="stateProvince" placeholder="e.g. Muscat Governorate" />
+            </div>
+          </div>
+
+          <!-- Country + Postal -->
+          <div class="field-row">
+            <div class="field">
+              <label>Country <span class="req">*</span></label>
+              <input formControlName="country" />
+              @if (isInvalid('country')) {
+                <span class="field-error">{{ getError('country') }}</span>
+              }
+            </div>
+            <div class="field">
+              <label>Postal Code</label>
+              <input formControlName="postalCode" placeholder="e.g. 100" />
+            </div>
+          </div>
+
+          <!-- Primary toggle -->
+          @if (activeAddresses().length > 0 || isEditMode()) {
+            <label class="toggle-item">
+              <div class="toggle-info">
+                <span class="toggle-label">Set as Primary Address</span>
+                <span class="toggle-hint">
+                  Primary address is used for official correspondence
+                </span>
+              </div>
+              <div class="toggle-wrap">
+                <input type="checkbox" formControlName="isPrimary" class="toggle-inp" />
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <div class="btn-spinner"></div>
+              <span>Saving...</span>
+            } @else {
+              <span class="material-icons">save</span>
+              <span>{{ isEditMode() ? 'Update' : 'Add Address' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CONFIRM DIALOG                                            -->
+<!-- ══════════════════════════════════════════════════════════ -->
+@if (showConfirm()) {
+  <div class="modal-backdrop">
+    <div class="confirm-dialog">
+      <div
+        class="confirm-icon"
+        [class.icon-star]="confirmType() === 'primary'"
+        [class.icon-warn]="confirmType() === 'delete'"
+      >
+        <span class="material-icons">
+          {{ confirmType() === 'primary' ? 'star' : 'delete_outline' }}
+        </span>
+      </div>
+      <h3 class="confirm-title">
+        {{ confirmType() === 'primary' ? 'Set as Primary?' : 'Remove Address?' }}
+      </h3>
+      <p class="confirm-msg">
+        <strong>{{ confirmItem()?.addressType }}</strong> — {{ confirmItem()?.addressLine1 }},
+        {{ confirmItem()?.city }}
+        @if (confirmType() === 'primary') {
+          <br /><small>This will replace the current primary address.</small>
+        } @else {
+          <br /><small>This address will be deactivated.</small>
+        }
+      </p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button
+          class="btn-confirm"
+          [class.btn-star-confirm]="confirmType() === 'primary'"
+          [class.btn-danger]="confirmType() === 'delete'"
+          (click)="confirmAction()"
+        >
+          {{ confirmType() === 'primary' ? 'Set Primary' : 'Remove' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,124 @@
+<nav class="sidebar-rail">
+
+  <!-- ── Logo ──────────────────────────────────────────── -->
+  <div class="rail-logo">
+    <div class="logo-avatar">
+      <span class="material-icons" style="font-size:20px">hexagon</span>
+    </div>
+  </div>
+
+  <!-- ── Loading skeleton ──────────────────────────────── -->
+  @if (loading()) {
+    <div class="rail-loading">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="skeleton-icon"></div>
+      }
+    </div>
+  }
+
+  <!-- ── Nav list ──────────────────────────────────────── -->
+  <ul class="rail-list" *ngIf="!loading()">
+
+    @for (item of navItems(); track item.mainMenuId) {
+      <li
+        class="rail-item"
+        [class.active]="isActive(item)"
+        (mouseenter)="item.children?.length
+          ? onMenuEnter(item.mainMenuId.toString(), $event)
+          : null"
+        (mouseleave)="onMenuLeave()"
+      >
+        <!-- Icon button -->
+        <button
+          class="rail-btn"
+          [class.active]="isActive(item)"
+          [style.background]="getIconBg(item.icon, isActive(item))"
+          [attr.title]="item.mainMenuName"
+          (click)="!item.children?.length
+            ? navigate(item.route!)
+            : null"
+        >
+          <!-- Colored icon -->
+          <span
+            class="material-icons rail-icon"
+            [style.color]="getIconColor(item.icon, isActive(item))">
+            {{ item.icon }}
+          </span>
+
+          <!-- Active left bar color -->
+          <span class="active-bar"
+                *ngIf="isActive(item)"
+                [style.background]="getIconStyle(item.icon).activeBg">
+          </span>
+
+          <!-- Tooltip — only shows when no flyout open -->
+          <span class="rail-tooltip" *ngIf="!item.children?.length">
+            {{ item.mainMenuName }}
+          </span>
+        </button>
+
+        <!-- ── Flyout submenu ─────────────────────────── -->
+        @if (item.children?.length && activeMenu() === item.mainMenuId.toString()) {
+          <div
+            class="flyout"
+            [style.top.px]="flyoutTop()"
+            (mouseenter)="onFlyoutEnter()"
+            (mouseleave)="onFlyoutLeave()">
+
+            <!-- Flyout header with module color -->
+            <div
+              class="flyout-header"
+              [style.color]="getIconStyle(item.icon).color"
+              [style.border-bottom-color]="getIconStyle(item.icon).bg">
+              <span class="material-icons flyout-header-icon"
+                    [style.color]="getIconStyle(item.icon).color">
+                {{ item.icon }}
+              </span>
+              {{ item.mainMenuName }}
+            </div>
+
+            <!-- Flyout links -->
+            <ul class="flyout-list">
+              @for (child of item.children; track child.subMenuId) {
+                <li>
+                  <button
+                    class="flyout-link"
+                    [class.active]="isChildActive(child.subMenuAction)"
+                    [style.--active-color]="getIconStyle(item.icon).color"
+                    [style.--active-bg]="getIconStyle(item.icon).bg"
+                    (click)="navigate(child.subMenuAction)">
+
+                    <!-- Active dot indicator -->
+                    <span class="flyout-dot"
+                          *ngIf="isChildActive(child.subMenuAction)"
+                          [style.background]="getIconStyle(item.icon).color">
+                    </span>
+                    <span class="flyout-dot-placeholder"
+                          *ngIf="!isChildActive(child.subMenuAction)">
+                    </span>
+
+                    {{ child.subMenuName }}
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+      </li>
+    }
+
+  </ul>
+
+  <!-- ── Logout at bottom ──────────────────────────────── -->
+  <div class="rail-bottom" *ngIf="!loading()">
+    <button
+      class="rail-btn logout-btn"
+      title="Logout"
+      (click)="navigate('/auth/login')">
+      <span class="material-icons rail-icon">power_settings_new</span>
+      <span class="rail-tooltip">Logout</span>
+    </button>
+  </div>
+
+</nav>
