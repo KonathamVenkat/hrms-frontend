@@ -24,6 +24,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PayrollService } from '../../services/payroll.service';
 import {
@@ -54,6 +55,7 @@ import {
     MatTooltipModule,
     MatDividerModule,
     MatTabsModule,
+    TranslatePipe,
   ],
   templateUrl: './employee-salary.html',
   styleUrls: ['./employee-salary.css'],
@@ -61,6 +63,7 @@ import {
 export class EmployeeSalary implements OnInit {
   private readonly svc = inject(PayrollService);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State ──────────────────────────────────────────────
   readonly salaries = signal<EmployeeSalaryResponse[]>([]);
@@ -188,18 +191,21 @@ export class EmployeeSalary implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.snack.open('✅ Salary assigned successfully', 'Close', {
-            duration: 3000,
-            panelClass: 'snack-success',
-          });
+          this.snack.open(
+            `✅ ${this.translate.instant('payroll.employeeSalary.success.assigned')}`,
+            this.translate.instant('payroll.employeeSalary.close'),
+            { duration: 3000, panelClass: 'snack-success' },
+          );
           this.showForm.set(false);
           this.saving.set(false);
           this.loadSalaries();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Save failed'), 'Close', {
-            duration: 4000,
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('payroll.employeeSalary.errors.saveFailed')),
+            this.translate.instant('payroll.employeeSalary.close'),
+            { duration: 4000 },
+          );
           this.saving.set(false);
         },
       });

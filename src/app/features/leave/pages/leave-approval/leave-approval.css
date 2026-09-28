@@ -625,7 +625,7 @@
 .modal-close {
   position: absolute;
   top: 14px;
-  right: 14px;
+  inset-inline-end: 14px;
   width: 30px;
   height: 30px;
   border: none;
@@ -676,7 +676,7 @@
   border: 1px solid #a7f3e8;
   padding: 1px 7px;
   border-radius: 20px;
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
 .modal-body {
@@ -702,13 +702,13 @@ label {
 .req {
   color: var(--red);
   font-weight: 700;
-  margin-left: 4px;
+  margin-inline-start: 4px;
   text-transform: none;
 }
 .opt {
   color: var(--muted);
   font-weight: 400;
-  margin-left: 4px;
+  margin-inline-start: 4px;
   text-transform: none;
 }
 textarea {

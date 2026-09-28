@@ -3,6 +3,7 @@
 import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -13,7 +14,7 @@ import { Auth } from '../../../../core/auth/auth'; // ✅ correct
 @Component({
   selector: 'app-leave-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './leave-list.html',
   styleUrl: './leave-list.css',
 })
@@ -22,6 +23,7 @@ export class LeaveListPage implements OnInit {
   private auth = inject(Auth); // ✅ correct
   private router = inject(Router);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   leaves = signal<LeaveRequest[]>([]);
@@ -104,7 +106,9 @@ export class LeaveListPage implements OnInit {
           }
         },
         error: (err: any) =>
-          this.error.set(err?.error?.message || 'Failed to load leave requests.'),
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.list.errors.loadFailed'),
+          ),
       });
   }
 
@@ -161,12 +165,14 @@ export class LeaveListPage implements OnInit {
       .pipe(finalize(() => this.cancelling.set(null)))
       .subscribe({
         next: () => {
-          this.showSuccess('Leave request cancelled successfully');
+          this.showSuccess(this.translate.instant('leave.list.success.cancelled'));
           this.closeConfirm();
           this.loadLeaves();
         },
         error: (err: any) => {
-          this.error.set(err?.error?.message || 'Cancellation failed.');
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.list.errors.cancellationFailed'),
+          );
           this.closeConfirm();
         },
       });

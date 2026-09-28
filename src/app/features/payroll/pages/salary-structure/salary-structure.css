@@ -23,7 +23,7 @@
 /* ── Items inline table ──────────────────────────────────── */
 .items-table-wrap { overflow-x:auto; border-radius:12px; border:1px solid #e5e7eb; }
 .items-table { width:100%; border-collapse:collapse; }
-.items-table th { background:#f8fafc; padding:10px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; text-align:left; border-bottom:1px solid #e5e7eb; }
+.items-table th { background:#f8fafc; padding:10px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; text-align:start; border-bottom:1px solid #e5e7eb; }
 .items-table td { padding:6px 10px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
 .items-table tr:last-child td { border-bottom:none; }
 .items-table tr:hover td { background:#fafafa; }
@@ -48,7 +48,7 @@
 .structure-panel { border-radius:14px !important; box-shadow:0 2px 8px rgba(0,0,0,0.06) !important; border:1px solid #e5e7eb !important; overflow:hidden; }
 .inactive-panel { opacity:0.65; }
 
-.code-chip { font-family:monospace; font-size:12px; background:#f1f5f9; padding:3px 8px; border-radius:6px; color:#475569; font-weight:700; margin-right:10px; }
+.code-chip { font-family:monospace; font-size:12px; background:#f1f5f9; padding:3px 8px; border-radius:6px; color:#475569; font-weight:700; margin-inline-end:10px; }
 .structure-name { font-size:14px; font-weight:600; color:#111827; }
 
 mat-panel-description { display:flex !important; align-items:center; gap:16px; font-size:12px; color:#6b7280; }
@@ -72,7 +72,7 @@ mat-panel-description { display:flex !important; align-items:center; gap:16px; f
 .comp-name { font-size:13px; font-weight:500; color:#111827; flex:1; }
 .comp-ar   { font-size:12px; color:#6b7280; direction:rtl; min-width:120px; }
 .comp-basis { font-size:12px; color:#94a3b8; min-width:100px; }
-.comp-value { font-size:14px; font-weight:700; min-width:100px; text-align:right; }
+.comp-value { font-size:14px; font-weight:700; min-width:100px; text-align:end; }
 .earning-val   { color:#059669; }
 .deduction-val { color:#dc2626; }
 .statutory-val { color:#d97706; }

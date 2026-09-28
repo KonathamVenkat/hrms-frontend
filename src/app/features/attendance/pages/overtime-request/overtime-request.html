@@ -4,22 +4,22 @@
     <div class="header-left">
       <mat-icon class="header-icon">more_time</mat-icon>
       <div>
-        <h2>Overtime Request</h2>
-        <span class="subtitle">Log and track your overtime work hours</span>
+        <h2>{{ 'attendance.overtimeRequest.title' | translate }}</h2>
+        <span class="subtitle">{{ 'attendance.overtimeRequest.subtitle' | translate }}</span>
       </div>
     </div>
     <button mat-flat-button color="primary" (click)="toggleForm()">
       <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
-      {{ showForm() ? 'Cancel' : 'New OT Request' }}
+      {{ (showForm() ? 'attendance.overtimeRequest.cancel' : 'attendance.overtimeRequest.newRequest') | translate }}
     </button>
   </div>
 
   <!-- ── Submit Form ─────────────────────────────────────── -->
   <mat-card class="form-card" *ngIf="showForm()">
     <mat-card-header>
-      <mat-card-title> <mat-icon>edit_calendar</mat-icon> New Overtime Request </mat-card-title>
+      <mat-card-title> <mat-icon>edit_calendar</mat-icon> {{ 'attendance.overtimeRequest.formTitle' | translate }} </mat-card-title>
       <mat-card-subtitle>
-        Submit for dates within the last 30 days (or future for Pre-Approved)
+        {{ 'attendance.overtimeRequest.formSubtitle' | translate }}
       </mat-card-subtitle>
     </mat-card-header>
 
@@ -28,7 +28,7 @@
         <div class="form-row">
           <!-- OT Date -->
           <mat-form-field appearance="outline" class="field-md">
-            <mat-label>Overtime Date</mat-label>
+            <mat-label>{{ 'attendance.overtimeRequest.otDate' | translate }}</mat-label>
             <input
               matInput
               [matDatepicker]="otDatePicker"
@@ -39,16 +39,16 @@
             <mat-datepicker-toggle matIconSuffix [for]="otDatePicker" />
             <mat-datepicker #otDatePicker />
             <mat-error *ngIf="submitForm.get('otDate')?.hasError('required')">
-              Date is required
+              {{ 'attendance.overtimeRequest.dateRequired' | translate }}
             </mat-error>
           </mat-form-field>
 
           <!-- OT Type -->
           <mat-form-field appearance="outline" class="field-md">
-            <mat-label>Overtime Type</mat-label>
+            <mat-label>{{ 'attendance.overtimeRequest.otType' | translate }}</mat-label>
             <mat-select formControlName="otType">
               <mat-option *ngFor="let opt of otTypeOptions" [value]="opt.value">
-                {{ opt.label }}
+                {{ opt.label | translate }}
               </mat-option>
             </mat-select>
           </mat-form-field>
@@ -57,58 +57,58 @@
         <div class="form-row">
           <!-- Start Time -->
           <mat-form-field appearance="outline" class="field-sm">
-            <mat-label>Start Time</mat-label>
+            <mat-label>{{ 'attendance.overtimeRequest.startTime' | translate }}</mat-label>
             <input matInput type="time" formControlName="startTime" />
             <mat-icon matSuffix>login</mat-icon>
             <mat-error *ngIf="submitForm.get('startTime')?.hasError('required')">
-              Start time is required
+              {{ 'attendance.overtimeRequest.startTimeRequired' | translate }}
             </mat-error>
           </mat-form-field>
 
           <!-- End Time -->
           <mat-form-field appearance="outline" class="field-sm">
-            <mat-label>End Time</mat-label>
+            <mat-label>{{ 'attendance.overtimeRequest.endTime' | translate }}</mat-label>
             <input matInput type="time" formControlName="endTime" />
             <mat-icon matSuffix>logout</mat-icon>
             <mat-error *ngIf="submitForm.get('endTime')?.hasError('required')">
-              End time is required
+              {{ 'attendance.overtimeRequest.endTimeRequired' | translate }}
             </mat-error>
           </mat-form-field>
 
           <!-- Project Code (optional) -->
           <mat-form-field appearance="outline" class="field-md">
-            <mat-label>Project Code (optional)</mat-label>
-            <input matInput formControlName="projectCode" placeholder="e.g. PRJ-2026-001" />
+            <mat-label>{{ 'attendance.overtimeRequest.projectCode' | translate }}</mat-label>
+            <input matInput formControlName="projectCode" [placeholder]="'attendance.overtimeRequest.projectCodePlaceholder' | translate" />
             <mat-icon matSuffix>work</mat-icon>
           </mat-form-field>
         </div>
 
         <!-- Reason -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Reason for Overtime</mat-label>
+          <mat-label>{{ 'attendance.overtimeRequest.reason' | translate }}</mat-label>
           <textarea
             matInput
             formControlName="reason"
             rows="3"
-            placeholder="Describe why overtime was required (min 10 characters)"
+            [placeholder]="'attendance.overtimeRequest.reasonPlaceholder' | translate"
           >
           </textarea>
           <mat-hint align="end"> {{ submitForm.get('reason')?.value?.length || 0 }}/500 </mat-hint>
           <mat-error *ngIf="submitForm.get('reason')?.hasError('required')">
-            Reason is required
+            {{ 'attendance.overtimeRequest.reasonRequired' | translate }}
           </mat-error>
           <mat-error *ngIf="submitForm.get('reason')?.hasError('minlength')">
-            Minimum 10 characters required
+            {{ 'attendance.overtimeRequest.reasonMinLength' | translate }}
           </mat-error>
         </mat-form-field>
       </form>
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">Discard</button>
+      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">{{ 'attendance.overtimeRequest.discard' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="submitting()">
         <mat-spinner *ngIf="submitting()" diameter="18"></mat-spinner>
-        <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> Submit Request </span>
+        <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> {{ 'attendance.overtimeRequest.submitRequest' | translate }} </span>
       </button>
     </mat-card-actions>
   </mat-card>
@@ -119,28 +119,28 @@
       <mat-card-content>
         <mat-icon>pending</mat-icon>
         <span class="stat-num">{{ pendingCount() }}</span>
-        <span class="stat-lbl">Pending</span>
+        <span class="stat-lbl">{{ 'attendance.overtimeRequest.pending' | translate }}</span>
       </mat-card-content>
     </mat-card>
     <mat-card class="stat-card approved-stat">
       <mat-card-content>
         <mat-icon>check_circle</mat-icon>
         <span class="stat-num">{{ approvedCount() }}</span>
-        <span class="stat-lbl">Approved</span>
+        <span class="stat-lbl">{{ 'attendance.overtimeRequest.approved' | translate }}</span>
       </mat-card-content>
     </mat-card>
     <mat-card class="stat-card rejected-stat">
       <mat-card-content>
         <mat-icon>cancel</mat-icon>
         <span class="stat-num">{{ rejectedCount() }}</span>
-        <span class="stat-lbl">Rejected</span>
+        <span class="stat-lbl">{{ 'attendance.overtimeRequest.rejected' | translate }}</span>
       </mat-card-content>
     </mat-card>
     <mat-card class="stat-card hours-stat">
       <mat-card-content>
         <mat-icon>timer</mat-icon>
         <span class="stat-num sm">{{ totalOtFormatted() }}</span>
-        <span class="stat-lbl">Approved OT</span>
+        <span class="stat-lbl">{{ 'attendance.overtimeRequest.approvedOt' | translate }}</span>
       </mat-card-content>
     </mat-card>
   </div>
@@ -148,7 +148,7 @@
   <!-- ── My Requests Table ───────────────────────────────── -->
   <mat-card class="table-card">
     <mat-card-header>
-      <mat-card-title> <mat-icon>list_alt</mat-icon> My Overtime Requests </mat-card-title>
+      <mat-card-title> <mat-icon>list_alt</mat-icon> {{ 'attendance.overtimeRequest.myRequests' | translate }} </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="table-wrapper">
@@ -159,7 +159,7 @@
         <table mat-table [dataSource]="myRequests()" *ngIf="!loading()" class="ot-table">
           <!-- OT ID -->
           <ng-container matColumnDef="otId">
-            <th mat-header-cell *matHeaderCellDef>Ref No.</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.refNo' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="ref-id">{{ row.otId }}</span>
             </td>
@@ -167,7 +167,7 @@
 
           <!-- Date -->
           <ng-container matColumnDef="otDate">
-            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.date' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="date-text">{{ row.otDateFormatted }}</span>
             </td>
@@ -175,21 +175,21 @@
 
           <!-- OT Type -->
           <ng-container matColumnDef="otType">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.type' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span
                 class="type-chip"
                 [style.background]="getOtTypeStyle(row.otType).bg"
                 [style.color]="getOtTypeStyle(row.otType).color"
               >
-                {{ getOtTypeStyle(row.otType).label }}
+                {{ getOtTypeStyle(row.otType).label | translate }}
               </span>
             </td>
           </ng-container>
 
           <!-- Start Time -->
           <ng-container matColumnDef="startTime">
-            <th mat-header-cell *matHeaderCellDef>Start</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.start' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="time-chip in">{{ formatTime(row.startTime) }}</span>
             </td>
@@ -197,7 +197,7 @@
 
           <!-- End Time -->
           <ng-container matColumnDef="endTime">
-            <th mat-header-cell *matHeaderCellDef>End</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.end' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="time-chip out">{{ formatTime(row.endTime) }}</span>
             </td>
@@ -205,7 +205,7 @@
 
           <!-- Duration -->
           <ng-container matColumnDef="duration">
-            <th mat-header-cell *matHeaderCellDef>Duration</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.duration' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="duration-badge">{{ row.durationFormatted }}</span>
             </td>
@@ -213,7 +213,7 @@
 
           <!-- Reason -->
           <ng-container matColumnDef="reason">
-            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.reason' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="reason-text" [matTooltip]="row.reason" matTooltipPosition="above">
                 {{ row.reason.length > 40 ? row.reason.slice(0, 40) + '...' : row.reason }}
@@ -223,7 +223,7 @@
 
           <!-- Status -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.overtimeRequest.columns.status' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <div class="status-col">
                 <span
@@ -234,7 +234,7 @@
                   <mat-icon class="status-icon">
                     {{ getStatusStyle(row.status).icon }}
                   </mat-icon>
-                  {{ getStatusStyle(row.status).label }}
+                  {{ getStatusStyle(row.status).label | translate }}
                 </span>
                 <span
                   class="rejection-note"
@@ -257,7 +257,7 @@
                 color="warn"
                 *ngIf="row.status === 'PENDING'"
                 (click)="onCancel(row.otId)"
-                matTooltip="Cancel Request"
+                [matTooltip]="'attendance.overtimeRequest.cancelRequest' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -276,8 +276,8 @@
             <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
               <div class="empty-state">
                 <mat-icon>more_time</mat-icon>
-                <p>No overtime requests found</p>
-                <button mat-stroked-button (click)="toggleForm()">Submit your first request</button>
+                <p>{{ 'attendance.overtimeRequest.emptyTitle' | translate }}</p>
+                <button mat-stroked-button (click)="toggleForm()">{{ 'attendance.overtimeRequest.emptyAction' | translate }}</button>
               </div>
             </td>
           </tr>

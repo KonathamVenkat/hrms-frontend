@@ -65,10 +65,10 @@
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   transition: all 0.15s;
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
 }
 .tab-btn:last-child {
-  border-right: none;
+  border-inline-end: none;
 }
 .tab-btn.active {
   background: var(--teal);
@@ -370,8 +370,8 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding-left: 20px;
-  border-left: 2px solid var(--border);
+  padding-inline-start: 20px;
+  border-inline-start: 2px solid var(--border);
 }
 
 .timeline-item {
@@ -386,7 +386,7 @@
 
 .timeline-dot {
   position: absolute;
-  left: -28px;
+  inset-inline-start: -28px;
   top: 2px;
 }
 .dot-current {

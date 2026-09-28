@@ -7,14 +7,14 @@
     </button>
     <div>
       <h1 class="page-title">
-        {{ isEdit() ? 'Edit Employee' : 'Create Employee' }}
+        {{ (isEdit() ? 'employee.form.editTitle' : 'employee.form.createTitle') | translate }}
       </h1>
       <p class="page-sub">
         @if (isEdit() && employeeCode()) {
           <span class="emp-code-display">{{ employeeCode() }}</span>
           · {{ workEmailReadOnly() }}
         } @else {
-          Fill in the details to add a new employee
+          {{ 'employee.form.createSub' | translate }}
         }
       </p>
     </div>
@@ -37,7 +37,7 @@
   @if (success()) {
     <div class="alert alert-success">
       <span class="material-icons">check_circle</span>
-      <span> Employee {{ isEdit() ? 'updated' : 'created' }} successfully! Redirecting... </span>
+      <span>{{ (isEdit() ? 'employee.form.successUpdate' : 'employee.form.successCreate') | translate }}</span>
     </div>
   }
 
@@ -49,20 +49,20 @@
       <div class="card full-width">
         <div class="card-header">
           <span class="material-icons">person</span>
-          Personal Information
+          {{ 'employee.form.personalInfoTitle' | translate }}
         </div>
         <div class="card-body">
           <div class="field-row">
             <div class="field">
-              <label>First Name <span class="req">*</span></label>
-              <input formControlName="firstName" placeholder="e.g. Ahmed" />
+              <label for="ef-first-name">{{ 'employee.form.firstName' | translate }} <span class="req">*</span></label>
+              <input id="ef-first-name" formControlName="firstName" placeholder="e.g. Ahmed" />
               @if (isInvalid('firstName')) {
                 <span class="field-error">{{ getError('firstName') }}</span>
               }
             </div>
             <div class="field">
-              <label>First Name (Arabic) <span class="req">*</span></label>
-              <input formControlName="firstNameAr" placeholder="e.g. أحمد" dir="rtl" />
+              <label for="ef-first-name-ar">{{ 'employee.form.firstNameAr' | translate }} <span class="req">*</span></label>
+              <input id="ef-first-name-ar" formControlName="firstNameAr" placeholder="e.g. أحمد" dir="rtl" />
               @if (isInvalid('firstNameAr')) {
                 <span class="field-error">{{ getError('firstNameAr') }}</span>
               }
@@ -71,26 +71,26 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Middle Name</label>
-              <input formControlName="middleName" placeholder="Optional" />
+              <label for="ef-middle-name">{{ 'employee.form.middleName' | translate }}</label>
+              <input id="ef-middle-name" formControlName="middleName" placeholder="Optional" />
             </div>
             <div class="field">
-              <label>Middle Name (Arabic)</label>
-              <input formControlName="middleNameAr" placeholder="اختياري" dir="rtl" />
+              <label for="ef-middle-name-ar">{{ 'employee.form.middleNameAr' | translate }}</label>
+              <input id="ef-middle-name-ar" formControlName="middleNameAr" placeholder="اختياري" dir="rtl" />
             </div>
           </div>
 
           <div class="field-row">
             <div class="field">
-              <label>Last Name <span class="req">*</span></label>
-              <input formControlName="lastName" placeholder="e.g. Al-Rashidi" />
+              <label for="ef-last-name">{{ 'employee.form.lastName' | translate }} <span class="req">*</span></label>
+              <input id="ef-last-name" formControlName="lastName" placeholder="e.g. Al-Rashidi" />
               @if (isInvalid('lastName')) {
                 <span class="field-error">{{ getError('lastName') }}</span>
               }
             </div>
             <div class="field">
-              <label>Last Name (Arabic) <span class="req">*</span></label>
-              <input formControlName="lastNameAr" placeholder="e.g. الراشدي" dir="rtl" />
+              <label for="ef-last-name-ar">{{ 'employee.form.lastNameAr' | translate }} <span class="req">*</span></label>
+              <input id="ef-last-name-ar" formControlName="lastNameAr" placeholder="e.g. الراشدي" dir="rtl" />
               @if (isInvalid('lastNameAr')) {
                 <span class="field-error">{{ getError('lastNameAr') }}</span>
               }
@@ -99,16 +99,16 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Date of Birth <span class="req">*</span></label>
-              <input type="date" formControlName="dateOfBirth" />
+              <label for="ef-date-of-birth">{{ 'employee.form.dateOfBirth' | translate }} <span class="req">*</span></label>
+              <input id="ef-date-of-birth" type="date" formControlName="dateOfBirth" />
               @if (isInvalid('dateOfBirth')) {
                 <span class="field-error">{{ getError('dateOfBirth') }}</span>
               }
             </div>
             <div class="field">
-              <label>Gender <span class="req">*</span></label>
-              <select formControlName="gender">
-                <option value="">Select gender</option>
+              <label for="ef-gender">{{ 'employee.form.gender' | translate }} <span class="req">*</span></label>
+              <select id="ef-gender" formControlName="gender">
+                <option value="">{{ 'employee.form.selectGender' | translate }}</option>
                 @for (g of genders; track g) {
                   <option [value]="g">{{ g.replace('_', ' ') }}</option>
                 }
@@ -121,18 +121,18 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Blood Group</label>
-              <select formControlName="bloodGroup">
-                <option value="">Select blood group</option>
+              <label for="ef-blood-group">{{ 'employee.form.bloodGroup' | translate }}</label>
+              <select id="ef-blood-group" formControlName="bloodGroup">
+                <option value="">{{ 'employee.form.selectBloodGroup' | translate }}</option>
                 @for (b of bloodGroups; track b) {
                   <option [value]="b">{{ b }}</option>
                 }
               </select>
             </div>
             <div class="field">
-              <label>Marital Status</label>
-              <select formControlName="maritalStatus">
-                <option value="">Select status</option>
+              <label for="ef-marital-status">{{ 'employee.form.maritalStatus' | translate }}</label>
+              <select id="ef-marital-status" formControlName="maritalStatus">
+                <option value="">{{ 'employee.form.selectMaritalStatus' | translate }}</option>
                 @for (m of maritalStatuses; track m) {
                   <option [value]="m">{{ m }}</option>
                 }
@@ -142,19 +142,19 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Nationality</label>
-              <input formControlName="nationality" placeholder="e.g. Omani" />
+              <label for="ef-nationality">{{ 'employee.form.nationality' | translate }}</label>
+              <input id="ef-nationality" formControlName="nationality" placeholder="e.g. Omani" />
             </div>
             <div class="field">
-              <label>Religion</label>
-              <input formControlName="religion" placeholder="e.g. Islam" />
+              <label for="ef-religion">{{ 'employee.form.religion' | translate }}</label>
+              <input id="ef-religion" formControlName="religion" placeholder="e.g. Islam" />
             </div>
           </div>
 
           @if (isEdit()) {
             <div class="field">
-              <label>Profile Photo URL</label>
-              <input formControlName="profilePhotoUrl" placeholder="https://..." />
+              <label for="ef-profile-photo-url">{{ 'employee.form.profilePhotoUrl' | translate }}</label>
+              <input id="ef-profile-photo-url" formControlName="profilePhotoUrl" placeholder="https://..." />
             </div>
           }
         </div>
@@ -166,32 +166,32 @@
       <div class="card">
         <div class="card-header">
           <span class="material-icons">contact_phone</span>
-          Contact Details
+          {{ 'employee.form.contactDetailsTitle' | translate }}
         </div>
         <div class="card-body">
-          <!-- Work email — readonly in edit mode -->
-          @if (isEdit()) {
-            <div class="field">
-              <label>Work Email</label>
+          <!-- Work email — never user-entered; server auto-generates it on create,
+               and it can't be changed afterward. There is no form control for it. -->
+          <div class="field">
+            <label>{{ 'employee.form.workEmail' | translate }}</label>
+            @if (isEdit()) {
               <div class="readonly-field">
                 <span class="material-icons readonly-icon">lock</span>
                 <span class="readonly-value">{{ workEmailReadOnly() }}</span>
               </div>
-              <span class="field-hint">Work email cannot be changed</span>
-            </div>
-          } @else {
-            <div class="field">
-              <label>Work Email <span class="req">*</span></label>
-              <input type="email" formControlName="workEmail" placeholder="name@company.com" />
-              @if (isInvalid('workEmail')) {
-                <span class="field-error">{{ getError('workEmail') }}</span>
-              }
-            </div>
-          }
+              <span class="field-hint">{{ 'employee.form.workEmailCannotChange' | translate }}</span>
+            } @else {
+              <div class="readonly-field">
+                <span class="material-icons readonly-icon">auto_awesome</span>
+                <span class="readonly-value">{{ 'employee.form.workEmailAutoGen' | translate }}</span>
+              </div>
+              <span class="field-hint">{{ 'employee.form.workEmailAutoGenHint' | translate }}</span>
+            }
+          </div>
 
           <div class="field">
-            <label>Personal Email <span class="req">*</span></label>
+            <label for="ef-personal-email">{{ 'employee.form.personalEmail' | translate }} <span class="req">*</span></label>
             <input
+              id="ef-personal-email"
               type="email"
               formControlName="personalEmail"
               placeholder="personal@example.com"
@@ -203,12 +203,12 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Personal Phone</label>
-              <input formControlName="personalPhone" placeholder="+968 9xxx xxxx" />
+              <label for="ef-personal-phone">{{ 'employee.form.personalPhone' | translate }}</label>
+              <input id="ef-personal-phone" formControlName="personalPhone" placeholder="+968 9xxx xxxx" />
             </div>
             <div class="field">
-              <label>Work Phone</label>
-              <input formControlName="workPhone" placeholder="+968 2xxx xxxx" />
+              <label for="ef-work-phone">{{ 'employee.form.workPhone' | translate }}</label>
+              <input id="ef-work-phone" formControlName="workPhone" placeholder="+968 2xxx xxxx" />
             </div>
           </div>
         </div>
@@ -220,7 +220,7 @@
       <div class="card">
         <div class="card-header">
           <span class="material-icons">work</span>
-          Employment Details
+          {{ 'employee.form.employmentDetailsTitle' | translate }}
         </div>
         <div class="card-body">
           <!-- Department -->
@@ -269,17 +269,17 @@
             -->
           <div class="field-row">
             <div class="field">
-              <label>Employment Type <span class="req">*</span></label>
-              <select formControlName="employmentType">
+              <label for="ef-employment-type">{{ 'employee.form.employmentType' | translate }} <span class="req">*</span></label>
+              <select id="ef-employment-type" formControlName="employmentType">
                 @for (t of empTypes; track t) {
                   <option [value]="t">{{ t.replace('_', ' ') }}</option>
                 }
               </select>
             </div>
             <div class="field">
-              <label>Employment Status <span class="req">*</span></label>
-              <select formControlName="employmentStatus">
-                @for (s of empStatuses; track s) {
+              <label for="ef-employment-status">{{ 'employee.form.employmentStatus' | translate }} <span class="req">*</span></label>
+              <select id="ef-employment-status" formControlName="employmentStatus">
+                @for (s of statusOptions; track s) {
                   <option [value]="s">{{ s.replace('_', ' ') }}</option>
                 }
               </select>
@@ -287,8 +287,8 @@
           </div>
 
           <div class="field">
-            <label>Hire Date <span class="req">*</span></label>
-            <input type="date" formControlName="hireDate" />
+            <label for="ef-hire-date">{{ 'employee.form.hireDate' | translate }} <span class="req">*</span></label>
+            <input id="ef-hire-date" type="date" formControlName="hireDate" />
             @if (isInvalid('hireDate')) {
               <span class="field-error">{{ getError('hireDate') }}</span>
             }
@@ -296,12 +296,18 @@
 
           <div class="field-row">
             <div class="field">
-              <label>Probation End Date</label>
-              <input type="date" formControlName="probationEndDate" />
+              <label for="ef-probation-end-date">{{ 'employee.form.probationEndDate' | translate }}</label>
+              <input id="ef-probation-end-date" type="date" formControlName="probationEndDate" />
+              @if (isInvalid('probationEndDate')) {
+                <span class="field-error">{{ getError('probationEndDate') }}</span>
+              }
             </div>
             <div class="field">
-              <label>Confirmation Date</label>
-              <input type="date" formControlName="confirmationDate" />
+              <label for="ef-confirmation-date">{{ 'employee.form.confirmationDate' | translate }}</label>
+              <input id="ef-confirmation-date" type="date" formControlName="confirmationDate" />
+              @if (isInvalid('confirmationDate')) {
+                <span class="field-error">{{ getError('confirmationDate') }}</span>
+              }
             </div>
           </div>
         </div>
@@ -314,30 +320,34 @@
       <div class="card full-width">
         <div class="card-header">
           <span class="material-icons">manage_accounts</span>
-          System Access
+          {{ 'employee.form.systemAccessTitle' | translate }}
           @if (isEdit()) {
-            <span class="card-hint">Username and password cannot be changed here</span>
+            <span class="card-hint">{{ 'employee.form.systemAccessHintEdit' | translate }}</span>
           } @else {
-            <span class="card-hint">Creates login credentials for this employee</span>
+            <span class="card-hint">{{ 'employee.form.systemAccessHintCreate' | translate }}</span>
           }
         </div>
         <div class="card-body">
           <div class="field-row">
-            <!-- Role — always editable -->
+            <!-- Role — editable on create; on edit, HR_ADMIN only -->
             <div class="field">
-              <label>Role <span class="req">*</span></label>
-              <select formControlName="role">
+              <label for="ef-role">{{ 'employee.form.role' | translate }} <span class="req">*</span></label>
+              <select id="ef-role" formControlName="role">
                 @for (r of roles; track r) {
                   <option [value]="r">{{ r.replace('_', ' ') }}</option>
                 }
               </select>
+              @if (isEdit() && !isHrAdmin()) {
+                <span class="field-hint">{{ 'employee.form.roleHrAdminOnlyHint' | translate }}</span>
+              }
             </div>
 
             <!-- Username — create only -->
             @if (!isEdit()) {
               <div class="field">
-                <label>Username <span class="req">*</span></label>
+                <label for="ef-username">{{ 'employee.form.username' | translate }} <span class="req">*</span></label>
                 <input
+                  id="ef-username"
                   formControlName="username"
                   placeholder="e.g. ahmed.rashidi"
                   autocomplete="new-password"
@@ -345,7 +355,7 @@
                 @if (isInvalid('username')) {
                   <span class="field-error">{{ getError('username') }}</span>
                 }
-                <span class="field-hint"> Letters, numbers, dots, hyphens, underscores only </span>
+                <span class="field-hint">{{ 'employee.form.usernameHint' | translate }}</span>
               </div>
             }
           </div>
@@ -353,15 +363,21 @@
           <!-- Password — create only -->
           @if (!isEdit()) {
             <div class="field" style="max-width: 480px">
-              <label>Password <span class="req">*</span></label>
+              <label for="ef-password">{{ 'employee.form.password' | translate }} <span class="req">*</span></label>
               <div class="password-wrap">
                 <input
+                  id="ef-password"
                   [type]="hidePassword() ? 'password' : 'text'"
                   formControlName="password"
-                  placeholder="Minimum 8 characters"
+                  [placeholder]="'employee.form.passwordPlaceholder' | translate"
                   autocomplete="new-password"
                 />
-                <button type="button" class="eye-btn" (click)="togglePassword()">
+                <button
+                  type="button"
+                  class="eye-btn"
+                  [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+                  (click)="togglePassword()"
+                >
                   <span class="material-icons">
                     {{ hidePassword() ? 'visibility_off' : 'visibility' }}
                   </span>
@@ -379,14 +395,16 @@
 
     <!-- ── Form footer ───────────────────────────────────── -->
     <div class="form-footer">
-      <button type="button" class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button type="button" class="btn-cancel" (click)="cancel()">
+        {{ 'common.cancel' | translate }}
+      </button>
       <button type="submit" class="btn-save" [disabled]="loading()">
         @if (loading()) {
           <div class="btn-spinner"></div>
-          <span>{{ isEdit() ? 'Updating...' : 'Saving...' }}</span>
+          <span>{{ (isEdit() ? 'employee.form.updating' : 'employee.form.saving') | translate }}</span>
         } @else {
           <span class="material-icons">save</span>
-          <span>{{ isEdit() ? 'Update Employee' : 'Create Employee' }}</span>
+          <span>{{ (isEdit() ? 'employee.form.updateButton' : 'employee.form.createButton') | translate }}</span>
         }
       </button>
     </div>

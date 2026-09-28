@@ -1,10 +1,13 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideAppInitializer, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 //import { RouterLinkActive } from '@angular/router';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideTranslateService, provideTranslateLoader } from '@ngx-translate/core';
+import { LanguageService } from './core/services/language.service';
+import { SsrSafeTranslateLoader } from './core/i18n/ssr-safe-translate-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,5 +15,12 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    provideTranslateService({
+      loader: provideTranslateLoader(SsrSafeTranslateLoader),
+      lang: 'en',
+      fallbackLang: 'en',
+    }),
+    // Apply the visitor's previously-chosen language (if any) before first render.
+    provideAppInitializer(() => inject(LanguageService).init()),
   ],
 };

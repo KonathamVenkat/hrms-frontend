@@ -7,8 +7,8 @@
     <div class="header-left">
       <mat-icon class="header-icon">bar_chart</mat-icon>
       <div>
-        <h2>Attendance Summary</h2>
-        <span class="subtitle">Monthly attendance overview and trends</span>
+        <h2>{{ 'attendance.summary.title' | translate }}</h2>
+        <span class="subtitle">{{ 'attendance.summary.subtitle' | translate }}</span>
       </div>
     </div>
 
@@ -16,16 +16,16 @@
     <div class="filter-bar">
       <form [formGroup]="filterForm" class="filter-form">
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Month</mat-label>
+          <mat-label>{{ 'attendance.summary.month' | translate }}</mat-label>
           <mat-select formControlName="month" (selectionChange)="onFilterChange()">
             <mat-option *ngFor="let m of months" [value]="m.value">
-              {{ m.label }}
+              {{ m.label | translate }}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Year</mat-label>
+          <mat-label>{{ 'attendance.summary.year' | translate }}</mat-label>
           <mat-select formControlName="year" (selectionChange)="onFilterChange()">
             <mat-option *ngFor="let y of years" [value]="y">{{ y }}</mat-option>
           </mat-select>
@@ -51,11 +51,11 @@
             <span class="pct-value" [style.color]="attendanceColor()">
               {{ formatPct(mySummary()!.attendancePercentage) }}
             </span>
-            <span class="pct-label">Attendance</span>
+            <span class="pct-label">{{ 'attendance.summary.attendance' | translate }}</span>
           </div>
           <div class="stat-detail">
             <span class="month-name">{{ mySummary()!.monthLabel }}</span>
-            <span class="live-pill" *ngIf="mySummary()!.isCurrentMonth">● Live</span>
+            <span class="live-pill" *ngIf="mySummary()!.isCurrentMonth">● {{ 'attendance.summary.live' | translate }}</span>
           </div>
           <mat-progress-bar
             [mode]="'determinate'"
@@ -71,7 +71,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">check_circle</mat-icon>
           <span class="stat-num">{{ mySummary()!.presentDays }}</span>
-          <span class="stat-lbl">Present Days</span>
+          <span class="stat-lbl">{{ 'attendance.summary.presentDays' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -80,7 +80,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">cancel</mat-icon>
           <span class="stat-num">{{ mySummary()!.absentDays }}</span>
-          <span class="stat-lbl">Absent Days</span>
+          <span class="stat-lbl">{{ 'attendance.summary.absentDays' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -89,7 +89,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">schedule</mat-icon>
           <span class="stat-num">{{ mySummary()!.lateDays }}</span>
-          <span class="stat-lbl">Late Days</span>
+          <span class="stat-lbl">{{ 'attendance.summary.lateDays' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -98,7 +98,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">brightness_5</mat-icon>
           <span class="stat-num">{{ mySummary()!.halfDays }}</span>
-          <span class="stat-lbl">Half Days</span>
+          <span class="stat-lbl">{{ 'attendance.summary.halfDays' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -107,7 +107,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">beach_access</mat-icon>
           <span class="stat-num">{{ mySummary()!.leaveDays }}</span>
-          <span class="stat-lbl">Leave Days</span>
+          <span class="stat-lbl">{{ 'attendance.summary.leaveDays' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -116,7 +116,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">work_history</mat-icon>
           <span class="stat-num sm">{{ mySummary()!.totalWorkingHours }}</span>
-          <span class="stat-lbl">Working Hours</span>
+          <span class="stat-lbl">{{ 'attendance.summary.workingHours' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -125,7 +125,7 @@
         <mat-card-content>
           <mat-icon class="card-icon">more_time</mat-icon>
           <span class="stat-num sm">{{ mySummary()!.totalOvertimeHours }}</span>
-          <span class="stat-lbl">Overtime</span>
+          <span class="stat-lbl">{{ 'attendance.summary.overtime' | translate }}</span>
         </mat-card-content>
       </mat-card>
 
@@ -136,7 +136,7 @@
       <mat-card-header>
         <mat-card-title>
           <mat-icon>trending_up</mat-icon>
-          Yearly Trend — {{ filterForm.value.year }}
+          {{ 'attendance.summary.yearlyTrend' | translate: { year: filterForm.value.year } }}
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
@@ -169,9 +169,9 @@
   <mat-card class="empty-card" *ngIf="!loading() && !mySummary()">
     <mat-card-content class="empty-content">
       <mat-icon class="empty-icon">event_busy</mat-icon>
-      <p>No attendance data found for the selected period.</p>
+      <p>{{ 'attendance.summary.emptyTitle' | translate }}</p>
       <button mat-stroked-button (click)="loadMySummary()">
-        <mat-icon>refresh</mat-icon> Refresh
+        <mat-icon>refresh</mat-icon> {{ 'attendance.summary.refresh' | translate }}
       </button>
     </mat-card-content>
   </mat-card>

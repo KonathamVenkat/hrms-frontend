@@ -21,6 +21,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatBadgeModule } from '@angular/material/badge';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { RegularizationService } from '../../services/regularization.service';
 import {
@@ -54,6 +55,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatDividerModule,
     MatDialogModule,
     MatBadgeModule,
+    TranslatePipe,
   ],
   templateUrl: './attendance-request-approval.html',
   styleUrls: ['./attendance-request-approval.css'],
@@ -62,6 +64,7 @@ export class AttendanceRequestApproval implements OnInit {
   private readonly svc = inject(RegularizationService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State signals ──────────────────────────────────────────
   readonly requests = signal<RegularizationResponse[]>([]);
@@ -111,11 +114,11 @@ export class AttendanceRequestApproval implements OnInit {
   ];
 
   readonly statusOptions: { value: RegularizationStatus | ''; label: string }[] = [
-    { value: '', label: 'All' },
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'APPROVED', label: 'Approved' },
-    { value: 'REJECTED', label: 'Rejected' },
-    { value: 'CANCELLED', label: 'Cancelled' },
+    { value: '', label: 'attendance.requestApproval.statusOptions.all' },
+    { value: 'PENDING', label: 'attendance.requestApproval.statusOptions.pending' },
+    { value: 'APPROVED', label: 'attendance.requestApproval.statusOptions.approved' },
+    { value: 'REJECTED', label: 'attendance.requestApproval.statusOptions.rejected' },
+    { value: 'CANCELLED', label: 'attendance.requestApproval.statusOptions.cancelled' },
   ];
 
   page = 0;
@@ -154,7 +157,11 @@ export class AttendanceRequestApproval implements OnInit {
         },
         error: (err) => {
           console.error('Failed to load regularization requests', err);
-          this.snack.open('Failed to load requests', 'Close', { duration: 3000 });
+          this.snack.open(
+            this.translate.instant('attendance.requestApproval.errors.loadFailed'),
+            this.translate.instant('attendance.requestApproval.close'),
+            { duration: 3000 },
+          );
           this.loading.set(false);
         },
       });
@@ -188,7 +195,10 @@ export class AttendanceRequestApproval implements OnInit {
   onApprove(request: RegularizationResponse): void {
     if (
       !confirm(
-        `Approve regularization for ${request.employeeName} on ${request.attendanceDateFormatted}?`,
+        this.translate.instant('attendance.requestApproval.confirmApprove', {
+          name: request.employeeName,
+          date: request.attendanceDateFormatted,
+        }),
       )
     )
       return;
@@ -204,8 +214,12 @@ export class AttendanceRequestApproval implements OnInit {
       .subscribe({
         next: (updated) => {
           this.snack.open(
-            `✅ Approved — ${request.employeeName}'s attendance for ${request.attendanceDateFormatted} has been corrected`,
-            'Close',
+            '✅ ' +
+              this.translate.instant('attendance.requestApproval.success.approved', {
+                name: request.employeeName,
+                date: request.attendanceDateFormatted,
+              }),
+            this.translate.instant('attendance.requestApproval.close'),
             { duration: 5000, panelClass: 'snack-success' },
           );
           this.processingId.set(null);
@@ -213,10 +227,11 @@ export class AttendanceRequestApproval implements OnInit {
           this.loadPendingCount();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Approval failed'), 'Close', {
-            duration: 4000,
-            panelClass: 'snack-error',
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.requestApproval.errors.approveFailed')),
+            this.translate.instant('attendance.requestApproval.close'),
+            { duration: 4000, panelClass: 'snack-error' },
+          );
           this.processingId.set(null);
         },
       });
@@ -251,7 +266,9 @@ export class AttendanceRequestApproval implements OnInit {
     if (!request) return;
 
     if (reason.length < 10) {
-      this.rejectionError.set('Rejection reason must be at least 10 characters.');
+      this.rejectionError.set(
+        this.translate.instant('attendance.requestApproval.errors.rejectionReasonTooShort'),
+      );
       return;
     }
 
@@ -266,8 +283,11 @@ export class AttendanceRequestApproval implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            `❌ Rejected — ${request.employeeName}'s request has been rejected`,
-            'Close',
+            '❌ ' +
+              this.translate.instant('attendance.requestApproval.success.rejected', {
+                name: request.employeeName,
+              }),
+            this.translate.instant('attendance.requestApproval.close'),
             { duration: 4000 },
           );
           this.closeRejectDialog();
@@ -276,10 +296,11 @@ export class AttendanceRequestApproval implements OnInit {
           this.loadPendingCount();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Rejection failed'), 'Close', {
-            duration: 4000,
-            panelClass: 'snack-error',
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.requestApproval.errors.rejectFailed')),
+            this.translate.instant('attendance.requestApproval.close'),
+            { duration: 4000, panelClass: 'snack-error' },
+          );
           this.processingId.set(null);
         },
       });

@@ -650,7 +650,7 @@
 }
 .selected-info {
   flex: 1;
-  text-align: left;
+  text-align: start;
 }
 .selected-name {
   display: block;

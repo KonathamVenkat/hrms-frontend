@@ -1,15 +1,15 @@
 <div class="admin-page">
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Document Types</h1>
+      <h1 class="page-title">{{ 'admin.documentTypes.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ docTypes().length }} Total</span>
-        <span class="chip chip-active">{{ activeCount() }} Active</span>
-        <span class="chip chip-mandatory">{{ mandatoryCount() }} Mandatory</span>
+        <span class="chip chip-total">{{ 'admin.documentTypes.totalChip' | translate: { count: docTypes().length } }}</span>
+        <span class="chip chip-active">{{ 'admin.documentTypes.activeChip' | translate: { count: activeCount() } }}</span>
+        <span class="chip chip-mandatory">{{ 'admin.documentTypes.mandatoryChip' | translate: { count: mandatoryCount() } }}</span>
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span> Add Document Type
+      <span class="material-icons">add</span> {{ 'admin.documentTypes.addDocumentType' | translate }}
     </button>
   </div>
 
@@ -29,7 +29,7 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search document types..."
+        [placeholder]="'admin.documentTypes.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -39,7 +39,7 @@
       [value]="filterCat()"
       (change)="filterCat.set($any($event.target).value)"
     >
-      <option value="">All Categories</option>
+      <option value="">{{ 'admin.documentTypes.allCategories' | translate }}</option>
       @for (c of categories; track c) {
         <option [value]="c">{{ c }}</option>
       }
@@ -50,21 +50,21 @@
         [class.active]="filterActive() === 'all'"
         (click)="filterActive.set('all')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'active'"
         (click)="filterActive.set('active')"
       >
-        Active
+        {{ 'common.active' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'inactive'"
         (click)="filterActive.set('inactive')"
       >
-        Inactive
+        {{ 'common.inactive' | translate }}
       </button>
     </div>
   </div>
@@ -72,7 +72,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading...</span>
+      <span>{{ 'common.loading' | translate }}</span>
     </div>
   }
 
@@ -82,15 +82,15 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Mandatory</th>
-            <th>Has Expiry</th>
-            <th>Extensions</th>
-            <th>Max Size</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ 'admin.documentTypes.columns.code' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.name' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.category' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.mandatory' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.hasExpiry' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.extensions' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.maxSize' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.status' | translate }}</th>
+            <th>{{ 'admin.documentTypes.columns.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -99,7 +99,7 @@
               <td colspan="10">
                 <div class="empty-state">
                   <span class="material-icons">folder_open</span>
-                  <p>No document types found</p>
+                  <p>{{ 'admin.documentTypes.emptyTitle' | translate }}</p>
                 </div>
               </td>
             </tr>
@@ -132,7 +132,7 @@
                 @if (dt.hasExpiry) {
                   <div class="expiry-info">
                     <span class="material-icons icon-yes">check_circle</span>
-                    <span class="expiry-days">{{ dt.expiryNoticeDays }}d notice</span>
+                    <span class="expiry-days">{{ 'admin.documentTypes.daysNotice' | translate: { days: dt.expiryNoticeDays } }}</span>
                   </div>
                 } @else {
                   <span class="material-icons icon-no">cancel</span>
@@ -154,12 +154,12 @@
                   [class.status-active]="dt.isActive"
                   [class.status-inactive]="!dt.isActive"
                 >
-                  <span class="status-dot"></span>{{ dt.isActive ? 'Active' : 'Inactive' }}
+                  <span class="status-dot"></span>{{ (dt.isActive ? 'common.active' : 'common.inactive') | translate }}
                 </span>
               </td>
               <td>
                 <div class="action-wrap">
-                  <button class="act-btn btn-edit" (click)="openEdit(dt)">
+                  <button class="act-btn btn-edit" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(dt)">
                     <span class="material-icons">edit</span>
                   </button>
                   <button
@@ -187,7 +187,7 @@
   <div class="modal-backdrop">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title">{{ isEditMode() ? 'Edit Document Type' : 'Add Document Type' }}</h2>
+        <h2 class="modal-title">{{ (isEditMode() ? 'admin.documentTypes.editTitle' : 'admin.documentTypes.addDocumentType') | translate }}</h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
@@ -201,15 +201,15 @@
         <div class="modal-body">
           <div class="field-row">
             <div class="field">
-              <label>Code <span class="req">*</span></label>
-              <input formControlName="docTypeCode" placeholder="e.g. NATIONAL_ID" />
+              <label for="dt-code">{{ 'admin.documentTypes.code' | translate }} <span class="req">*</span></label>
+              <input id="dt-code" formControlName="docTypeCode" [placeholder]="'admin.documentTypes.codePlaceholder' | translate" />
               @if (isInvalid('docTypeCode')) {
                 <span class="field-error">{{ getError('docTypeCode') }}</span>
               }
             </div>
             <div class="field">
-              <label>Category <span class="req">*</span></label>
-              <select formControlName="category">
+              <label for="dt-category">{{ 'admin.documentTypes.category' | translate }} <span class="req">*</span></label>
+              <select id="dt-category" formControlName="category">
                 @for (c of categories; track c) {
                   <option [value]="c">{{ c }}</option>
                 }
@@ -218,37 +218,38 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Name (English) <span class="req">*</span></label>
-              <input formControlName="docTypeName" placeholder="e.g. National ID Card" />
+              <label for="dt-name-en">{{ 'admin.documentTypes.nameEn' | translate }} <span class="req">*</span></label>
+              <input id="dt-name-en" formControlName="docTypeName" [placeholder]="'admin.documentTypes.nameEnPlaceholder' | translate" />
               @if (isInvalid('docTypeName')) {
                 <span class="field-error">{{ getError('docTypeName') }}</span>
               }
             </div>
             <div class="field">
-              <label>Name (Arabic) <span class="req">*</span></label>
-              <input formControlName="docTypeNameAr" placeholder="e.g. بطاقة الهوية" dir="rtl" />
+              <label for="dt-name-ar">{{ 'admin.documentTypes.nameAr' | translate }} <span class="req">*</span></label>
+              <input id="dt-name-ar" formControlName="docTypeNameAr" placeholder="e.g. بطاقة الهوية" dir="rtl" />
               @if (isInvalid('docTypeNameAr')) {
                 <span class="field-error">{{ getError('docTypeNameAr') }}</span>
               }
             </div>
           </div>
           <div class="field">
-            <label>Description</label>
+            <label for="dt-description">{{ 'admin.documentTypes.description' | translate }}</label>
             <textarea
+              id="dt-description"
               formControlName="description"
-              placeholder="Optional description..."
+              [placeholder]="'admin.documentTypes.descriptionPlaceholder' | translate"
               rows="2"
             ></textarea>
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Allowed Extensions</label>
-              <input formControlName="allowedExtensions" placeholder="PDF,JPG,PNG" />
-              <span class="field-hint">Comma-separated, uppercase</span>
+              <label for="dt-allowed-extensions">{{ 'admin.documentTypes.allowedExtensions' | translate }}</label>
+              <input id="dt-allowed-extensions" formControlName="allowedExtensions" placeholder="PDF,JPG,PNG" />
+              <span class="field-hint">{{ 'admin.documentTypes.allowedExtensionsHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>Max File Size (MB)</label>
-              <input type="number" formControlName="maxFileSizeMb" min="1" max="50" />
+              <label for="dt-max-file-size">{{ 'admin.documentTypes.maxFileSize' | translate }}</label>
+              <input id="dt-max-file-size" type="number" formControlName="maxFileSizeMb" min="1" max="50" />
               @if (isInvalid('maxFileSizeMb')) {
                 <span class="field-error">{{ getError('maxFileSizeMb') }}</span>
               }
@@ -257,8 +258,8 @@
           <div class="toggles-row">
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Mandatory</span>
-                <span class="toggle-hint">Required for all employees</span>
+                <span class="toggle-label">{{ 'admin.documentTypes.mandatory' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.documentTypes.mandatoryHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isMandatory" class="toggle-inp" />
@@ -267,8 +268,8 @@
             </label>
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Has Expiry</span>
-                <span class="toggle-hint">Document expires (passport, visa, etc.)</span>
+                <span class="toggle-label">{{ 'admin.documentTypes.hasExpiry' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.documentTypes.hasExpiryHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="hasExpiry" class="toggle-inp" />
@@ -278,8 +279,8 @@
             @if (isEditMode()) {
               <label class="toggle-item">
                 <div class="toggle-info">
-                  <span class="toggle-label">Active</span>
-                  <span class="toggle-hint">Inactive types cannot be uploaded</span>
+                  <span class="toggle-label">{{ 'common.active' | translate }}</span>
+                  <span class="toggle-hint">{{ 'admin.documentTypes.activeHint' | translate }}</span>
                 </div>
                 <div class="toggle-wrap">
                   <input type="checkbox" formControlName="isActive" class="toggle-inp" />
@@ -290,25 +291,25 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Expiry Notice Days</label>
-              <input type="number" formControlName="expiryNoticeDays" min="0" max="365" />
-              <span class="field-hint">Days before expiry to send notification</span>
+              <label for="dt-expiry-notice-days">{{ 'admin.documentTypes.expiryNoticeDays' | translate }}</label>
+              <input id="dt-expiry-notice-days" type="number" formControlName="expiryNoticeDays" min="0" max="365" />
+              <span class="field-hint">{{ 'admin.documentTypes.expiryNoticeDaysHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>Sort Order</label>
-              <input type="number" formControlName="sortOrder" min="0" />
+              <label for="dt-sort-order">{{ 'admin.documentTypes.sortOrder' | translate }}</label>
+              <input id="dt-sort-order" type="number" formControlName="sortOrder" min="0" />
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>Saving...</span>
+              <span>{{ 'admin.documentTypes.saving' | translate }}</span>
             } @else {
               <span class="material-icons">save</span
-              ><span>{{ isEditMode() ? 'Update' : 'Add Type' }}</span>
+              ><span>{{ (isEditMode() ? 'admin.documentTypes.update' : 'admin.documentTypes.addType') | translate }}</span>
             }
           </button>
         </div>
@@ -328,20 +329,20 @@
         <span class="material-icons">folder</span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }} Document Type?
+        {{ (confirmItem()?.isActive ? 'admin.documentTypes.deactivateTitle' : 'admin.documentTypes.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         <strong>{{ confirmItem()?.docTypeName }}</strong>
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-danger]="confirmItem()?.isActive"
           [class.btn-success]="!confirmItem()?.isActive"
           (click)="confirmToggle()"
         >
-          {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }}
+          {{ (confirmItem()?.isActive ? 'admin.documentTypes.deactivate' : 'admin.documentTypes.activate') | translate }}
         </button>
       </div>
     </div>

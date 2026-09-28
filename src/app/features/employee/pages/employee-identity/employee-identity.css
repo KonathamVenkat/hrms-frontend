@@ -230,7 +230,7 @@
 
 /* Expiry tags */
 .expiry-tag {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 7px;
@@ -279,6 +279,40 @@
   font-size: 13px;
   letter-spacing: 0.03em;
 }
+.pii-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pii-toggle {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.pii-toggle:hover {
+  color: var(--teal);
+}
+.pii-toggle .material-icons {
+  font-size: 16px;
+}
+.pii-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pii-input-wrap input {
+  padding-inline-end: 40px;
+}
+.pii-input-wrap .pii-toggle {
+  position: absolute;
+  inset-inline-end: 10px;
+}
+
 .text-danger {
   color: var(--red);
   font-weight: 700;

@@ -2,18 +2,18 @@
   <!-- ── Page Header ──────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Leave Types</h1>
+      <h1 class="page-title">{{ 'admin.leaveTypes.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ leaveTypes().length }} Total</span>
-        <span class="chip chip-active">{{ activeCount() }} Active</span>
+        <span class="chip chip-total">{{ 'admin.leaveTypes.totalChip' | translate: { count: leaveTypes().length } }}</span>
+        <span class="chip chip-active">{{ 'admin.leaveTypes.activeChip' | translate: { count: activeCount() } }}</span>
         @if (inactiveCount() > 0) {
-          <span class="chip chip-inactive">{{ inactiveCount() }} Inactive</span>
+          <span class="chip chip-inactive">{{ 'admin.leaveTypes.inactiveChip' | translate: { count: inactiveCount() } }}</span>
         }
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
       <span class="material-icons">add</span>
-      Add Leave Type
+      {{ 'admin.leaveTypes.addLeaveType' | translate }}
     </button>
   </div>
 
@@ -37,7 +37,7 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search by name or code..."
+        [placeholder]="'admin.leaveTypes.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -54,21 +54,21 @@
         [class.active]="filterActive() === 'all'"
         (click)="filterActive.set('all')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'active'"
         (click)="filterActive.set('active')"
       >
-        Active
+        {{ 'common.active' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'inactive'"
         (click)="filterActive.set('inactive')"
       >
-        Inactive
+        {{ 'common.inactive' | translate }}
       </button>
     </div>
   </div>
@@ -78,7 +78,7 @@
     @if (loading()) {
       <div class="loading-wrap">
         <div class="spinner"></div>
-        <span>Loading leave types...</span>
+        <span>{{ 'admin.leaveTypes.loading' | translate }}</span>
       </div>
     }
 
@@ -87,15 +87,15 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Days</th>
-            <th>Paid</th>
-            <th>Carry Fwd</th>
-            <th>Doc Req.</th>
-            <th>Gender</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ 'admin.leaveTypes.columns.code' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.name' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.days' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.paid' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.carryFwd' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.docReq' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.gender' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.status' | translate }}</th>
+            <th>{{ 'admin.leaveTypes.columns.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -104,8 +104,8 @@
               <td colspan="10">
                 <div class="empty-state">
                   <span class="material-icons">event_busy</span>
-                  <p>No leave types found</p>
-                  <small>Add your first leave type using the button above</small>
+                  <p>{{ 'admin.leaveTypes.emptyTitle' | translate }}</p>
+                  <small>{{ 'admin.leaveTypes.emptyHint' | translate }}</small>
                 </div>
               </td>
             </tr>
@@ -142,7 +142,7 @@
                 @if (lt.isCarryForward) {
                   <div class="carry-info">
                     <span class="material-icons icon-yes">check_circle</span>
-                    <span class="carry-days">max {{ lt.maxCarryDays }}d</span>
+                    <span class="carry-days">{{ 'admin.leaveTypes.maxDays' | translate: { days: lt.maxCarryDays } }}</span>
                   </div>
                 } @else {
                   <span class="material-icons icon-no">cancel</span>
@@ -170,20 +170,20 @@
                   [class.status-inactive]="!lt.isActive"
                 >
                   <span class="status-dot"></span>
-                  {{ lt.isActive ? 'Active' : 'Inactive' }}
+                  {{ (lt.isActive ? 'common.active' : 'common.inactive') | translate }}
                 </span>
               </td>
 
               <td>
                 <div class="action-wrap">
-                  <button class="act-btn btn-edit" title="Edit" (click)="openEdit(lt)">
+                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(lt)">
                     <span class="material-icons">edit</span>
                   </button>
                   <button
                     class="act-btn"
                     [class.btn-deactivate]="lt.isActive"
                     [class.btn-activate]="!lt.isActive"
-                    [title]="lt.isActive ? 'Deactivate' : 'Activate'"
+                    [title]="(lt.isActive ? 'admin.leaveTypes.deactivate' : 'admin.leaveTypes.activate') | translate"
                     (click)="openConfirm(lt)"
                   >
                     <span class="material-icons">
@@ -210,7 +210,7 @@
       <!-- Modal header -->
       <div class="modal-header">
         <h2 class="modal-title">
-          {{ isEditMode() ? 'Edit Leave Type' : 'Add Leave Type' }}
+          {{ (isEditMode() ? 'admin.leaveTypes.editTitle' : 'admin.leaveTypes.addLeaveType') | translate }}
         </h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
@@ -231,37 +231,38 @@
           <!-- Row 1: Code + Sort -->
           <div class="field-row">
             <div class="field">
-              <label>Code <span class="req">*</span></label>
+              <label for="lt-code">{{ 'admin.leaveTypes.code' | translate }} <span class="req">*</span></label>
               <input
+                id="lt-code"
                 formControlName="code"
-                placeholder="e.g. ANNUAL"
+                [placeholder]="'admin.leaveTypes.codePlaceholder' | translate"
                 [class.readonly-inp]="isEditMode()"
               />
               @if (isInvalid('code')) {
                 <span class="field-error">{{ getError('code') }}</span>
               }
               @if (!isEditMode()) {
-                <span class="field-hint">Uppercase, no spaces (e.g. SICK_LEAVE)</span>
+                <span class="field-hint">{{ 'admin.leaveTypes.codeHint' | translate }}</span>
               }
             </div>
             <div class="field field-sm">
-              <label>Sort Order</label>
-              <input type="number" formControlName="sortOrder" min="0" />
+              <label for="lt-sort-order">{{ 'admin.leaveTypes.sortOrder' | translate }}</label>
+              <input id="lt-sort-order" type="number" formControlName="sortOrder" min="0" />
             </div>
           </div>
 
           <!-- Row 2: Names -->
           <div class="field-row">
             <div class="field">
-              <label>Name (English) <span class="req">*</span></label>
-              <input formControlName="nameEn" placeholder="e.g. Annual Leave" />
+              <label for="lt-name-en">{{ 'admin.leaveTypes.nameEn' | translate }} <span class="req">*</span></label>
+              <input id="lt-name-en" formControlName="nameEn" [placeholder]="'admin.leaveTypes.nameEnPlaceholder' | translate" />
               @if (isInvalid('nameEn')) {
                 <span class="field-error">{{ getError('nameEn') }}</span>
               }
             </div>
             <div class="field">
-              <label>Name (Arabic) <span class="req">*</span></label>
-              <input formControlName="nameAr" placeholder="e.g. إجازة سنوية" dir="rtl" />
+              <label for="lt-name-ar">{{ 'admin.leaveTypes.nameAr' | translate }} <span class="req">*</span></label>
+              <input id="lt-name-ar" formControlName="nameAr" placeholder="e.g. إجازة سنوية" dir="rtl" />
               @if (isInvalid('nameAr')) {
                 <span class="field-error">{{ getError('nameAr') }}</span>
               }
@@ -270,10 +271,11 @@
 
           <!-- Description -->
           <div class="field">
-            <label>Description</label>
+            <label for="lt-description">{{ 'admin.leaveTypes.description' | translate }}</label>
             <textarea
+              id="lt-description"
               formControlName="description"
-              placeholder="Brief description of this leave type..."
+              [placeholder]="'admin.leaveTypes.descriptionPlaceholder' | translate"
               rows="2"
             ></textarea>
           </div>
@@ -281,21 +283,21 @@
           <!-- Row 3: Days -->
           <div class="field-row">
             <div class="field">
-              <label>Default Days <span class="req">*</span></label>
-              <input type="number" formControlName="defaultDays" min="0" max="365" />
+              <label for="lt-default-days">{{ 'admin.leaveTypes.defaultDays' | translate }} <span class="req">*</span></label>
+              <input id="lt-default-days" type="number" formControlName="defaultDays" min="0" max="365" />
               @if (isInvalid('defaultDays')) {
                 <span class="field-error">{{ getError('defaultDays') }}</span>
               }
             </div>
             <div class="field">
-              <label>Max Consecutive Days</label>
-              <input type="number" formControlName="maxConsecutiveDays" min="0" />
-              <span class="field-hint">0 = no limit</span>
+              <label for="lt-max-consecutive-days">{{ 'admin.leaveTypes.maxConsecutiveDays' | translate }}</label>
+              <input id="lt-max-consecutive-days" type="number" formControlName="maxConsecutiveDays" min="0" />
+              <span class="field-hint">{{ 'admin.leaveTypes.noLimitHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>Min Notice Days</label>
-              <input type="number" formControlName="minNoticeDays" min="0" />
-              <span class="field-hint">Days in advance required</span>
+              <label for="lt-min-notice-days">{{ 'admin.leaveTypes.minNoticeDays' | translate }}</label>
+              <input id="lt-min-notice-days" type="number" formControlName="minNoticeDays" min="0" />
+              <span class="field-hint">{{ 'admin.leaveTypes.minNoticeHint' | translate }}</span>
             </div>
           </div>
 
@@ -303,8 +305,8 @@
           <div class="toggles-grid">
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Paid Leave</span>
-                <span class="toggle-hint">Employee receives salary during this leave</span>
+                <span class="toggle-label">{{ 'admin.leaveTypes.paidLeave' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.leaveTypes.paidLeaveHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isPaid" class="toggle-inp" />
@@ -314,8 +316,8 @@
 
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Carry Forward</span>
-                <span class="toggle-hint">Unused days carry to next year</span>
+                <span class="toggle-label">{{ 'admin.leaveTypes.carryForward' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.leaveTypes.carryForwardHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isCarryForward" class="toggle-inp" />
@@ -325,8 +327,8 @@
 
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Requires Document</span>
-                <span class="toggle-hint">Medical cert. or proof required</span>
+                <span class="toggle-label">{{ 'admin.leaveTypes.requiresDocument' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.leaveTypes.requiresDocumentHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="requiresDocument" class="toggle-inp" />
@@ -337,8 +339,8 @@
             @if (isEditMode()) {
               <label class="toggle-item">
                 <div class="toggle-info">
-                  <span class="toggle-label">Active</span>
-                  <span class="toggle-hint">Inactive types cannot be applied</span>
+                  <span class="toggle-label">{{ 'common.active' | translate }}</span>
+                  <span class="toggle-hint">{{ 'admin.leaveTypes.activeHint' | translate }}</span>
                 </div>
                 <div class="toggle-wrap">
                   <input type="checkbox" formControlName="isActive" class="toggle-inp" />
@@ -351,13 +353,13 @@
           <!-- Row 5: Max carry days + gender -->
           <div class="field-row">
             <div class="field">
-              <label>Max Carry Forward Days</label>
-              <input type="number" formControlName="maxCarryDays" min="0" />
-              <span class="field-hint">Only applies if carry forward is enabled</span>
+              <label for="lt-max-carry-days">{{ 'admin.leaveTypes.maxCarryDays' | translate }}</label>
+              <input id="lt-max-carry-days" type="number" formControlName="maxCarryDays" min="0" />
+              <span class="field-hint">{{ 'admin.leaveTypes.maxCarryDaysHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>Applicable Gender <span class="req">*</span></label>
-              <select formControlName="applicableGender">
+              <label for="lt-applicable-gender">{{ 'admin.leaveTypes.applicableGender' | translate }} <span class="req">*</span></label>
+              <select id="lt-applicable-gender" formControlName="applicableGender">
                 @for (g of genderOptions; track g) {
                   <option [value]="g">{{ g }}</option>
                 }
@@ -369,14 +371,14 @@
 
         <!-- Modal footer -->
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>Saving...</span>
+              <span>{{ 'admin.leaveTypes.saving' | translate }}</span>
             } @else {
               <span class="material-icons">save</span>
-              <span>{{ isEditMode() ? 'Update' : 'Create' }}</span>
+              <span>{{ (isEditMode() ? 'admin.leaveTypes.update' : 'admin.leaveTypes.create') | translate }}</span>
             }
           </button>
         </div>
@@ -403,27 +405,26 @@
         </span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }}
-        Leave Type?
+        {{ (confirmTarget()?.isActive ? 'admin.leaveTypes.deactivateTitle' : 'admin.leaveTypes.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         @if (confirmTarget()?.isActive) {
           <strong>{{ confirmTarget()?.nameEn }}</strong>
-          will be deactivated. Employees will not be able to apply for this leave type.
+          {{ 'admin.leaveTypes.deactivateMsg' | translate }}
         } @else {
           <strong>{{ confirmTarget()?.nameEn }}</strong>
-          will be activated and available for leave requests.
+          {{ 'admin.leaveTypes.activateMsg' | translate }}
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-danger]="confirmTarget()?.isActive"
           [class.btn-success]="!confirmTarget()?.isActive"
           (click)="confirmToggle()"
         >
-          {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }}
+          {{ (confirmTarget()?.isActive ? 'admin.leaveTypes.deactivate' : 'admin.leaveTypes.activate') | translate }}
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading employee...</span>
+      <span>{{ 'employee.detail.loading' | translate }}</span>
     </div>
   }
 
@@ -12,7 +12,7 @@
     <div class="alert alert-error">
       <span class="material-icons">error_outline</span>
       <span>{{ error() }}</span>
-      <button class="alert-back" (click)="goBack()">Go Back</button>
+      <button class="alert-back" (click)="goBack()">{{ 'employee.detail.goBack' | translate }}</button>
     </div>
   }
 
@@ -70,8 +70,21 @@
           </span>
           <button class="btn-edit" (click)="editEmployee()">
             <span class="material-icons">edit</span>
-            Edit
+            {{ 'common.edit' | translate }}
           </button>
+          @if (isHrAdmin()) {
+            @if (employee()!.isActive) {
+              <button class="btn-deactivate" (click)="openConfirm()">
+                <span class="material-icons">block</span>
+                {{ 'employee.detail.deactivateAction' | translate }}
+              </button>
+            } @else {
+              <button class="btn-reactivate" (click)="openConfirm()">
+                <span class="material-icons">check_circle</span>
+                {{ 'employee.detail.reactivateAction' | translate }}
+              </button>
+            }
+          }
         </div>
       </div>
       <!-- end profile-card -->
@@ -84,7 +97,7 @@
           (click)="activeDetailTab.set('profile')"
         >
           <span class="material-icons">person</span>
-          Profile
+          {{ 'employee.detail.tabs.profile' | translate }}
         </button>
         <button
           class="detail-tab"
@@ -92,7 +105,7 @@
           (click)="activeDetailTab.set('job')"
         >
           <span class="material-icons">work</span>
-          Job Details
+          {{ 'employee.detail.tabs.job' | translate }}
         </button>
         <button
           class="detail-tab"
@@ -100,7 +113,7 @@
           (click)="activeDetailTab.set('addresses')"
         >
           <span class="material-icons">location_on</span>
-          Addresses
+          {{ 'employee.detail.tabs.addresses' | translate }}
         </button>
         <button
           class="detail-tab"
@@ -108,14 +121,14 @@
           (click)="activeDetailTab.set('identity')"
         >
           <span class="material-icons">badge</span>
-          Identity
+          {{ 'employee.detail.tabs.identity' | translate }}
         </button>
         <button
           class="detail-tab"
           [class.active]="activeDetailTab() === 'documents'"
           (click)="activeDetailTab.set('documents')"
         >
-          <span class="material-icons">folder</span> Documents
+          <span class="material-icons">folder</span> {{ 'employee.detail.tabs.documents' | translate }}
         </button>
       </div>
       <!-- end tab bar -->
@@ -127,39 +140,39 @@
           <div class="info-card">
             <div class="card-header">
               <span class="material-icons">person</span>
-              Personal Information
+              {{ 'employee.detail.sections.personalInfo' | translate }}
             </div>
             <div class="card-body">
               <div class="info-row">
-                <span class="info-label">Full Name (EN)</span>
+                <span class="info-label">{{ 'employee.detail.fields.fullNameEn' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.fullNameEn) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Full Name (AR)</span>
+                <span class="info-label">{{ 'employee.detail.fields.fullNameAr' | translate }}</span>
                 <span class="info-value arabic">{{ getValue(employee()!.fullNameAr) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Date of Birth</span>
+                <span class="info-label">{{ 'employee.form.dateOfBirth' | translate }}</span>
                 <span class="info-value">{{ formatDate(employee()!.dateOfBirth) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Gender</span>
+                <span class="info-label">{{ 'employee.form.gender' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.gender) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Blood Group</span>
+                <span class="info-label">{{ 'employee.form.bloodGroup' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.bloodGroup) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Marital Status</span>
+                <span class="info-label">{{ 'employee.form.maritalStatus' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.maritalStatus) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Nationality</span>
+                <span class="info-label">{{ 'employee.form.nationality' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.nationality) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Religion</span>
+                <span class="info-label">{{ 'employee.form.religion' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.religion) }}</span>
               </div>
             </div>
@@ -169,27 +182,27 @@
           <div class="info-card">
             <div class="card-header">
               <span class="material-icons">contact_phone</span>
-              Contact Details
+              {{ 'employee.detail.sections.contactDetails' | translate }}
             </div>
             <div class="card-body">
               <div class="info-row">
-                <span class="info-label">Work Email</span>
+                <span class="info-label">{{ 'employee.form.workEmail' | translate }}</span>
                 <a class="info-value link" [href]="'mailto:' + employee()!.workEmail">
                   {{ employee()!.workEmail }}
                 </a>
               </div>
               <div class="info-row">
-                <span class="info-label">Personal Email</span>
+                <span class="info-label">{{ 'employee.form.personalEmail' | translate }}</span>
                 <a class="info-value link" [href]="'mailto:' + employee()!.personalEmail">
                   {{ employee()!.personalEmail }}
                 </a>
               </div>
               <div class="info-row">
-                <span class="info-label">Work Phone</span>
+                <span class="info-label">{{ 'employee.form.workPhone' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.workPhone) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Personal Phone</span>
+                <span class="info-label">{{ 'employee.form.personalPhone' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.personalPhone) }}</span>
               </div>
             </div>
@@ -199,7 +212,7 @@
           <div class="info-card">
             <div class="card-header">
               <span class="material-icons">work</span>
-              Employment Summary
+              {{ 'employee.detail.sections.employmentSummary' | translate }}
             </div>
             <div class="card-body">
               <!--div class="info-row">
@@ -221,13 +234,13 @@
                 </span>
               </div-->
               <div class="info-row">
-                <span class="info-label">Employment Type</span>
+                <span class="info-label">{{ 'employee.form.employmentType' | translate }}</span>
                 <span class="info-value">
                   {{ employee()!.employmentType.replace('_', ' ') }}
                 </span>
               </div>
               <div class="info-row">
-                <span class="info-label">Employment Status</span>
+                <span class="info-label">{{ 'employee.form.employmentStatus' | translate }}</span>
                 <span
                   class="status-badge small"
                   [ngClass]="getStatusClass(employee()!.employmentStatus)"
@@ -237,15 +250,15 @@
                 </span>
               </div>
               <div class="info-row">
-                <span class="info-label">Hire Date</span>
+                <span class="info-label">{{ 'employee.form.hireDate' | translate }}</span>
                 <span class="info-value">{{ formatDate(employee()!.hireDate) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Probation End Date</span>
+                <span class="info-label">{{ 'employee.form.probationEndDate' | translate }}</span>
                 <span class="info-value">{{ formatDate(employee()!.probationEndDate) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Confirmation Date</span>
+                <span class="info-label">{{ 'employee.form.confirmationDate' | translate }}</span>
                 <span class="info-value">{{ formatDate(employee()!.confirmationDate) }}</span>
               </div>
             </div>
@@ -255,29 +268,29 @@
           <div class="info-card">
             <div class="card-header">
               <span class="material-icons">history</span>
-              Audit Information
+              {{ 'employee.detail.sections.auditInfo' | translate }}
             </div>
             <div class="card-body">
               <div class="info-row">
-                <span class="info-label">Created By</span>
+                <span class="info-label">{{ 'employee.detail.fields.createdBy' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.createdBy) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Created At</span>
+                <span class="info-label">{{ 'employee.detail.fields.createdAt' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.createdAt) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Updated By</span>
+                <span class="info-label">{{ 'employee.detail.fields.updatedBy' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.updatedBy) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Updated At</span>
+                <span class="info-label">{{ 'employee.detail.fields.updatedAt' | translate }}</span>
                 <span class="info-value">{{ getValue(employee()!.updatedAt) }}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Active</span>
+                <span class="info-label">{{ 'common.active' | translate }}</span>
                 <span class="info-value">
-                  {{ employee()!.isActive ? 'Yes' : 'No' }}
+                  {{ (employee()!.isActive ? 'employee.detail.yes' : 'employee.detail.no') | translate }}
                 </span>
               </div>
             </div>
@@ -302,6 +315,47 @@
       }
     </div>
     <!-- end content -->
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- CONFIRM DIALOG — Deactivate / Reactivate                -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    @if (showConfirm()) {
+      <div class="modal-backdrop">
+        <div class="confirm-dialog">
+          <div class="confirm-icon" [class.icon-warn]="employee()!.isActive" [class.icon-info]="!employee()!.isActive">
+            <span class="material-icons">{{ employee()!.isActive ? 'block' : 'check_circle' }}</span>
+          </div>
+          <h3 class="confirm-title">
+            {{ (employee()!.isActive ? 'employee.detail.confirm.deactivateTitle' : 'employee.detail.confirm.reactivateTitle') | translate }}
+          </h3>
+          <p class="confirm-msg">
+            <strong>{{ employee()!.fullNameEn }}</strong>
+            @if (employee()!.isActive) {
+              {{ 'employee.detail.confirm.deactivateMsg' | translate }}
+            } @else {
+              {{ 'employee.detail.confirm.reactivateMsg' | translate }}
+            }
+          </p>
+          @if (confirmError()) {
+            <p class="confirm-error">{{ confirmError() }}</p>
+          }
+          <div class="confirm-actions">
+            <button class="btn-cancel" [disabled]="confirmBusy()" (click)="cancelConfirm()">
+              {{ 'common.cancel' | translate }}
+            </button>
+            <button
+              class="btn-confirm"
+              [class.btn-danger]="employee()!.isActive"
+              [class.btn-success]="!employee()!.isActive"
+              [disabled]="confirmBusy()"
+              (click)="confirmToggle()"
+            >
+              {{ confirmBusy() ? ('employee.detail.confirm.pleaseWait' | translate) : ((employee()!.isActive ? 'employee.detail.deactivateAction' : 'employee.detail.reactivateAction') | translate) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   }
 </div>
 <!-- end detail-page -->

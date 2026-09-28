@@ -80,13 +80,15 @@ export interface CheckOutRequest {
 }
 
 // Status display config
+// Note: `label` values are ngx-translate keys, not display text — templates must pipe
+// them through `| translate` (e.g. `getStatusStyle(row.status).label | translate`).
 export const STATUS_CONFIG: Record<AttendanceStatus,
   { label: string; color: string; bg: string; icon: string }> = {
-  PRESENT:  { label: 'Present',  color: '#166534', bg: '#dcfce7', icon: 'check_circle' },
-  LATE:     { label: 'Late',     color: '#92400e', bg: '#fef3c7', icon: 'schedule'     },
-  ABSENT:   { label: 'Absent',   color: '#991b1b', bg: '#fee2e2', icon: 'cancel'       },
-  HALF_DAY: { label: 'Half Day', color: '#1e40af', bg: '#dbeafe', icon: 'brightness_5' },
-  ON_LEAVE: { label: 'On Leave', color: '#6b21a8', bg: '#f3e8ff', icon: 'beach_access' },
-  HOLIDAY:  { label: 'Holiday',  color: '#0e7490', bg: '#cffafe', icon: 'celebration'  },
-  WEEKEND:  { label: 'Weekend',  color: '#475569', bg: '#f1f5f9', icon: 'weekend'      },
+  PRESENT:  { label: 'attendance.status.present',  color: '#166534', bg: '#dcfce7', icon: 'check_circle' },
+  LATE:     { label: 'attendance.status.late',     color: '#92400e', bg: '#fef3c7', icon: 'schedule'     },
+  ABSENT:   { label: 'attendance.status.absent',   color: '#991b1b', bg: '#fee2e2', icon: 'cancel'       },
+  HALF_DAY: { label: 'attendance.status.halfDay',  color: '#1e40af', bg: '#dbeafe', icon: 'brightness_5' },
+  ON_LEAVE: { label: 'attendance.status.onLeave',  color: '#6b21a8', bg: '#f3e8ff', icon: 'beach_access' },
+  HOLIDAY:  { label: 'attendance.status.holiday',  color: '#0e7490', bg: '#cffafe', icon: 'celebration'  },
+  WEEKEND:  { label: 'attendance.status.weekend',  color: '#475569', bg: '#f1f5f9', icon: 'weekend'      },
 };

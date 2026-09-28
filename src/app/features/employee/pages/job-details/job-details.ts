@@ -1,4 +1,13 @@
-import { Component, OnInit, Input, signal, inject, computed, DestroyRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  signal,
+  inject,
+  computed,
+  DestroyRef,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -7,6 +16,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -20,16 +30,20 @@ import { WorkShiftService } from '../../../admin/work-shifts/services/work-shift
 import { OfficeLocationService } from '../../../admin/office-locations/services/office-location';
 import { WorkShift } from '../../../admin/work-shifts/models/work-shift';
 import { OfficeLocation } from '../../../admin/office-locations/models/office-location';
+import { EmployeeSearchSelect } from '../../components/employee-search-select/employee-search-select';
 
 @Component({
   selector: 'app-job-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EmployeeSearchSelect, TranslatePipe],
   templateUrl: './job-details.html',
   styleUrl: './job-details.css',
 })
 export class JobDetailsComponent implements OnInit {
   @Input() employeeId!: number; // passed from employee-detail
+
+  @ViewChild('reportingManagerPicker') reportingManagerPicker?: EmployeeSearchSelect;
+  @ViewChild('functionalManagerPicker') functionalManagerPicker?: EmployeeSearchSelect;
 
   private fb = inject(FormBuilder);
   private jobSvc = inject(JobDetailsService);
@@ -37,6 +51,7 @@ export class JobDetailsComponent implements OnInit {
   private shiftSvc = inject(WorkShiftService);
   private locationSvc = inject(OfficeLocationService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   currentJob = signal<JobDetails | null>(null);
@@ -57,7 +72,6 @@ export class JobDetailsComponent implements OnInit {
   filteredDesignations = signal<DesignationLookup[]>([]);
   locations = signal<OfficeLocation[]>([]);
   shifts = signal<WorkShift[]>([]);
-  managers = signal<{ id: number; name: string; code: string }[]>([]);
 
   readonly workModes = ['ON_SITE', 'REMOTE', 'HYBRID'];
 
@@ -122,7 +136,9 @@ export class JobDetailsComponent implements OnInit {
         error: (err) => {
           // 404 = no job assigned yet — not an error to show
           if (err.status !== 404) {
-            this.error.set(err?.error?.message || 'Failed to load job details.');
+            this.error.set(
+              err?.error?.message || this.translate.instant('employee.jobDetails.errors.loadFailed'),
+            );
           }
         },
       });
@@ -191,24 +207,6 @@ export class JobDetailsComponent implements OnInit {
           if (res.success) this.shifts.set(res.data);
         },
       });
-
-    // Managers = all active employees as lookup
-    this.empSvc
-      .getEmployees({ size: 200, sortBy: 'EMPLOYEE_CODE', sortDir: 'ASC' })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            this.managers.set(
-              res.data.content.map((e) => ({
-                id: e.employeeId,
-                name: e.fullNameEn,
-                code: e.employeeCode,
-              })),
-            );
-          }
-        },
-      });
   }
 
   // ── Open modal ────────────────────────────────────────────
@@ -251,6 +249,20 @@ export class JobDetailsComponent implements OnInit {
       effectiveFrom: job.effectiveFrom,
       remarks: job.remarks ?? '',
     });
+
+    // patchValue already cleared the pickers' display text via writeValue(null)
+    // where there's no manager — only set a label where one exists.
+    if (job.reportingManagerName) {
+      this.reportingManagerPicker?.setInitialLabel(
+        `${job.reportingManagerName} (${job.reportingManagerCode})`,
+      );
+    }
+    if (job.functionalManagerName) {
+      this.functionalManagerPicker?.setInitialLabel(
+        `${job.functionalManagerName} (${job.functionalManagerCode})`,
+      );
+    }
+
     this.showModal.set(true);
   }
 
@@ -294,15 +306,20 @@ export class JobDetailsComponent implements OnInit {
           this.history.set([]); // reset history cache
           this.closeModal();
           this.showSuccess(
-            this.isNewAssignment()
-              ? 'New job assignment saved successfully'
-              : 'Job details updated successfully',
+            this.translate.instant(
+              this.isNewAssignment()
+                ? 'employee.jobDetails.success.assigned'
+                : 'employee.jobDetails.success.updated',
+            ),
           );
         } else {
           this.error.set(res.message);
         }
       },
-      error: (err) => this.error.set(err?.error?.message || 'Operation failed. Please try again.'),
+      error: (err) =>
+        this.error.set(
+          err?.error?.message || this.translate.instant('employee.jobDetails.errors.saveFailed'),
+        ),
     });
   }
 
@@ -319,9 +336,13 @@ export class JobDetailsComponent implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    return this.translate.instant('common.validation.invalid');
   }
 
   private showSuccess(msg: string): void {
@@ -339,6 +360,6 @@ export class JobDetailsComponent implements OnInit {
   }
 
   formatDateRange(from: string, to?: string): string {
-    return to ? `${from} → ${to}` : `${from} → Present`;
+    return to ? `${from} → ${to}` : `${from} → ${this.translate.instant('employee.jobDetails.present')}`;
   }
 }

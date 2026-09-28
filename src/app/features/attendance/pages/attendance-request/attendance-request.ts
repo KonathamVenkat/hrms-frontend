@@ -26,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { RegularizationService } from '../../services/regularization.service';
 import {
@@ -59,6 +60,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatChipsModule,
     MatDividerModule,
     MatTabsModule,
+    TranslatePipe,
   ],
   templateUrl: './attendance-request.html',
   styleUrls: ['./attendance-request.css'],
@@ -67,6 +69,7 @@ export class AttendanceRequest implements OnInit {
   private readonly svc = inject(RegularizationService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State signals ──────────────────────────────────────────
   readonly myRequests = signal<RegularizationResponse[]>([]);
@@ -163,10 +166,11 @@ export class AttendanceRequest implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.snack.open('✅ Regularization request submitted successfully', 'Close', {
-            duration: 4000,
-            panelClass: 'snack-success',
-          });
+          this.snack.open(
+            '✅ ' + this.translate.instant('attendance.request.success.submitted'),
+            this.translate.instant('attendance.request.close'),
+            { duration: 4000, panelClass: 'snack-success' },
+          );
           this.submitForm.reset();
           this.showForm.set(false);
           this.submitting.set(false);
@@ -174,10 +178,11 @@ export class AttendanceRequest implements OnInit {
           this.loadMyRequests();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Failed to submit request'), 'Close', {
-            duration: 5000,
-            panelClass: 'snack-error',
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.request.errors.submitFailed')),
+            this.translate.instant('attendance.request.close'),
+            { duration: 5000, panelClass: 'snack-error' },
+          );
           this.submitting.set(false);
         },
       });
@@ -185,16 +190,22 @@ export class AttendanceRequest implements OnInit {
 
   // ── Cancel ────────────────────────────────────────────────
   onCancel(regId: number): void {
-    if (!confirm('Are you sure you want to cancel this request?')) return;
+    if (!confirm(this.translate.instant('attendance.request.confirmCancel'))) return;
     this.svc.cancel(regId, this.employeeId()).subscribe({
       next: () => {
-        this.snack.open('Request cancelled', 'Close', { duration: 3000 });
+        this.snack.open(
+          this.translate.instant('attendance.request.success.cancelled'),
+          this.translate.instant('attendance.request.close'),
+          { duration: 3000 },
+        );
         this.loadMyRequests();
       },
       error: (err) =>
-        this.snack.open('❌ ' + (err.error?.message || 'Cancel failed'), 'Close', {
-          duration: 4000,
-        }),
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('attendance.request.errors.cancelFailed')),
+          this.translate.instant('attendance.request.close'),
+          { duration: 4000 },
+        ),
     });
   }
 

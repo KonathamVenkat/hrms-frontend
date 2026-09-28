@@ -3,20 +3,20 @@
   <!-- ── Page header ────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">My Leave Requests</h1>
+      <h1 class="page-title">{{ 'leave.list.title' | translate }}</h1>
       @if (totalElements() > 0) {
         <span class="count-badge">{{ totalElements() }}</span>
       }
       @if (pendingCount() > 0) {
         <span class="pending-chip">
           <span class="material-icons">hourglass_empty</span>
-          {{ pendingCount() }} pending
+          {{ pendingCount() }} {{ 'leave.list.pendingSuffix' | translate }}
         </span>
       }
     </div>
     <button class="btn-apply" (click)="applyNewLeave()">
       <span class="material-icons">add</span>
-      Apply Leave
+      {{ 'leave.list.applyButton' | translate }}
     </button>
   </div>
 
@@ -24,22 +24,24 @@
   <div class="filter-bar">
     <select
       class="filter-select"
+      [attr.aria-label]="'leave.list.statusFilterLabel' | translate"
       [value]="filterStatus()"
       (change)="filterStatus.set($any($event.target).value); onFilterChange()"
     >
-      <option value="">All Status</option>
-      <option value="PENDING">Pending</option>
-      <option value="APPROVED">Approved</option>
-      <option value="REJECTED">Rejected</option>
-      <option value="CANCELLED">Cancelled</option>
+      <option value="">{{ 'leave.list.allStatus' | translate }}</option>
+      <option value="PENDING">{{ 'leave.list.statusPending' | translate }}</option>
+      <option value="APPROVED">{{ 'leave.list.statusApproved' | translate }}</option>
+      <option value="REJECTED">{{ 'leave.list.statusRejected' | translate }}</option>
+      <option value="CANCELLED">{{ 'leave.list.statusCancelled' | translate }}</option>
     </select>
 
     <select
       class="filter-select"
+      [attr.aria-label]="'leave.list.typeFilterLabel' | translate"
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value); onFilterChange()"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'leave.list.allTypes' | translate }}</option>
       @for (lt of leaveTypes; track lt) {
         <option [value]="lt">{{ lt }}</option>
       }
@@ -47,6 +49,7 @@
 
     <select
       class="filter-select"
+      [attr.aria-label]="'leave.list.yearFilterLabel' | translate"
       [value]="filterYear()"
       (change)="filterYear.set(+$any($event.target).value); onFilterChange()"
     >
@@ -58,7 +61,7 @@
     @if (filterStatus() || filterType()) {
       <button class="btn-clear" (click)="clearFilters()">
         <span class="material-icons">filter_alt_off</span>
-        Clear
+        {{ 'common.clear' | translate }}
       </button>
     }
   </div>
@@ -79,7 +82,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading leave requests...</span>
+      <span>{{ 'leave.list.loadingText' | translate }}</span>
     </div>
   }
 
@@ -87,16 +90,16 @@
   @if (!loading() && leaves().length === 0) {
     <div class="empty-state">
       <span class="material-icons">event_busy</span>
-      <p>No leave requests found</p>
+      <p>{{ 'leave.list.emptyTitle' | translate }}</p>
       <small>
         @if (filterStatus() || filterType()) {
-          Try adjusting your filters
+          {{ 'leave.list.emptyHintFiltered' | translate }}
         } @else {
-          Apply for your first leave below
+          {{ 'leave.list.emptyHintDefault' | translate }}
         }
       </small>
       <button class="btn-apply-sm" (click)="applyNewLeave()">
-        <span class="material-icons">add</span> Apply Leave
+        <span class="material-icons">add</span> {{ 'leave.list.applyButton' | translate }}
       </button>
     </div>
   }
@@ -122,7 +125,7 @@
                   {{ leave.leaveTypeName }}
                 </span>
                 @if (leave.isPaid === false) {
-                  <span class="unpaid-tag">Unpaid</span>
+                  <span class="unpaid-tag">{{ 'leave.list.unpaidTag' | translate }}</span>
                 }
               </div>
               <div class="card-top-right">
@@ -139,7 +142,7 @@
                     (click)="openCancel(leave)"
                   >
                     <span class="material-icons">close</span>
-                    Cancel
+                    {{ 'common.cancel' | translate }}
                   </button>
                 }
               </div>
@@ -148,19 +151,20 @@
             <!-- ── Dates ───────────────────────────────── -->
             <div class="card-dates">
               <div class="date-block">
-                <span class="date-label">From</span>
+                <span class="date-label">{{ 'leave.list.dateFrom' | translate }}</span>
                 <span class="date-val">{{ leave.startDate }}</span>
               </div>
               <div class="date-arrow">
                 <span class="material-icons">arrow_forward</span>
               </div>
               <div class="date-block">
-                <span class="date-label">To</span>
+                <span class="date-label">{{ 'leave.list.dateTo' | translate }}</span>
                 <span class="date-val">{{ leave.endDate }}</span>
               </div>
               <div class="days-chip">
                 <span class="material-icons">calendar_today</span>
-                {{ leave.totalDays }} day{{ leave.totalDays !== 1 ? 's' : '' }}
+                {{ leave.totalDays }}
+                {{ (leave.totalDays !== 1 ? 'leave.list.daysPlural' : 'leave.list.daySingular') | translate }}
               </div>
             </div>
 
@@ -174,10 +178,15 @@
                   {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
                 </span>
                 <span>
-                  {{ leave.status === 'APPROVED' ? 'Approved' : 'Rejected' }}
-                  by <strong>{{ leave.approvedBy }}</strong>
+                  {{
+                    (leave.status === 'APPROVED'
+                      ? 'leave.list.statusApproved'
+                      : 'leave.list.statusRejected'
+                    ) | translate
+                  }}
+                  {{ 'leave.list.byConnector' | translate }} <strong>{{ leave.approvedBy }}</strong>
                   @if (leave.approvedAt) {
-                    on {{ leave.approvedAt | slice: 0 : 10 }}
+                    {{ 'leave.list.onConnector' | translate }} {{ leave.approvedAt | slice: 0 : 10 }}
                   }
                 </span>
                 <!-- remarks = rejectionReason from backend -->
@@ -189,10 +198,14 @@
 
             <!-- ── Footer ──────────────────────────────── -->
             <div class="card-footer">
-              <span class="submitted-date"> Submitted: {{ leave.createdAt | slice: 0 : 10 }} </span>
+              <span class="submitted-date">
+                {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
+              </span>
               @if (leave.balanceAvailable != null) {
                 <span class="balance-snap">
-                  Balance at request: {{ leave.balanceAvailable | number: '1.1-1' }} days
+                  {{ 'leave.list.balanceLabel' | translate }}
+                  {{ leave.balanceAvailable | number: '1.1-1' }}
+                  {{ 'leave.list.daysPlural' | translate }}
                 </span>
               }
             </div>
@@ -205,7 +218,10 @@
     @if (totalPages() > 1) {
       <div class="pagination">
         <span class="pag-info">
-          Showing {{ showingFrom }}–{{ showingTo }} of {{ totalElements() }}
+          {{
+            'leave.list.showing'
+              | translate: { from: showingFrom, to: showingTo, total: totalElements() }
+          }}
         </span>
         <div class="pag-btns">
           <button
@@ -246,18 +262,24 @@
       <div class="confirm-icon">
         <span class="material-icons">event_busy</span>
       </div>
-      <h3 class="confirm-title">Cancel Leave Request?</h3>
+      <h3 class="confirm-title">{{ 'leave.list.confirmCancelTitle' | translate }}</h3>
       <div class="confirm-details">
         <span class="confirm-type">{{ confirmItem()?.leaveTypeName }}</span>
         <span class="confirm-dates">
           {{ confirmItem()?.startDate }} → {{ confirmItem()?.endDate }}
         </span>
-        <span class="confirm-days"> {{ confirmItem()?.totalDays }} day(s) </span>
+        <span class="confirm-days">
+          {{ confirmItem()?.totalDays }} {{ 'leave.list.daysUnitParenthetical' | translate }}
+        </span>
       </div>
-      <p class="confirm-msg">The reserved days will be released back to your balance.</p>
+      <p class="confirm-msg">{{ 'leave.list.confirmCancelMsg' | translate }}</p>
       <div class="confirm-actions">
-        <button class="btn-no" (click)="closeConfirm()">Keep Request</button>
-        <button class="btn-yes" (click)="confirmCancel()">Yes, Cancel It</button>
+        <button class="btn-no" (click)="closeConfirm()">
+          {{ 'leave.list.keepRequestButton' | translate }}
+        </button>
+        <button class="btn-yes" (click)="confirmCancel()">
+          {{ 'leave.list.confirmCancelButton' | translate }}
+        </button>
       </div>
     </div>
   </div>

@@ -2,13 +2,16 @@
 import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { finalize, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeeService } from '../../services/employee';
 import { JobDetailsComponent } from '../job-details/job-details';
 import { EmployeeAddressesComponent } from '../employee-addresses/employee-addresses';
 import { EmployeeIdentityComponent } from '../employee-identity/employee-identity';
 import { EmployeeDocumentsComponent } from '../employee-documents/employee-documents';
+import { Auth } from '../../../../core/auth/auth';
+import { getHttpErrorMessage } from '../../../../core/utils/http-error-message';
 
 export interface EmployeeDetail {
   employeeId: number;
@@ -62,6 +65,7 @@ export interface EmployeeDetail {
     EmployeeAddressesComponent,
     EmployeeIdentityComponent,
     EmployeeDocumentsComponent,
+    TranslatePipe,
   ],
   templateUrl: './employee-detail.html',
   styleUrl: './employee-detail.css',
@@ -71,6 +75,8 @@ export class EmployeeDetail implements OnInit {
   private router = inject(Router);
   private empService = inject(EmployeeService);
   private destroyRef = inject(DestroyRef);
+  private auth = inject(Auth);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   employee = signal<EmployeeDetail | null>(null);
@@ -79,7 +85,15 @@ export class EmployeeDetail implements OnInit {
 
   activeDetailTab = signal<'profile' | 'job' | 'addresses' | 'identity' | 'documents'>('profile');
 
+  // ── Deactivate / Reactivate (HR_ADMIN only) ────────────────
+  isHrAdmin = signal(false);
+  showConfirm = signal(false);
+  confirmBusy = signal(false);
+  confirmError = signal<string | null>(null);
+
   ngOnInit(): void {
+    this.isHrAdmin.set(this.auth.getRole() === 'HR_ADMIN');
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.router.navigateByUrl('/app/employee/list');
@@ -108,13 +122,9 @@ export class EmployeeDetail implements OnInit {
         },
         error: (err) => {
           this.error.set(
-            err.status === 404
-              ? 'Employee not found.'
-              : err.status === 403
-                ? 'Access denied.'
-                : err.status === 0
-                  ? 'Cannot reach server.'
-                  : err?.error?.message || 'Unexpected error.',
+            getHttpErrorMessage(this.translate, err, {
+              404: this.translate.instant('employee.detail.errors.notFound'),
+            }),
           );
         },
       });
@@ -127,6 +137,45 @@ export class EmployeeDetail implements OnInit {
 
   editEmployee(): void {
     this.router.navigate(['/app/employee/edit', this.employee()?.employeeId]);
+  }
+
+  // ── Deactivate / Reactivate ─────────────────────────────────
+  openConfirm(): void {
+    this.confirmError.set(null);
+    this.showConfirm.set(true);
+  }
+
+  cancelConfirm(): void {
+    this.showConfirm.set(false);
+  }
+
+  confirmToggle(): void {
+    const emp = this.employee();
+    if (!emp) return;
+
+    this.confirmBusy.set(true);
+    this.confirmError.set(null);
+
+    const request$: Observable<{ success: boolean; message: string }> = emp.isActive
+      ? this.empService.deactivateEmployee(emp.employeeId)
+      : this.empService.reactivateEmployee(emp.employeeId);
+
+    request$
+      .pipe(
+        finalize(() => this.confirmBusy.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.showConfirm.set(false);
+            this.loadEmployee(emp.employeeId);
+          } else {
+            this.confirmError.set(res.message || this.translate.instant('common.httpErrors.actionFailed'));
+          }
+        },
+        error: (err) => this.confirmError.set(getHttpErrorMessage(this.translate, err)),
+      });
   }
 
   // ── Helpers ───────────────────────────────────────────────

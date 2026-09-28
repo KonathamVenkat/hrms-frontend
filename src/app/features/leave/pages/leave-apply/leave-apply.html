@@ -6,8 +6,8 @@
       <span class="material-icons">arrow_back</span>
     </button>
     <div>
-      <h1 class="page-title">Apply for Leave</h1>
-      <p class="page-sub">{{ currentYear }} — Submit a new leave request</p>
+      <h1 class="page-title">{{ 'leave.apply.title' | translate }}</h1>
+      <p class="page-sub">{{ 'leave.apply.subtitle' | translate: { year: currentYear } }}</p>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading your leave balances...</span>
+      <span>{{ 'leave.apply.loadingText' | translate }}</span>
     </div>
   }
 
@@ -41,19 +41,18 @@
       <div class="form-card">
         <div class="form-card-header">
           <span class="material-icons">event_available</span>
-          Leave Request Details
+          {{ 'leave.apply.formTitle' | translate }}
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="form-body">
           <!-- ── Leave type ─────────────────────────────── -->
           <div class="field">
-            <label>Leave Type <span class="req">*</span></label>
+            <label>{{ 'leave.apply.leaveTypeLabel' | translate }} <span class="req">*</span></label>
 
             @if (balances().length === 0) {
               <div class="no-balance-warn">
                 <span class="material-icons">warning</span>
-                No leave balances found for {{ currentYear }}. Please contact HR to initialize your
-                balance.
+                {{ 'leave.apply.noBalanceWarn' | translate: { year: currentYear } }}
               </div>
             } @else {
               <div class="type-grid">
@@ -73,7 +72,8 @@
                     <div class="type-info">
                       <span class="type-name">{{ b.leaveTypeName }}</span>
                       <span class="type-avail">
-                        {{ b.availableDays.toFixed(1) }} / {{ b.totalDays.toFixed(1) }} days
+                        {{ b.availableDays.toFixed(1) }} / {{ b.totalDays.toFixed(1) }}
+                        {{ 'leave.list.daysPlural' | translate }}
                       </span>
                     </div>
                     <div class="type-mini-bar">
@@ -90,22 +90,23 @@
               </div>
             }
             @if (isInvalid('leaveTypeCode')) {
-              <span class="field-error">Please select a leave type</span>
+              <span class="field-error">{{ 'leave.apply.selectLeaveTypeError' | translate }}</span>
             }
           </div>
 
           <!-- ── Date range ─────────────────────────────── -->
           <div class="field-row">
             <div class="field">
-              <label>Start Date <span class="req">*</span></label>
-              <input type="date" formControlName="startDate" [min]="getMinDate()" />
+              <label for="la-start-date">{{ 'leave.apply.startDateLabel' | translate }} <span class="req">*</span></label>
+              <input id="la-start-date" type="date" formControlName="startDate" [min]="getMinDate()" />
               @if (isInvalid('startDate')) {
                 <span class="field-error">{{ getError('startDate') }}</span>
               }
             </div>
             <div class="field">
-              <label>End Date <span class="req">*</span></label>
+              <label for="la-end-date">{{ 'leave.apply.endDateLabel' | translate }} <span class="req">*</span></label>
               <input
+                id="la-end-date"
                 type="date"
                 formControlName="endDate"
                 [min]="ctrl('startDate').value || getMinDate()"
@@ -120,7 +121,7 @@
           @if (form.errors?.['dateRange'] && form.touched) {
             <div class="field-alert">
               <span class="material-icons">warning</span>
-              {{ form.errors?.['dateRange'] }}
+              {{ form.errors?.['dateRange'] | translate }}
             </div>
           }
 
@@ -133,15 +134,28 @@
                 </span>
               </div>
               <div class="days-info">
-                <span class="days-count">{{ calculatedDays() }} working days</span>
+                <span class="days-count">
+                  {{ 'leave.apply.workingDaysCount' | translate: { count: calculatedDays() } }}
+                </span>
                 @if (selectedBalance()) {
                   <span class="days-remaining">
                     @if (isBalanceSufficient()) {
-                      {{ (selectedBalance()!.availableDays - calculatedDays()).toFixed(1) }}
-                      days remaining after this request
+                      {{
+                        'leave.apply.daysRemainingAfter'
+                          | translate
+                            : {
+                                days: (selectedBalance()!.availableDays - calculatedDays()).toFixed(1)
+                              }
+                      }}
                     } @else {
-                      ⚠ Insufficient — need {{ calculatedDays() }} days, have
-                      {{ selectedBalance()!.availableDays.toFixed(1) }}
+                      {{
+                        'leave.apply.insufficientBalance'
+                          | translate
+                            : {
+                                need: calculatedDays(),
+                                have: selectedBalance()!.availableDays.toFixed(1)
+                              }
+                      }}
                     }
                   </span>
                 }
@@ -151,11 +165,12 @@
 
           <!-- ── Reason ─────────────────────────────────── -->
           <div class="field">
-            <label>Reason <span class="req">*</span></label>
+            <label for="la-reason">{{ 'leave.apply.reasonLabel' | translate }} <span class="req">*</span></label>
             <textarea
+              id="la-reason"
               formControlName="reason"
               rows="3"
-              placeholder="Briefly describe the reason for your leave request..."
+              [placeholder]="'leave.apply.reasonPlaceholder' | translate"
             >
             </textarea>
             <span class="char-count"> {{ ctrl('reason').value?.length ?? 0 }}/500 </span>
@@ -166,7 +181,9 @@
 
           <!-- ── Actions ───────────────────────────────── -->
           <div class="form-actions">
-            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+            <button type="button" class="btn-cancel" (click)="onCancel()">
+              {{ 'common.cancel' | translate }}
+            </button>
             <button
               type="submit"
               class="btn-submit"
@@ -174,10 +191,10 @@
             >
               @if (submitting()) {
                 <div class="btn-spinner"></div>
-                <span>Submitting...</span>
+                <span>{{ 'leave.apply.submittingText' | translate }}</span>
               } @else {
                 <span class="material-icons">send</span>
-                <span>Submit Request</span>
+                <span>{{ 'leave.apply.submitButton' | translate }}</span>
               }
             </button>
           </div>
@@ -190,7 +207,7 @@
       <div class="balance-sidebar">
         <div class="sidebar-header">
           <span class="material-icons">account_balance_wallet</span>
-          My Leave Balance — {{ currentYear }}
+          {{ 'leave.apply.sidebarTitle' | translate: { year: currentYear } }}
         </div>
         <div class="balance-list">
           @for (b of balances(); track b.leaveType) {
@@ -211,11 +228,13 @@
                 ></div>
               </div>
               <div class="bal-breakdown">
-                <span>Used: {{ b.usedDays.toFixed(1) }}</span>
+                <span>{{ 'leave.apply.usedLabel' | translate }}: {{ b.usedDays.toFixed(1) }}</span>
                 @if (b.pendingDays > 0) {
-                  <span class="pending-text"> Pending: {{ b.pendingDays.toFixed(1) }} </span>
+                  <span class="pending-text">
+                    {{ 'leave.apply.pendingLabel' | translate }}: {{ b.pendingDays.toFixed(1) }}
+                  </span>
                 }
-                <span>Total: {{ b.totalDays.toFixed(1) }}</span>
+                <span>{{ 'leave.apply.totalLabel' | translate }}: {{ b.totalDays.toFixed(1) }}</span>
               </div>
             </div>
           }

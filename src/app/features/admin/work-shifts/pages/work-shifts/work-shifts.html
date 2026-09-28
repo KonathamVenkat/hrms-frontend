@@ -2,15 +2,15 @@
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Work Shifts</h1>
+      <h1 class="page-title">{{ 'admin.workShifts.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ shifts().length }} Total</span>
-        <span class="chip chip-active">{{ activeCount() }} Active</span>
+        <span class="chip chip-total">{{ 'admin.workShifts.totalChip' | translate: { count: shifts().length } }}</span>
+        <span class="chip chip-active">{{ 'admin.workShifts.activeChip' | translate: { count: activeCount() } }}</span>
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
       <span class="material-icons">add</span>
-      Add Shift
+      {{ 'admin.workShifts.addShift' | translate }}
     </button>
   </div>
 
@@ -32,7 +32,7 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search shifts..."
+        [placeholder]="'admin.workShifts.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -48,7 +48,7 @@
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'admin.workShifts.allTypes' | translate }}</option>
       @for (t of shiftTypes; track t) {
         <option [value]="t">{{ t }}</option>
       }
@@ -60,21 +60,21 @@
         [class.active]="filterActive() === 'all'"
         (click)="filterActive.set('all')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'active'"
         (click)="filterActive.set('active')"
       >
-        Active
+        {{ 'common.active' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'inactive'"
         (click)="filterActive.set('inactive')"
       >
-        Inactive
+        {{ 'common.inactive' | translate }}
       </button>
     </div>
   </div>
@@ -83,7 +83,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading work shifts...</span>
+      <span>{{ 'admin.workShifts.loading' | translate }}</span>
     </div>
   }
 
@@ -92,8 +92,8 @@
     @if (filteredShifts().length === 0) {
       <div class="empty-card">
         <span class="material-icons">schedule</span>
-        <p>No shifts found</p>
-        <small>Add work shifts using the button above</small>
+        <p>{{ 'admin.workShifts.emptyTitle' | translate }}</p>
+        <small>{{ 'admin.workShifts.emptyHint' | translate }}</small>
       </div>
     } @else {
       <div class="shifts-grid">
@@ -108,14 +108,14 @@
                 </span>
               </div>
               <div class="card-actions">
-                <button class="act-btn btn-edit" title="Edit" (click)="openEdit(s)">
+                <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(s)">
                   <span class="material-icons">edit</span>
                 </button>
                 <button
                   class="act-btn"
                   [class.btn-deactivate]="s.isActive"
                   [class.btn-activate]="!s.isActive"
-                  [title]="s.isActive ? 'Deactivate' : 'Activate'"
+                  [title]="(s.isActive ? 'admin.workShifts.deactivate' : 'admin.workShifts.activate') | translate"
                   (click)="openConfirm(s)"
                 >
                   <span class="material-icons">
@@ -134,12 +134,12 @@
               @if (s.isFlexible) {
                 <div class="time-flex">
                   <span class="material-icons">schedule</span>
-                  <span>Flexible — {{ s.workingHours }}h/day</span>
+                  <span>{{ 'admin.workShifts.flexibleHoursPerDay' | translate: { hours: s.workingHours } }}</span>
                 </div>
               } @else {
                 <div class="time-range">
                   <div class="time-block">
-                    <span class="time-label">Start</span>
+                    <span class="time-label">{{ 'admin.workShifts.start' | translate }}</span>
                     <span class="time-val">{{ s.startTime }}</span>
                   </div>
                   <div class="time-arrow">
@@ -149,7 +149,7 @@
                     }
                   </div>
                   <div class="time-block">
-                    <span class="time-label">End</span>
+                    <span class="time-label">{{ 'admin.workShifts.end' | translate }}</span>
                     <span class="time-val">{{ s.endTime }}</span>
                   </div>
                 </div>
@@ -161,17 +161,17 @@
               <div class="stat-item">
                 <span class="material-icons stat-icon">timer</span>
                 <span class="stat-val">{{ s.workingHours }}h</span>
-                <span class="stat-lbl">Working</span>
+                <span class="stat-lbl">{{ 'admin.workShifts.working' | translate }}</span>
               </div>
               <div class="stat-item">
                 <span class="material-icons stat-icon">coffee</span>
                 <span class="stat-val">{{ s.breakDuration }}m</span>
-                <span class="stat-lbl">Break</span>
+                <span class="stat-lbl">{{ 'admin.workShifts.break' | translate }}</span>
               </div>
               <div class="stat-item">
                 <span class="material-icons stat-icon">how_to_reg</span>
                 <span class="stat-val">{{ s.gracePeriod }}m</span>
-                <span class="stat-lbl">Grace</span>
+                <span class="stat-lbl">{{ 'admin.workShifts.grace' | translate }}</span>
               </div>
             </div>
 
@@ -201,7 +201,7 @@
                 [class.status-inactive]="!s.isActive"
               >
                 <span class="status-dot"></span>
-                {{ s.isActive ? 'Active' : 'Inactive' }}
+                {{ (s.isActive ? 'common.active' : 'common.inactive') | translate }}
               </span>
             </div>
           </div>
@@ -219,7 +219,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2 class="modal-title">
-          {{ isEditMode() ? 'Edit Work Shift' : 'Add Work Shift' }}
+          {{ (isEditMode() ? 'admin.workShifts.editTitle' : 'admin.workShifts.addTitle') | translate }}
         </h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
@@ -237,10 +237,10 @@
           <!-- Row 1: Code + Type + Sort -->
           <div class="field-row-3">
             <div class="field">
-              <label>Shift Code <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.shiftCode' | translate }} <span class="req">*</span></label>
               <input
                 formControlName="shiftCode"
-                placeholder="e.g. MORNING"
+                [placeholder]="'admin.workShifts.shiftCodePlaceholder' | translate"
                 [class.readonly-inp]="isEditMode()"
               />
               @if (isInvalid('shiftCode')) {
@@ -248,7 +248,7 @@
               }
             </div>
             <div class="field">
-              <label>Shift Type <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.shiftType' | translate }} <span class="req">*</span></label>
               <select formControlName="shiftType">
                 @for (t of shiftTypes; track t) {
                   <option [value]="t">{{ t }}</option>
@@ -256,7 +256,7 @@
               </select>
             </div>
             <div class="field field-sm">
-              <label>Sort Order</label>
+              <label>{{ 'admin.workShifts.sortOrder' | translate }}</label>
               <input type="number" formControlName="sortOrder" min="0" />
             </div>
           </div>
@@ -264,14 +264,14 @@
           <!-- Row 2: Names -->
           <div class="field-row">
             <div class="field">
-              <label>Shift Name (English) <span class="req">*</span></label>
-              <input formControlName="shiftName" placeholder="e.g. Morning Shift" />
+              <label>{{ 'admin.workShifts.shiftNameEn' | translate }} <span class="req">*</span></label>
+              <input formControlName="shiftName" [placeholder]="'admin.workShifts.shiftNameEnPlaceholder' | translate" />
               @if (isInvalid('shiftName')) {
                 <span class="field-error">{{ getError('shiftName') }}</span>
               }
             </div>
             <div class="field">
-              <label>Shift Name (Arabic) <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.shiftNameAr' | translate }} <span class="req">*</span></label>
               <input formControlName="shiftNameAr" placeholder="e.g. الدوام الصباحي" dir="rtl" />
               @if (isInvalid('shiftNameAr')) {
                 <span class="field-error">{{ getError('shiftNameAr') }}</span>
@@ -282,21 +282,21 @@
           <!-- Row 3: Times + Hours -->
           <div class="field-row-3">
             <div class="field">
-              <label>Start Time <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.startTime' | translate }} <span class="req">*</span></label>
               <input type="time" formControlName="startTime" />
               @if (isInvalid('startTime')) {
                 <span class="field-error">{{ getError('startTime') }}</span>
               }
             </div>
             <div class="field">
-              <label>End Time <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.endTime' | translate }} <span class="req">*</span></label>
               <input type="time" formControlName="endTime" />
               @if (isInvalid('endTime')) {
                 <span class="field-error">{{ getError('endTime') }}</span>
               }
             </div>
             <div class="field">
-              <label>Working Hours <span class="req">*</span></label>
+              <label>{{ 'admin.workShifts.workingHours' | translate }} <span class="req">*</span></label>
               <input type="number" formControlName="workingHours" min="0.5" max="24" step="0.5" />
               @if (isInvalid('workingHours')) {
                 <span class="field-error">{{ getError('workingHours') }}</span>
@@ -307,29 +307,29 @@
           <!-- Row 4: Break + Grace -->
           <div class="field-row">
             <div class="field">
-              <label>Break Duration (minutes)</label>
+              <label>{{ 'admin.workShifts.breakDuration' | translate }}</label>
               <input type="number" formControlName="breakDuration" min="0" max="120" />
-              <span class="field-hint">Time deducted from working hours</span>
+              <span class="field-hint">{{ 'admin.workShifts.breakDurationHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>Grace Period (minutes)</label>
+              <label>{{ 'admin.workShifts.gracePeriod' | translate }}</label>
               <input type="number" formControlName="gracePeriod" min="0" max="60" />
-              <span class="field-hint">Late arrival tolerance</span>
+              <span class="field-hint">{{ 'admin.workShifts.gracePeriodHint' | translate }}</span>
             </div>
           </div>
 
           <!-- Working days selector -->
           <div class="field">
-            <label>Working Days <span class="req">*</span></label>
+            <label>{{ 'admin.workShifts.workingDays' | translate }} <span class="req">*</span></label>
             <div class="days-presets">
               <button type="button" class="preset-btn" (click)="setPreset('sun-thu')">
-                SUN–THU
+                {{ 'admin.workShifts.presetSunThu' | translate }}
               </button>
               <button type="button" class="preset-btn" (click)="setPreset('mon-fri')">
-                MON–FRI
+                {{ 'admin.workShifts.presetMonFri' | translate }}
               </button>
               <button type="button" class="preset-btn" (click)="setPreset('all')">
-                All 7 Days
+                {{ 'admin.workShifts.presetAll' | translate }}
               </button>
             </div>
             <div class="days-picker">
@@ -345,7 +345,7 @@
               }
             </div>
             @if (selectedDays().length === 0) {
-              <span class="field-error">Select at least one working day</span>
+              <span class="field-error">{{ 'admin.workShifts.selectDayError' | translate }}</span>
             }
           </div>
 
@@ -353,8 +353,8 @@
           <div class="toggles-row">
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Overnight Shift</span>
-                <span class="toggle-hint">Crosses midnight (e.g. 22:00–06:00)</span>
+                <span class="toggle-label">{{ 'admin.workShifts.overnightShift' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.workShifts.overnightHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isOvernight" class="toggle-inp" />
@@ -364,8 +364,8 @@
 
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Flexible Hours</span>
-                <span class="toggle-hint">No fixed start/end — log daily hours</span>
+                <span class="toggle-label">{{ 'admin.workShifts.flexibleHours' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.workShifts.flexibleHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isFlexible" class="toggle-inp" />
@@ -376,8 +376,8 @@
             @if (isEditMode()) {
               <label class="toggle-item">
                 <div class="toggle-info">
-                  <span class="toggle-label">Active</span>
-                  <span class="toggle-hint">Inactive shifts cannot be assigned</span>
+                  <span class="toggle-label">{{ 'common.active' | translate }}</span>
+                  <span class="toggle-hint">{{ 'admin.workShifts.activeHint' | translate }}</span>
                 </div>
                 <div class="toggle-wrap">
                   <input type="checkbox" formControlName="isActive" class="toggle-inp" />
@@ -389,24 +389,24 @@
 
           <!-- Description -->
           <div class="field">
-            <label>Description</label>
+            <label>{{ 'admin.workShifts.description' | translate }}</label>
             <textarea
               formControlName="description"
-              placeholder="Optional description..."
+              [placeholder]="'admin.workShifts.descriptionPlaceholder' | translate"
               rows="2"
             ></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>Saving...</span>
+              <span>{{ 'admin.workShifts.saving' | translate }}</span>
             } @else {
               <span class="material-icons">save</span>
-              <span>{{ isEditMode() ? 'Update' : 'Create Shift' }}</span>
+              <span>{{ (isEditMode() ? 'admin.workShifts.update' : 'admin.workShifts.createShift') | translate }}</span>
             }
           </button>
         </div>
@@ -429,26 +429,26 @@
         <span class="material-icons">schedule</span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }} Shift?
+        {{ (confirmTarget()?.isActive ? 'admin.workShifts.deactivateTitle' : 'admin.workShifts.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         <strong>{{ confirmTarget()?.shiftName }}</strong>
         ({{ confirmTarget()?.startTime }} – {{ confirmTarget()?.endTime }})
         @if (confirmTarget()?.isActive) {
-          will be deactivated and cannot be assigned to employees.
+          {{ 'admin.workShifts.deactivateMsg' | translate }}
         } @else {
-          will be activated and available for assignment.
+          {{ 'admin.workShifts.activateMsg' | translate }}
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-danger]="confirmTarget()?.isActive"
           [class.btn-success]="!confirmTarget()?.isActive"
           (click)="confirmToggle()"
         >
-          {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }}
+          {{ (confirmTarget()?.isActive ? 'admin.workShifts.deactivate' : 'admin.workShifts.activate') | translate }}
         </button>
       </div>
     </div>

@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ import { Holiday } from '../../models/holiday-calendar';
 @Component({
   selector: 'app-holiday-calendar',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './holiday-calendar.html',
   styleUrl: './holiday-calendar.css',
 })
@@ -24,6 +25,7 @@ export class HolidayCalendar implements OnInit {
   private fb = inject(FormBuilder);
   private holidayService = inject(HolidayService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   holidays = signal<Holiday[]>([]);
@@ -129,7 +131,10 @@ export class HolidayCalendar implements OnInit {
           if (res.success) this.holidays.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err) => this.error.set(err?.error?.message || 'Failed to load holidays.'),
+        error: (err) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('admin.holidayCalendar.errors.loadFailed'),
+          ),
       });
   }
 
@@ -203,9 +208,12 @@ export class HolidayCalendar implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode()
-              ? `"${res.data.holidayName}" updated`
-              : `"${res.data.holidayName}" added`,
+            this.translate.instant(
+              this.isEditMode()
+                ? 'admin.holidayCalendar.success.updated'
+                : 'admin.holidayCalendar.success.added',
+              { name: res.data.holidayName },
+            ),
           );
           this.closeModal();
           this.loadHolidays();
@@ -216,8 +224,8 @@ export class HolidayCalendar implements OnInit {
       error: (err) =>
         this.error.set(
           err.status === 409
-            ? 'A holiday with this name on this date already exists.'
-            : err?.error?.message || 'Operation failed.',
+            ? this.translate.instant('admin.holidayCalendar.errors.duplicate')
+            : err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'),
         ),
     });
   }
@@ -244,13 +252,16 @@ export class HolidayCalendar implements OnInit {
     call.subscribe({
       next: () => {
         this.showSuccess(
-          h.isActive ? `"${h.holidayName}" deactivated` : `"${h.holidayName}" activated`,
+          this.translate.instant(
+            h.isActive ? 'admin.holidayCalendar.success.deactivated' : 'admin.holidayCalendar.success.activated',
+            { name: h.holidayName },
+          ),
         );
         this.cancelConfirm();
         this.loadHolidays();
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -269,10 +280,14 @@ export class HolidayCalendar implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} characters`;
-    if (c.errors['pattern']) return 'Invalid format';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('common.validation.pattern');
+    return this.translate.instant('common.validation.invalid');
   }
 
   private showSuccess(msg: string): void {

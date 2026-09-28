@@ -22,6 +22,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { OvertimeService } from '../../services/overtime.service';
 import {
@@ -55,6 +56,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatTooltipModule,
     MatChipsModule,
     MatDividerModule,
+    TranslatePipe,
   ],
   templateUrl: './overtime-request.html',
   styleUrls: ['./overtime-request.css'],
@@ -63,6 +65,7 @@ export class OvertimeRequest implements OnInit {
   private readonly svc = inject(OvertimeService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State signals ──────────────────────────────────────
   readonly myRequests = signal<OvertimeResponse[]>([]);
@@ -100,10 +103,10 @@ export class OvertimeRequest implements OnInit {
 
   // ── OT Type options ────────────────────────────────────
   readonly otTypeOptions: { value: OvertimeType; label: string }[] = [
-    { value: 'PRE_APPROVED', label: 'Pre-Approved (notify before)' },
-    { value: 'POST_FACTO', label: 'Post Facto (after completing)' },
-    { value: 'WEEKEND', label: 'Weekend Work' },
-    { value: 'HOLIDAY', label: 'Holiday Work' },
+    { value: 'PRE_APPROVED', label: 'attendance.overtimeRequest.otTypeOptions.preApproved' },
+    { value: 'POST_FACTO', label: 'attendance.overtimeRequest.otTypeOptions.postFacto' },
+    { value: 'WEEKEND', label: 'attendance.overtimeRequest.otTypeOptions.weekend' },
+    { value: 'HOLIDAY', label: 'attendance.overtimeRequest.otTypeOptions.holiday' },
   ];
 
   // ── Submit form ────────────────────────────────────────
@@ -178,10 +181,11 @@ export class OvertimeRequest implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.snack.open('✅ Overtime request submitted successfully', 'Close', {
-            duration: 4000,
-            panelClass: 'snack-success',
-          });
+          this.snack.open(
+            '✅ ' + this.translate.instant('attendance.overtimeRequest.success.submitted'),
+            this.translate.instant('attendance.overtimeRequest.close'),
+            { duration: 4000, panelClass: 'snack-success' },
+          );
           this.submitForm.reset({ otType: 'POST_FACTO' });
           this.showForm.set(false);
           this.submitting.set(false);
@@ -189,26 +193,33 @@ export class OvertimeRequest implements OnInit {
           this.loadMyRequests();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Submission failed'), 'Close', {
-            duration: 5000,
-            panelClass: 'snack-error',
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.submitFailed')),
+            this.translate.instant('attendance.overtimeRequest.close'),
+            { duration: 5000, panelClass: 'snack-error' },
+          );
           this.submitting.set(false);
         },
       });
   }
 
   onCancel(otId: string): void {
-    if (!confirm('Are you sure you want to cancel this overtime request?')) return;
+    if (!confirm(this.translate.instant('attendance.overtimeRequest.confirmCancel'))) return;
     this.svc.cancel(otId, this.employeeId()).subscribe({
       next: () => {
-        this.snack.open('Request cancelled', 'Close', { duration: 3000 });
+        this.snack.open(
+          this.translate.instant('attendance.overtimeRequest.success.cancelled'),
+          this.translate.instant('attendance.overtimeRequest.close'),
+          { duration: 3000 },
+        );
         this.loadMyRequests();
       },
       error: (err) =>
-        this.snack.open('❌ ' + (err.error?.message || 'Cancel failed'), 'Close', {
-          duration: 4000,
-        }),
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.cancelFailed')),
+          this.translate.instant('attendance.overtimeRequest.close'),
+          { duration: 4000 },
+        ),
     });
   }
 

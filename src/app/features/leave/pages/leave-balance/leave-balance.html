@@ -2,9 +2,11 @@
   <!-- ── Page Header ──────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Leave Balances</h1>
+      <h1 class="page-title">{{ 'leave.balance.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ totalBalances() }} records</span>
+        <span class="chip chip-total">
+          {{ 'leave.balance.recordsCount' | translate: { count: totalBalances() } }}
+        </span>
       </div>
     </div>
     <div class="header-right">
@@ -37,7 +39,7 @@
       (click)="activeTab.set('overview')"
     >
       <span class="material-icons">dashboard</span>
-      Overview
+      {{ 'leave.balance.tabOverview' | translate }}
     </button>
     <button
       class="tab-btn"
@@ -45,7 +47,7 @@
       (click)="activeTab.set('initialize')"
     >
       <span class="material-icons">playlist_add</span>
-      Initialize
+      {{ 'leave.balance.tabInitialize' | translate }}
     </button>
     <button
       class="tab-btn"
@@ -53,7 +55,7 @@
       (click)="activeTab.set('adjust')"
     >
       <span class="material-icons">tune</span>
-      Adjust Balance
+      {{ 'leave.balance.tabAdjust' | translate }}
     </button>
   </div>
 
@@ -76,18 +78,18 @@
     @if (loading()) {
       <div class="loading-wrap">
         <div class="spinner"></div>
-        <span>Loading {{ selectedYear() }} balances...</span>
+        <span>{{ 'leave.balance.loadingText' | translate: { year: selectedYear() } }}</span>
       </div>
     }
 
     @if (!loading() && balances().length === 0) {
       <div class="empty-state">
         <span class="material-icons">event_busy</span>
-        <p>No leave balances for {{ selectedYear() }}</p>
-        <small>Click "Initialize" tab to create balances for all employees</small>
+        <p>{{ 'leave.balance.emptyTitle' | translate: { year: selectedYear() } }}</p>
+        <small>{{ 'leave.balance.emptyHint' | translate }}</small>
         <button class="btn-init-sm" (click)="activeTab.set('initialize')">
           <span class="material-icons">playlist_add</span>
-          Initialize Now
+          {{ 'leave.balance.initializeNowButton' | translate }}
         </button>
       </div>
     }
@@ -108,9 +110,14 @@
                 <span class="type-name">{{ group.leaveTypeName }}</span>
               </div>
               <div class="type-stats">
-                <span class="type-emp-count">{{ group.totalEmps }} employees</span>
+                <span class="type-emp-count">
+                  {{ 'leave.balance.employeesCount' | translate: { count: group.totalEmps } }}
+                </span>
                 <span class="type-avg">
-                  avg {{ group.avgAvailable.toFixed(1) }} days available
+                  {{
+                    'leave.balance.avgDaysAvailable'
+                      | translate: { avg: group.avgAvailable.toFixed(1) }
+                  }}
                 </span>
               </div>
             </div>
@@ -119,7 +126,9 @@
             <div class="emp-rows">
               @for (b of group.items.slice(0, 5); track b.balanceId) {
                 <div class="emp-bal-row">
-                  <span class="emp-id">EMP #{{ b.employeeId }}</span>
+                  <span class="emp-id">
+                    {{ 'leave.balance.empIdPrefix' | translate }}{{ b.employeeId }}
+                  </span>
                   <div class="bal-bar-wrap">
                     <div class="bal-bar">
                       <div
@@ -129,13 +138,16 @@
                       ></div>
                     </div>
                     <span class="bal-text">
-                      {{ b.availableDays.toFixed(1) }}/{{ b.totalDays.toFixed(1) }} days
+                      {{ b.availableDays.toFixed(1) }}/{{ b.totalDays.toFixed(1) }}
+                      {{ 'leave.list.daysPlural' | translate }}
                     </span>
                   </div>
                 </div>
               }
               @if (group.items.length > 5) {
-                <p class="more-rows">+{{ group.items.length - 5 }} more employees</p>
+                <p class="more-rows">
+                  {{ 'leave.balance.moreEmployees' | translate: { count: group.items.length - 5 } }}
+                </p>
               }
             </div>
           </div>
@@ -151,25 +163,23 @@
     <div class="form-card">
       <div class="form-card-header">
         <span class="material-icons">playlist_add</span>
-        Initialize Leave Balances
+        {{ 'leave.balance.initFormTitle' | translate }}
       </div>
 
       <div class="form-card-body">
         <div class="info-banner">
           <span class="material-icons">info</span>
           <div>
-            <strong>What this does:</strong>
-            Creates leave balance records for each active employee based on the default days
-            configured in Leave Types (Admin Config). Run this at the start of each year or when new
-            employees join.
+            <strong>{{ 'leave.balance.initInfoTitle' | translate }}</strong>
+            {{ 'leave.balance.initInfoBody' | translate }}
           </div>
         </div>
 
         <form [formGroup]="initForm" (ngSubmit)="onInitialize()" novalidate>
           <div class="field-row">
             <div class="field">
-              <label>Year <span class="req">*</span></label>
-              <select formControlName="year">
+              <label for="lb-init-year">{{ 'leave.balance.yearLabel' | translate }} <span class="req">*</span></label>
+              <select id="lb-init-year" formControlName="year">
                 @for (y of yearOptions; track y) {
                   <option [value]="y">{{ y }}</option>
                 }
@@ -188,9 +198,9 @@
                 <span class="toggle-slider"></span>
               </div>
               <div class="option-info">
-                <span class="option-label">Skip Existing</span>
+                <span class="option-label">{{ 'leave.balance.skipExistingLabel' | translate }}</span>
                 <span class="option-hint">
-                  Don't overwrite employees who already have balances for this year
+                  {{ 'leave.balance.skipExistingHint' | translate }}
                 </span>
               </div>
             </label>
@@ -201,9 +211,9 @@
                 <span class="toggle-slider"></span>
               </div>
               <div class="option-info">
-                <span class="option-label">Apply Carry Forward</span>
+                <span class="option-label">{{ 'leave.balance.carryForwardLabel' | translate }}</span>
                 <span class="option-hint">
-                  Add unused annual leave from previous year (up to max carry limit)
+                  {{ 'leave.balance.carryForwardHint' | translate }}
                 </span>
               </div>
             </label>
@@ -213,10 +223,10 @@
             <button type="submit" class="btn-initialize" [disabled]="initializing()">
               @if (initializing()) {
                 <div class="btn-spinner"></div>
-                <span>Initializing...</span>
+                <span>{{ 'leave.balance.initializingText' | translate }}</span>
               } @else {
                 <span class="material-icons">playlist_add</span>
-                <span>Initialize All Employees</span>
+                <span>{{ 'leave.balance.initializeAllButton' | translate }}</span>
               }
             </button>
           </div>
@@ -229,29 +239,31 @@
               <span class="material-icons">
                 {{ initResult()!.errorCount > 0 ? 'warning' : 'check_circle' }}
               </span>
-              <strong>Initialization Complete — {{ initResult()!.year }}</strong>
+              <strong>
+                {{ 'leave.balance.initCompleteTitle' | translate: { year: initResult()!.year } }}
+              </strong>
             </div>
             <div class="result-stats">
               <div class="result-stat">
                 <span class="stat-val green">{{ initResult()!.initializedCount }}</span>
-                <span class="stat-lbl">Initialized</span>
+                <span class="stat-lbl">{{ 'leave.balance.resultInitialized' | translate }}</span>
               </div>
               <div class="result-stat">
                 <span class="stat-val muted">{{ initResult()!.skippedCount }}</span>
-                <span class="stat-lbl">Skipped</span>
+                <span class="stat-lbl">{{ 'leave.balance.resultSkipped' | translate }}</span>
               </div>
               <div class="result-stat">
                 <span class="stat-val red">{{ initResult()!.errorCount }}</span>
-                <span class="stat-lbl">Errors</span>
+                <span class="stat-lbl">{{ 'leave.balance.resultErrors' | translate }}</span>
               </div>
               <div class="result-stat">
                 <span class="stat-val blue">{{ initResult()!.totalEmployees }}</span>
-                <span class="stat-lbl">Total</span>
+                <span class="stat-lbl">{{ 'leave.balance.resultTotal' | translate }}</span>
               </div>
             </div>
             @if (initResult()!.errors.length > 0) {
               <div class="result-errors">
-                <p class="error-title">Errors:</p>
+                <p class="error-title">{{ 'leave.balance.errorsTitle' | translate }}</p>
                 @for (err of initResult()!.errors; track err) {
                   <p class="error-item">{{ err }}</p>
                 }
@@ -270,16 +282,15 @@
     <div class="form-card">
       <div class="form-card-header">
         <span class="material-icons">tune</span>
-        Adjust Leave Balance
+        {{ 'leave.balance.adjustFormTitle' | translate }}
       </div>
 
       <div class="form-card-body">
         <div class="info-banner info-banner-warn">
           <span class="material-icons">warning</span>
           <div>
-            <strong>Use with caution.</strong>
-            Manual adjustments override the default allocation. All adjustments are logged for audit
-            purposes.
+            <strong>{{ 'leave.balance.adjustWarnTitle' | translate }}</strong>
+            {{ 'leave.balance.adjustWarnBody' | translate }}
           </div>
         </div>
 
@@ -287,16 +298,16 @@
           <!-- Employee ID + Leave Type -->
           <div class="field-row">
             <div class="field">
-              <label>Employee ID <span class="req">*</span></label>
-              <input formControlName="employeeId" type="number" placeholder="Enter employee ID" />
+              <label for="lb-adjust-employee-id">{{ 'leave.balance.employeeIdLabel' | translate }} <span class="req">*</span></label>
+              <input id="lb-adjust-employee-id" formControlName="employeeId" type="number" [placeholder]="'leave.balance.employeeIdPlaceholder' | translate" />
               @if (isInvalid(adjustForm, 'employeeId')) {
                 <span class="field-error">{{ getError(adjustForm, 'employeeId') }}</span>
               }
             </div>
             <div class="field">
-              <label>Leave Type <span class="req">*</span></label>
-              <select formControlName="leaveTypeCode">
-                <option value="">Select leave type</option>
+              <label for="lb-adjust-leave-type">{{ 'leave.balance.leaveTypeLabel' | translate }} <span class="req">*</span></label>
+              <select id="lb-adjust-leave-type" formControlName="leaveTypeCode">
+                <option value="">{{ 'leave.balance.selectLeaveType' | translate }}</option>
                 @for (lt of leaveTypes; track lt) {
                   <option [value]="lt">{{ lt }}</option>
                 }
@@ -310,15 +321,15 @@
           <!-- Year + Adjustment type -->
           <div class="field-row">
             <div class="field">
-              <label>Year <span class="req">*</span></label>
-              <select formControlName="year">
+              <label for="lb-adjust-year">{{ 'leave.balance.yearLabel' | translate }} <span class="req">*</span></label>
+              <select id="lb-adjust-year" formControlName="year">
                 @for (y of yearOptions; track y) {
                   <option [value]="y">{{ y }}</option>
                 }
               </select>
             </div>
             <div class="field">
-              <label>Adjustment Type <span class="req">*</span></label>
+              <label>{{ 'leave.balance.adjustmentTypeLabel' | translate }} <span class="req">*</span></label>
               <div class="adj-type-selector">
                 @for (at of adjustmentTypes; track at.value) {
                   <label
@@ -331,8 +342,8 @@
                       [value]="at.value"
                       style="display: none"
                     />
-                    <span class="adj-label">{{ at.label }}</span>
-                    <span class="adj-desc">{{ at.desc }}</span>
+                    <span class="adj-label">{{ at.labelKey | translate }}</span>
+                    <span class="adj-desc">{{ at.descKey | translate }}</span>
                   </label>
                 }
               </div>
@@ -342,22 +353,23 @@
           <!-- Days + Reason -->
           <div class="field-row">
             <div class="field">
-              <label>Days <span class="req">*</span></label>
+              <label for="lb-adjust-days">{{ 'leave.balance.daysLabel' | translate }} <span class="req">*</span></label>
               <input
+                id="lb-adjust-days"
                 formControlName="days"
                 type="number"
                 min="0.5"
                 max="365"
                 step="0.5"
-                placeholder="e.g. 5"
+                [placeholder]="'leave.balance.daysPlaceholder' | translate"
               />
               @if (isInvalid(adjustForm, 'days')) {
                 <span class="field-error">{{ getError(adjustForm, 'days') }}</span>
               }
             </div>
             <div class="field">
-              <label>Reason <span class="req">*</span></label>
-              <input formControlName="reason" placeholder="e.g. Annual merit grant" />
+              <label for="lb-adjust-reason">{{ 'leave.balance.reasonLabel' | translate }} <span class="req">*</span></label>
+              <input id="lb-adjust-reason" formControlName="reason" [placeholder]="'leave.balance.reasonPlaceholder' | translate" />
               @if (isInvalid(adjustForm, 'reason')) {
                 <span class="field-error">{{ getError(adjustForm, 'reason') }}</span>
               }
@@ -368,10 +380,10 @@
             <button type="submit" class="btn-adjust" [disabled]="adjusting()">
               @if (adjusting()) {
                 <div class="btn-spinner"></div>
-                <span>Saving...</span>
+                <span>{{ 'leave.balance.savingText' | translate }}</span>
               } @else {
                 <span class="material-icons">tune</span>
-                <span>Apply Adjustment</span>
+                <span>{{ 'leave.balance.applyAdjustmentButton' | translate }}</span>
               }
             </button>
           </div>

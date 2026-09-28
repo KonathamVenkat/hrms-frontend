@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ import { WorkShift } from '../../models/work-shift';
 @Component({
   selector: 'app-work-shifts',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './work-shifts.html',
   styleUrl: './work-shifts.css',
 })
@@ -24,6 +25,7 @@ export class WorkShifts implements OnInit {
   private fb = inject(FormBuilder);
   private shiftService = inject(WorkShiftService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   shifts = signal<WorkShift[]>([]);
@@ -124,7 +126,10 @@ export class WorkShifts implements OnInit {
           if (res.success) this.shifts.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err) => this.error.set(err?.error?.message || 'Failed to load shifts.'),
+        error: (err) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('admin.workShifts.errors.loadFailed'),
+          ),
       });
   }
 
@@ -210,7 +215,7 @@ export class WorkShifts implements OnInit {
   // ── Submit ────────────────────────────────────────────────
   onSubmit(): void {
     if (this.selectedDays().length === 0) {
-      this.error.set('Please select at least one working day.');
+      this.error.set(this.translate.instant('admin.workShifts.errors.noDaySelected'));
       return;
     }
     if (this.form.invalid) {
@@ -248,9 +253,10 @@ export class WorkShifts implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode()
-              ? `"${res.data.shiftName}" updated`
-              : `"${res.data.shiftName}" created`,
+            this.translate.instant(
+              this.isEditMode() ? 'admin.workShifts.success.updated' : 'admin.workShifts.success.created',
+              { name: res.data.shiftName },
+            ),
           );
           this.closeModal();
           this.loadShifts();
@@ -261,8 +267,8 @@ export class WorkShifts implements OnInit {
       error: (err) =>
         this.error.set(
           err.status === 409
-            ? err?.error?.message || 'Shift code or name already exists.'
-            : err?.error?.message || 'Operation failed.',
+            ? err?.error?.message || this.translate.instant('admin.workShifts.errors.duplicate')
+            : err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'),
         ),
     });
   }
@@ -288,13 +294,16 @@ export class WorkShifts implements OnInit {
     call.subscribe({
       next: () => {
         this.showSuccess(
-          s.isActive ? `"${s.shiftName}" deactivated` : `"${s.shiftName}" activated`,
+          this.translate.instant(
+            s.isActive ? 'admin.workShifts.success.deactivated' : 'admin.workShifts.success.activated',
+            { name: s.shiftName },
+          ),
         );
         this.cancelConfirm();
         this.loadShifts();
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -313,15 +322,20 @@ export class WorkShifts implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['min']) return `Min: ${c.errors['min'].min}`;
-    if (c.errors['max']) return `Max: ${c.errors['max'].max}`;
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    if (c.errors['pattern'])
-      return name === 'shiftCode'
-        ? 'Uppercase letters, numbers and underscores only'
-        : 'Format must be HH:MM (24hr)';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['min']) return this.translate.instant('common.validation.min', { count: c.errors['min'].min });
+    if (c.errors['max']) return this.translate.instant('common.validation.max', { count: c.errors['max'].max });
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) {
+      return this.translate.instant(
+        name === 'shiftCode' ? 'admin.workShifts.errors.patternCode' : 'admin.workShifts.errors.patternTime',
+      );
+    }
+    return this.translate.instant('common.validation.invalid');
   }
 
   private showSuccess(msg: string): void {

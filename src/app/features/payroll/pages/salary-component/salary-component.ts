@@ -22,6 +22,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { PayrollService } from '../../services/payroll.service';
 import {
@@ -52,6 +53,7 @@ import {
     MatTooltipModule,
     MatDividerModule,
     MatChipsModule,
+    TranslatePipe,
   ],
   templateUrl: './salary-component.html',
   styleUrls: ['./salary-component.css'],
@@ -59,6 +61,7 @@ import {
 export class SalaryComponentComponent implements OnInit {
   private readonly svc = inject(PayrollService);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State ──────────────────────────────────────────────
   readonly components = signal<SalaryComponentResponse[]>([]);
@@ -82,16 +85,16 @@ export class SalaryComponentComponent implements OnInit {
   ];
 
   readonly componentTypes: { value: ComponentType; label: string }[] = [
-    { value: 'EARNING', label: 'Earning' },
-    { value: 'DEDUCTION', label: 'Deduction' },
-    { value: 'STATUTORY', label: 'Statutory' },
+    { value: 'EARNING', label: 'payroll.salaryComponent.types.earning' },
+    { value: 'DEDUCTION', label: 'payroll.salaryComponent.types.deduction' },
+    { value: 'STATUTORY', label: 'payroll.salaryComponent.types.statutory' },
   ];
 
   readonly calcTypes: { value: CalculationType; label: string }[] = [
-    { value: 'FIXED', label: 'Fixed Amount' },
-    { value: 'PERCENTAGE_OF_BASIC', label: '% of Basic' },
-    { value: 'PERCENTAGE_OF_GROSS', label: '% of Gross' },
-    { value: 'FORMULA', label: 'Formula (Payroll Run)' },
+    { value: 'FIXED', label: 'payroll.salaryComponent.calcTypes.fixed' },
+    { value: 'PERCENTAGE_OF_BASIC', label: 'payroll.salaryComponent.calcTypes.percentOfBasic' },
+    { value: 'PERCENTAGE_OF_GROSS', label: 'payroll.salaryComponent.calcTypes.percentOfGross' },
+    { value: 'FORMULA', label: 'payroll.salaryComponent.calcTypes.formula' },
   ];
 
   // ── Form ───────────────────────────────────────────────
@@ -172,8 +175,10 @@ export class SalaryComponentComponent implements OnInit {
     obs.subscribe({
       next: () => {
         this.snack.open(
-          `✅ Component ${this.editingId() ? 'updated' : 'created'} successfully`,
-          'Close',
+          `✅ ${this.translate.instant(
+            this.editingId() ? 'payroll.salaryComponent.success.updated' : 'payroll.salaryComponent.success.created',
+          )}`,
+          this.translate.instant('payroll.salaryComponent.close'),
           { duration: 3000, panelClass: 'snack-success' },
         );
         this.showForm.set(false);
@@ -181,7 +186,11 @@ export class SalaryComponentComponent implements OnInit {
         this.load();
       },
       error: (err) => {
-        this.snack.open('❌ ' + (err.error?.message || 'Save failed'), 'Close', { duration: 4000 });
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('payroll.salaryComponent.errors.saveFailed')),
+          this.translate.instant('payroll.salaryComponent.close'),
+          { duration: 4000 },
+        );
         this.saving.set(false);
       },
     });
@@ -191,7 +200,11 @@ export class SalaryComponentComponent implements OnInit {
     this.svc.toggleComponent(comp.componentId, !comp.isActive).subscribe({
       next: () => this.load(),
       error: (err) =>
-        this.snack.open('❌ ' + (err.error?.message || 'Failed'), 'Close', { duration: 3000 }),
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('payroll.salaryComponent.errors.toggleFailed')),
+          this.translate.instant('payroll.salaryComponent.close'),
+          { duration: 3000 },
+        ),
     });
   }
 

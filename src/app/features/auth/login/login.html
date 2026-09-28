@@ -6,15 +6,19 @@
         <span class="logo-icon">⬡</span>
         <span class="logo-text">EHRMS</span>
       </div>
-      <h1 class="brand-headline">Human Resource<br />Management<br />System</h1>
+      <h1 class="brand-headline">
+        {{ 'auth.login.brandHeadline1' | translate }}<br />
+        {{ 'auth.login.brandHeadline2' | translate }}<br />
+        {{ 'auth.login.brandHeadline3' | translate }}
+      </h1>
       <p class="brand-sub">
-        A unified platform for employees, payroll, attendance, leave and reporting.
+        {{ 'auth.login.brandSub' | translate }}
       </p>
       <ul class="feature-list">
-        <li>&#128101; Employee Management</li>
-        <li>&#128176; Payroll &amp; Compensation</li>
-        <li>&#128197; Leave &amp; Attendance</li>
-        <li>&#128202; Reports &amp; Analytics</li>
+        <li>&#128101; {{ 'auth.login.featureEmployee' | translate }}</li>
+        <li>&#128176; {{ 'auth.login.featurePayroll' | translate }}</li>
+        <li>&#128197; {{ 'auth.login.featureLeaveAttendance' | translate }}</li>
+        <li>&#128202; {{ 'auth.login.featureReports' | translate }}</li>
       </ul>
     </div>
     <div class="deco d1"></div>
@@ -24,9 +28,13 @@
   <!-- Right Form Panel -->
   <main class="form-panel">
     <div class="form-wrap">
+      <div class="lang-switcher-wrap">
+        <app-language-switcher />
+      </div>
+
       <div class="form-header">
-        <h2>Welcome back</h2>
-        <p>Sign in to your account to continue</p>
+        <h2>{{ 'auth.login.welcomeTitle' | translate }}</h2>
+        <p>{{ 'auth.login.welcomeSub' | translate }}</p>
       </div>
 
       <!-- Error Banner -->
@@ -40,11 +48,11 @@
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
         <!-- Username -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Username</mat-label>
+          <mat-label>{{ 'auth.login.usernameLabel' | translate }}</mat-label>
           <input
             matInput
             formControlName="username"
-            placeholder="Enter your username"
+            [placeholder]="'auth.login.usernamePlaceholder' | translate"
             autocomplete="username"
             value="admin"
           />
@@ -55,12 +63,12 @@
 
         <!-- Password -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
+          <mat-label>{{ 'auth.login.passwordLabel' | translate }}</mat-label>
           <input
             matInput
             formControlName="password"
             [type]="hidePassword() ? 'password' : 'text'"
-            placeholder="Enter your password"
+            [placeholder]="'auth.login.passwordPlaceholder' | translate"
             autocomplete="current-password"
             value="admin123"
           />
@@ -76,8 +84,10 @@
 
         <!-- Remember + Forgot -->
         <div class="form-row">
-          <mat-checkbox formControlName="rememberMe" color="primary"> Remember me </mat-checkbox>
-          <a href="#" class="forgot-link">Forgot password?</a>
+          <mat-checkbox formControlName="rememberMe" color="primary">
+            {{ 'auth.login.rememberMe' | translate }}
+          </mat-checkbox>
+          <a href="#" class="forgot-link">{{ 'auth.login.forgotPassword' | translate }}</a>
         </div>
 
         <!-- Submit -->
@@ -90,14 +100,16 @@
         >
           @if (loading()) {
             <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
-            <span>&nbsp;Signing in…</span>
+            <span>&nbsp;{{ 'auth.login.signingIn' | translate }}</span>
           } @else {
-            <span>Sign In</span>
+            <span>{{ 'auth.login.signIn' | translate }}</span>
           }
         </button>
       </form>
 
-      <p class="footer-text">&copy; {{ currentYear }} EHRMS &middot; All rights reserved</p>
+      <p class="footer-text">
+        &copy; {{ currentYear }} EHRMS &middot; {{ 'auth.login.allRightsReserved' | translate }}
+      </p>
     </div>
   </main>
 </div>

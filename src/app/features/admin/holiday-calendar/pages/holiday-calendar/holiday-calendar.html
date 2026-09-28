@@ -2,11 +2,11 @@
   <!-- ── Page Header ──────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Holiday Calendar</h1>
+      <h1 class="page-title">{{ 'admin.holidayCalendar.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ totalActive() }} Active</span>
-        <span class="chip chip-public">{{ publicCount() }} Public</span>
-        <span class="chip chip-religious">{{ religiousCount() }} Religious</span>
+        <span class="chip chip-total">{{ 'admin.holidayCalendar.activeChip' | translate: { count: totalActive() } }}</span>
+        <span class="chip chip-public">{{ 'admin.holidayCalendar.publicChip' | translate: { count: publicCount() } }}</span>
+        <span class="chip chip-religious">{{ 'admin.holidayCalendar.religiousChip' | translate: { count: religiousCount() } }}</span>
       </div>
     </div>
     <div class="header-right">
@@ -30,7 +30,7 @@
       </div>
       <button class="btn-add" (click)="openCreate()">
         <span class="material-icons">add</span>
-        Add Holiday
+        {{ 'admin.holidayCalendar.addHoliday' | translate }}
       </button>
     </div>
   </div>
@@ -55,7 +55,7 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search holidays..."
+        [placeholder]="'admin.holidayCalendar.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -71,7 +71,7 @@
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'admin.holidayCalendar.allTypes' | translate }}</option>
       @for (t of holidayTypes; track t) {
         <option [value]="t">{{ t }}</option>
       }
@@ -83,21 +83,21 @@
         [class.active]="filterActive() === 'all'"
         (click)="filterActive.set('all')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'active'"
         (click)="filterActive.set('active')"
       >
-        Active
+        {{ 'common.active' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'inactive'"
         (click)="filterActive.set('inactive')"
       >
-        Inactive
+        {{ 'common.inactive' | translate }}
       </button>
     </div>
   </div>
@@ -106,7 +106,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading holidays for {{ selectedYear() }}...</span>
+      <span>{{ 'admin.holidayCalendar.loadingFor' | translate: { year: selectedYear() } }}</span>
     </div>
   }
 
@@ -114,10 +114,10 @@
   @if (!loading() && filteredHolidays().length === 0) {
     <div class="empty-card">
       <span class="material-icons">event_busy</span>
-      <p>No holidays found for {{ selectedYear() }}</p>
-      <small>Add holidays using the button above</small>
+      <p>{{ 'admin.holidayCalendar.emptyTitle' | translate: { year: selectedYear() } }}</p>
+      <small>{{ 'admin.holidayCalendar.emptyHint' | translate }}</small>
       <button class="btn-add-sm" (click)="openCreate()">
-        <span class="material-icons">add</span> Add Holiday
+        <span class="material-icons">add</span> {{ 'admin.holidayCalendar.addHoliday' | translate }}
       </button>
     </div>
   }
@@ -130,7 +130,7 @@
           <!-- Month header -->
           <div class="month-header">
             <span class="month-name">{{ group.month }}</span>
-            <span class="month-count">{{ group.items.length }} holidays</span>
+            <span class="month-count">{{ 'admin.holidayCalendar.holidaysCount' | translate: { count: group.items.length } }}</span>
           </div>
 
           <!-- Holidays in this month -->
@@ -158,7 +158,7 @@
                     @if (h.isRecurring) {
                       <span class="recurring-badge">
                         <span class="material-icons">event_repeat</span>
-                        Recurring
+                        {{ 'admin.holidayCalendar.recurring' | translate }}
                       </span>
                     }
                     @if (h.description) {
@@ -175,20 +175,20 @@
                     [class.status-inactive]="!h.isActive"
                   >
                     <span class="status-dot"></span>
-                    {{ h.isActive ? 'Active' : 'Inactive' }}
+                    {{ (h.isActive ? 'common.active' : 'common.inactive') | translate }}
                   </span>
                 </div>
 
                 <!-- Actions -->
                 <div class="holiday-actions">
-                  <button class="act-btn btn-edit" title="Edit" (click)="openEdit(h)">
+                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(h)">
                     <span class="material-icons">edit</span>
                   </button>
                   <button
                     class="act-btn"
                     [class.btn-deactivate]="h.isActive"
                     [class.btn-activate]="!h.isActive"
-                    [title]="h.isActive ? 'Deactivate' : 'Activate'"
+                    [title]="(h.isActive ? 'admin.holidayCalendar.deactivate' : 'admin.holidayCalendar.activate') | translate"
                     (click)="openConfirm(h)"
                   >
                     <span class="material-icons">
@@ -213,7 +213,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2 class="modal-title">
-          {{ isEditMode() ? 'Edit Holiday' : 'Add Holiday' }}
+          {{ (isEditMode() ? 'admin.holidayCalendar.editTitle' : 'admin.holidayCalendar.addHoliday') | translate }}
         </h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
@@ -232,14 +232,14 @@
           <!-- Names -->
           <div class="field-row">
             <div class="field">
-              <label>Holiday Name (English) <span class="req">*</span></label>
-              <input formControlName="holidayName" placeholder="e.g. National Day" />
+              <label>{{ 'admin.holidayCalendar.holidayNameEn' | translate }} <span class="req">*</span></label>
+              <input formControlName="holidayName" [placeholder]="'admin.holidayCalendar.holidayNameEnPlaceholder' | translate" />
               @if (isInvalid('holidayName')) {
                 <span class="field-error">{{ getError('holidayName') }}</span>
               }
             </div>
             <div class="field">
-              <label>Holiday Name (Arabic) <span class="req">*</span></label>
+              <label>{{ 'admin.holidayCalendar.holidayNameAr' | translate }} <span class="req">*</span></label>
               <input formControlName="holidayNameAr" placeholder="e.g. العيد الوطني" dir="rtl" />
               @if (isInvalid('holidayNameAr')) {
                 <span class="field-error">{{ getError('holidayNameAr') }}</span>
@@ -250,14 +250,14 @@
           <!-- Date + Type -->
           <div class="field-row">
             <div class="field">
-              <label>Holiday Date <span class="req">*</span></label>
+              <label>{{ 'admin.holidayCalendar.holidayDate' | translate }} <span class="req">*</span></label>
               <input type="date" formControlName="holidayDate" />
               @if (isInvalid('holidayDate')) {
                 <span class="field-error">{{ getError('holidayDate') }}</span>
               }
             </div>
             <div class="field">
-              <label>Holiday Type <span class="req">*</span></label>
+              <label>{{ 'admin.holidayCalendar.holidayType' | translate }} <span class="req">*</span></label>
               <select formControlName="holidayType">
                 @for (t of holidayTypes; track t) {
                   <option [value]="t">{{ t }}</option>
@@ -268,10 +268,10 @@
 
           <!-- Description -->
           <div class="field">
-            <label>Description</label>
+            <label>{{ 'admin.holidayCalendar.description' | translate }}</label>
             <textarea
               formControlName="description"
-              placeholder="Optional description..."
+              [placeholder]="'admin.holidayCalendar.descriptionPlaceholder' | translate"
               rows="2"
             ></textarea>
           </div>
@@ -280,8 +280,8 @@
           <div class="toggles-row">
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Recurring Yearly</span>
-                <span class="toggle-hint">Repeats on same date every year</span>
+                <span class="toggle-label">{{ 'admin.holidayCalendar.recurringYearly' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.holidayCalendar.recurringHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isRecurring" class="toggle-inp" />
@@ -292,8 +292,8 @@
             @if (isEditMode()) {
               <label class="toggle-item">
                 <div class="toggle-info">
-                  <span class="toggle-label">Active</span>
-                  <span class="toggle-hint">Inactive holidays are excluded from calculations</span>
+                  <span class="toggle-label">{{ 'common.active' | translate }}</span>
+                  <span class="toggle-hint">{{ 'admin.holidayCalendar.activeHint' | translate }}</span>
                 </div>
                 <div class="toggle-wrap">
                   <input type="checkbox" formControlName="isActive" class="toggle-inp" />
@@ -305,14 +305,14 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>Saving...</span>
+              <span>{{ 'admin.holidayCalendar.saving' | translate }}</span>
             } @else {
               <span class="material-icons">save</span>
-              <span>{{ isEditMode() ? 'Update' : 'Add Holiday' }}</span>
+              <span>{{ (isEditMode() ? 'admin.holidayCalendar.update' : 'admin.holidayCalendar.addHoliday') | translate }}</span>
             }
           </button>
         </div>
@@ -335,26 +335,26 @@
         <span class="material-icons">event_busy</span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }} Holiday?
+        {{ (confirmTarget()?.isActive ? 'admin.holidayCalendar.deactivateTitle' : 'admin.holidayCalendar.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         <strong>{{ confirmTarget()?.holidayName }}</strong>
         ({{ formatDate(confirmTarget()?.holidayDate ?? '') }})
         @if (confirmTarget()?.isActive) {
-          will be excluded from leave calculations.
+          {{ 'admin.holidayCalendar.excludedMsg' | translate }}
         } @else {
-          will be included in leave calculations.
+          {{ 'admin.holidayCalendar.includedMsg' | translate }}
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-danger]="confirmTarget()?.isActive"
           [class.btn-success]="!confirmTarget()?.isActive"
           (click)="confirmToggle()"
         >
-          {{ confirmTarget()?.isActive ? 'Deactivate' : 'Activate' }}
+          {{ (confirmTarget()?.isActive ? 'admin.holidayCalendar.deactivate' : 'admin.holidayCalendar.activate') | translate }}
         </button>
       </div>
     </div>

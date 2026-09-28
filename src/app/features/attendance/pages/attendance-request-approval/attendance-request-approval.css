@@ -179,15 +179,15 @@
 
 /* Row highlights */
 .pending-row td {
-  border-left: 3px solid #f59e0b;
+  border-inline-start: 3px solid #f59e0b;
 }
 .approved-row td {
   background: #f0fdf4 !important;
-  border-left: 3px solid #059669;
+  border-inline-start: 3px solid #059669;
 }
 .rejected-row td {
   background: #fff5f5 !important;
-  border-left: 3px solid #ef4444;
+  border-inline-start: 3px solid #ef4444;
 }
 
 /* ── Employee Cell ───────────────────────────────────────── */
@@ -347,7 +347,7 @@
   font-size: 15px !important;
   width: 15px !important;
   height: 15px !important;
-  margin-right: 2px;
+  margin-inline-end: 2px;
 }
 
 .acted-info .acted-at {

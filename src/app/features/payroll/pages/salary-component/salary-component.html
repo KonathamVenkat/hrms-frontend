@@ -6,12 +6,12 @@
     <div class="header-left">
       <mat-icon class="header-icon">tune</mat-icon>
       <div>
-        <h2>Salary Components</h2>
-        <span class="subtitle">Define earning, deduction and statutory components</span>
+        <h2>{{ 'payroll.salaryComponent.title' | translate }}</h2>
+        <span class="subtitle">{{ 'payroll.salaryComponent.subtitle' | translate }}</span>
       </div>
     </div>
     <button mat-flat-button color="primary" (click)="openCreate()">
-      <mat-icon>add</mat-icon> New Component
+      <mat-icon>add</mat-icon> {{ 'payroll.salaryComponent.newButton' | translate }}
     </button>
   </div>
 
@@ -20,77 +20,77 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon>{{ editingId() ? 'edit' : 'add_circle' }}</mat-icon>
-        {{ editingId() ? 'Edit' : 'New' }} Salary Component
+        {{ (editingId() ? 'payroll.salaryComponent.formTitleEdit' : 'payroll.salaryComponent.formTitleNew') | translate }}
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="form" class="form-grid">
 
         <mat-form-field appearance="outline">
-          <mat-label>Component Code</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.componentCode' | translate }}</mat-label>
           <input matInput formControlName="componentCode"
-                 placeholder="e.g. HRA" [readonly]="!!editingId()">
-          <mat-error *ngIf="form.get('componentCode')?.hasError('required')">Required</mat-error>
+                 [placeholder]="'payroll.salaryComponent.fields.componentCodePlaceholder' | translate" [readonly]="!!editingId()">
+          <mat-error *ngIf="form.get('componentCode')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Component Name (EN)</mat-label>
-          <input matInput formControlName="componentName" placeholder="Housing Allowance">
-          <mat-error *ngIf="form.get('componentName')?.hasError('required')">Required</mat-error>
+          <mat-label>{{ 'payroll.salaryComponent.fields.componentNameEn' | translate }}</mat-label>
+          <input matInput formControlName="componentName" [placeholder]="'payroll.salaryComponent.fields.componentNameEnPlaceholder' | translate">
+          <mat-error *ngIf="form.get('componentName')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Component Name (AR)</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.componentNameAr' | translate }}</mat-label>
           <input matInput formControlName="componentNameAr" dir="rtl">
-          <mat-error *ngIf="form.get('componentNameAr')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('componentNameAr')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Type</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.type' | translate }}</mat-label>
           <mat-select formControlName="componentType">
-            <mat-option *ngFor="let t of componentTypes" [value]="t.value">{{ t.label }}</mat-option>
+            <mat-option *ngFor="let t of componentTypes" [value]="t.value">{{ t.label | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Calculation Type</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.calcType' | translate }}</mat-label>
           <mat-select formControlName="calcType">
-            <mat-option *ngFor="let c of calcTypes" [value]="c.value">{{ c.label }}</mat-option>
+            <mat-option *ngFor="let c of calcTypes" [value]="c.value">{{ c.label | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Default Value / %</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.defaultValue' | translate }}</mat-label>
           <input matInput type="number" formControlName="defaultValue" min="0">
-          <mat-hint>Fixed amount or percentage</mat-hint>
+          <mat-hint>{{ 'payroll.salaryComponent.fields.defaultValueHint' | translate }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Sort Order</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.sortOrder' | translate }}</mat-label>
           <input matInput type="number" formControlName="sortOrder" min="0">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-col">
-          <mat-label>Description</mat-label>
+          <mat-label>{{ 'payroll.salaryComponent.fields.description' | translate }}</mat-label>
           <input matInput formControlName="description">
         </mat-form-field>
 
         <div class="toggle-row">
           <mat-slide-toggle formControlName="isTaxable" color="primary">
-            Taxable
+            {{ 'payroll.salaryComponent.fields.taxable' | translate }}
           </mat-slide-toggle>
           <mat-slide-toggle formControlName="isPasiApplicable" color="accent">
-            PASI Applicable
+            {{ 'payroll.salaryComponent.fields.pasiApplicable' | translate }}
           </mat-slide-toggle>
         </div>
 
       </form>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">Cancel</button>
+      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
         <mat-spinner *ngIf="saving()" diameter="18"></mat-spinner>
-        <span *ngIf="!saving()"><mat-icon>save</mat-icon> Save</span>
+        <span *ngIf="!saving()"><mat-icon>save</mat-icon> {{ 'common.save' | translate }}</span>
       </button>
     </mat-card-actions>
   </mat-card>
@@ -109,14 +109,14 @@
           </ng-container>
 
           <ng-container matColumnDef="componentCode">
-            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.code' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="code-chip">{{ r.componentCode }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="componentName">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.name' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <div class="name-cell">
                 <span class="name-en">{{ r.componentName }}</span>
@@ -126,23 +126,23 @@
           </ng-container>
 
           <ng-container matColumnDef="componentType">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.type' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="type-chip"
                     [style.background]="getTypeStyle(r.componentType).bg"
                     [style.color]="getTypeStyle(r.componentType).color">
-                {{ getTypeStyle(r.componentType).label }}
+                {{ getTypeStyle(r.componentType).label | translate }}
               </span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="calcType">
-            <th mat-header-cell *matHeaderCellDef>Calc Type</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.calcType' | translate }}</th>
             <td mat-cell *matCellDef="let r">{{ r.calcTypeLabel }}</td>
           </ng-container>
 
           <ng-container matColumnDef="defaultValue">
-            <th mat-header-cell *matHeaderCellDef>Default</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.default' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="amount">
                 {{ r.calcType === 'FIXED' ? (r.defaultValue | number:'1.3-3') + ' OMR'
@@ -152,7 +152,7 @@
           </ng-container>
 
           <ng-container matColumnDef="pasi">
-            <th mat-header-cell *matHeaderCellDef>PASI</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.pasi' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <mat-icon [style.color]="r.isPasiApplicable ? '#059669' : '#cbd5e1'">
                 {{ r.isPasiApplicable ? 'check_circle' : 'remove' }}
@@ -161,12 +161,12 @@
           </ng-container>
 
           <ng-container matColumnDef="isActive">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.status' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="status-chip"
                     [style.background]="r.isActive ? '#dcfce7' : '#fee2e2'"
                     [style.color]="r.isActive ? '#166534' : '#991b1b'">
-                {{ r.isActive ? 'Active' : 'Inactive' }}
+                {{ (r.isActive ? 'common.active' : 'common.inactive') | translate }}
               </span>
             </td>
           </ng-container>
@@ -174,13 +174,13 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let r">
-              <button mat-icon-button (click)="openEdit(r)" matTooltip="Edit">
+              <button mat-icon-button (click)="openEdit(r)" [matTooltip]="'common.edit' | translate">
                 <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button
                       [color]="r.isActive ? 'warn' : 'primary'"
                       (click)="toggleActive(r)"
-                      [matTooltip]="r.isActive ? 'Deactivate' : 'Activate'">
+                      [matTooltip]="(r.isActive ? 'payroll.salaryComponent.deactivate' : 'payroll.salaryComponent.activate') | translate">
                 <mat-icon>{{ r.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
               </button>
             </td>

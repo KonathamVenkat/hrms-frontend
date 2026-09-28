@@ -2,14 +2,14 @@
   <!-- ── Page Header ──────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Employees</h1>
+      <h1 class="page-title">{{ 'employee.list.title' | translate }}</h1>
       @if (totalElements() > 0) {
         <span class="count-badge">{{ totalElements() }}</span>
       }
     </div>
     <button class="btn-create" (click)="createEmployee()">
       <span class="material-icons">add</span>
-      Create Employee
+      {{ 'employee.list.createButton' | translate }}
     </button>
   </div>
 
@@ -20,7 +20,8 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search by name, code, email..."
+        [attr.aria-label]="'employee.list.searchLabel' | translate"
+        [placeholder]="'employee.list.searchPlaceholder' | translate"
         [value]="filter().search"
         (input)="filter.update((f) => ({ ...f, search: $any($event.target).value }))"
         (keyup.enter)="onSearch()"
@@ -28,15 +29,20 @@
       @if (filter().search) {
         <button
           class="clear-icon"
+          [attr.aria-label]="'employee.list.clearSearch' | translate"
           (click)="filter.update((f) => ({ ...f, search: '' })); onSearch()"
         >
           <span class="material-icons">close</span>
         </button>
       }
     </div>
+    <button class="btn-search" (click)="onSearch()">
+      {{ 'employee.list.searchButton' | translate }}
+    </button>
 
     <!-- Department filter -->
     <select
+      [attr.aria-label]="'employee.list.departmentLabel' | translate"
       [value]="filter().departmentId ?? ''"
       (change)="
         filter.update((f) => ({
@@ -47,7 +53,7 @@
       "
       class="filter-select"
     >
-      <option value="">All Departments</option>
+      <option value="">{{ 'employee.list.allDepartments' | translate }}</option>
       @for (d of departments(); track d.id) {
         <option [value]="d.id">{{ d.name }}</option>
       }
@@ -55,6 +61,7 @@
 
     <!-- Employment Type filter -->
     <select
+      [attr.aria-label]="'employee.list.typeLabel' | translate"
       [value]="filter().employmentType"
       (change)="
         filter.update((f) => ({ ...f, employmentType: $any($event.target).value }));
@@ -62,7 +69,7 @@
       "
       class="filter-select"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'employee.list.allTypes' | translate }}</option>
       @for (t of employmentTypes; track t) {
         <option [value]="t">{{ t.replace('_', ' ') }}</option>
       }
@@ -70,6 +77,7 @@
 
     <!-- Status filter -->
     <select
+      [attr.aria-label]="'employee.list.statusLabel' | translate"
       [value]="filter().employmentStatus"
       (change)="
         filter.update((f) => ({ ...f, employmentStatus: $any($event.target).value }));
@@ -77,22 +85,29 @@
       "
       class="filter-select"
     >
-      <option value="">All Status</option>
+      <option value="">{{ 'employee.list.allStatus' | translate }}</option>
       @for (s of statuses; track s) {
         <option [value]="s">{{ s.replace('_', ' ') }}</option>
       }
     </select>
 
+    <!-- Active status filter -->
+    <select
+      [attr.aria-label]="'employee.list.activeLabel' | translate"
+      [value]="filter().isActive === null ? '' : filter().isActive + ''"
+      (change)="onActiveFilterChange($any($event.target).value)"
+      class="filter-select"
+    >
+      <option value="true">{{ 'common.active' | translate }}</option>
+      <option value="false">{{ 'common.inactive' | translate }}</option>
+      <option value="">{{ 'common.all' | translate }}</option>
+    </select>
+
     <!-- Clear filters -->
-    @if (
-      filter().search ||
-      filter().departmentId ||
-      filter().employmentType ||
-      filter().employmentStatus
-    ) {
+    @if (hasNonDefaultFilters()) {
       <button class="btn-clear" (click)="clearFilters()">
         <span class="material-icons">filter_alt_off</span>
-        Clear
+        {{ 'employee.list.clearFilters' | translate }}
       </button>
     }
   </div>
@@ -102,7 +117,7 @@
     @if (loading()) {
       <div class="loading-overlay">
         <div class="spinner"></div>
-        <span>Loading employees...</span>
+        <span>{{ 'common.loading' | translate }}</span>
       </div>
     }
 
@@ -110,13 +125,13 @@
       <table class="emp-table">
         <thead>
           <tr>
-            <th>Employee</th>
-            <th>Department</th>
-            <th>Designation</th>
-            <th>Type</th>
-            <th>Hire Date</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{ 'employee.list.columns.employee' | translate }}</th>
+            <th>{{ 'employee.list.columns.department' | translate }}</th>
+            <th>{{ 'employee.list.columns.designation' | translate }}</th>
+            <th>{{ 'employee.list.columns.type' | translate }}</th>
+            <th>{{ 'employee.list.columns.hireDate' | translate }}</th>
+            <th>{{ 'employee.list.columns.status' | translate }}</th>
+            <th>{{ 'employee.list.columns.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -125,10 +140,11 @@
               <td colspan="7">
                 <div class="empty-state">
                   <span class="material-icons">people_outline</span>
-                  <p>No employees found</p>
-                  <small>Try adjusting your filters or create a new employee</small>
+                  <p>{{ 'employee.list.emptyTitle' | translate }}</p>
+                  <small>{{ 'employee.list.emptyHint' | translate }}</small>
                   <button class="btn-create-sm" (click)="createEmployee()">
-                    <span class="material-icons">add</span> Create Employee
+                    <span class="material-icons">add</span>
+                    {{ 'employee.list.createButton' | translate }}
                   </button>
                 </div>
               </td>
@@ -136,7 +152,12 @@
           }
 
           @for (emp of employees(); track emp.employeeId) {
-            <tr class="emp-row" (click)="viewEmployee(emp.employeeId)">
+            <tr
+              class="emp-row"
+              tabindex="0"
+              (click)="viewEmployee(emp.employeeId)"
+              (keydown)="onRowKeydown($event, emp.employeeId)"
+            >
               <!-- Employee name + avatar -->
               <td>
                 <div class="emp-cell">
@@ -145,18 +166,15 @@
                     <span class="emp-name">{{ emp.fullNameEn }}</span>
                     <span class="emp-code">{{ emp.employeeCode }}</span>
                     <span class="emp-email">{{ emp.workEmail }}</span>
-                    <!-- ✅ was emp.email -->
                   </div>
                 </div>
               </td>
 
               <td>
                 <span class="dept-text">{{ emp.departmentName || '—' }}</span>
-                <!-- ✅ was emp.department -->
               </td>
 
               <td>{{ emp.designationTitle || '—' }}</td>
-              <!-- ✅ was emp.designation -->
 
               <td>
                 <span class="type-badge" [ngClass]="getTypeClass(emp.employmentType)">
@@ -165,24 +183,31 @@
               </td>
 
               <td>{{ emp.hireDate | date: 'dd MMM yyyy' }}</td>
-              <!-- ✅ was emp.joiningDate -->
 
               <td>
                 <span class="status-badge" [ngClass]="getStatusClass(emp.employmentStatus)">
-                  <!-- ✅ was emp.status -->
                   <span class="status-dot"></span>
                   {{ emp.employmentStatus }}
-                  <!-- ✅ was emp.status -->
                 </span>
               </td>
 
               <!-- Actions -->
               <td (click)="$event.stopPropagation()">
                 <div class="action-wrap">
-                  <button class="act-btn view" title="View" (click)="viewEmployee(emp.employeeId)">
+                  <button
+                    class="act-btn view"
+                    [attr.aria-label]="'employee.list.viewAction' | translate"
+                    [title]="'common.view' | translate"
+                    (click)="viewEmployee(emp.employeeId)"
+                  >
                     <span class="material-icons">visibility</span>
                   </button>
-                  <button class="act-btn edit" title="Edit" (click)="editEmployee(emp.employeeId)">
+                  <button
+                    class="act-btn edit"
+                    [attr.aria-label]="'employee.list.editAction' | translate"
+                    [title]="'common.edit' | translate"
+                    (click)="editEmployee(emp.employeeId)"
+                  >
                     <span class="material-icons">edit</span>
                   </button>
                 </div>
@@ -194,37 +219,61 @@
     </div>
 
     <!-- ── Pagination ──────────────────────────────────────── -->
-    @if (totalPages() > 1) {
-      <div class="pagination">
-        <span class="pag-info">
-          Showing {{ showingFrom() }}–{{ showingTo() }} of {{ totalElements() }} employees
-        </span>
+    <div class="pagination">
+      <span class="pag-info">
+        {{
+          'employee.list.showing'
+            | translate: { from: showingFrom(), to: showingTo(), total: totalElements() }
+        }}
+      </span>
+
+      <label class="page-size-wrap">
+        {{ 'employee.list.pageSizeLabel' | translate }}
+        <select
+          [value]="pageSize()"
+          (change)="onPageSizeChange(+$any($event.target).value)"
+        >
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">{{ size }}</option>
+          }
+        </select>
+      </label>
+
+      @if (totalPages() > 1) {
         <div class="pag-btns">
           <button
             class="pag-btn"
+            [attr.aria-label]="'employee.list.prevPage' | translate"
             [disabled]="currentPage() === 0"
             (click)="onPageChange(currentPage() - 1)"
           >
             <span class="material-icons">chevron_left</span>
           </button>
-          @for (p of pages(); track p) {
-            <button
-              class="pag-btn num"
-              [class.active]="p === currentPage()"
-              (click)="onPageChange(p)"
-            >
-              {{ p + 1 }}
-            </button>
+          @for (entry of pageEntries(); track $index) {
+            @if (entry === 'ellipsis') {
+              <span class="pag-ellipsis">&hellip;</span>
+            } @else {
+              <button
+                class="pag-btn num"
+                [class.active]="entry === currentPage()"
+                [attr.aria-label]="'employee.list.goToPage' | translate: { page: entry + 1 }"
+                [attr.aria-current]="entry === currentPage() ? 'page' : null"
+                (click)="onPageChange(entry)"
+              >
+                {{ entry + 1 }}
+              </button>
+            }
           }
           <button
             class="pag-btn"
+            [attr.aria-label]="'employee.list.nextPage' | translate"
             [disabled]="currentPage() === totalPages() - 1"
             (click)="onPageChange(currentPage() + 1)"
           >
             <span class="material-icons">chevron_right</span>
           </button>
         </div>
-      </div>
-    }
+      }
+    </div>
   </div>
 </div>

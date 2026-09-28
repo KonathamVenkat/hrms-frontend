@@ -10,6 +10,9 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { LanguageSwitcher } from '../../core/components/language-switcher/language-switcher';
+import { LanguageService } from '../../core/services/language.service';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -27,7 +30,7 @@ export interface AuthUser {
 
 @Component({
   selector: 'app-toolbar',
-  imports: [],
+  imports: [LanguageSwitcher, TranslatePipe],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +42,9 @@ export class Toolbar implements OnInit, OnDestroy {
   private router = inject(Router);
   private elRef = inject(ElementRef);
   private platformId = inject(PLATFORM_ID);
+  private languageService = inject(LanguageService);
+
+  protected readonly direction = this.languageService.direction;
 
   currentTime = signal('00:00:00');
   isDarkMode = signal(false);
@@ -47,6 +53,7 @@ export class Toolbar implements OnInit, OnDestroy {
   notifCount = signal(0);
   dropdownTop = signal<number>(64);
   dropdownRight = signal<number>(20);
+  dropdownLeft = signal<number>(20);
 
   user = signal<AuthUser | null>(null);
 
@@ -100,12 +107,18 @@ export class Toolbar implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * The dropdown is `position: fixed`, so it anchors to raw viewport coordinates — those
+   * don't mirror automatically under `dir="rtl"`. We anchor to the button's trailing edge
+   * in both directions: its right edge in LTR, its left edge in RTL (see toolbar.html).
+   */
   toggleProfile(event: MouseEvent): void {
     if (isPlatformBrowser(this.platformId)) {
       const btn = event.currentTarget as HTMLElement;
       const rect = btn.getBoundingClientRect();
       this.dropdownTop.set(rect.bottom + 8);
       this.dropdownRight.set(window.innerWidth - rect.right);
+      this.dropdownLeft.set(rect.left);
     }
     this.profileOpen.update((v) => !v);
   }

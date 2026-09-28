@@ -38,11 +38,12 @@ export interface RegularizationActionRequest {
   rejectionReason?:  string;
 }
 
-// Status display config
+// Status display config — `label` values are ngx-translate keys, templates must pipe
+// them through `| translate`.
 export const REG_STATUS_CONFIG: Record<RegularizationStatus,
   { label: string; color: string; bg: string; icon: string }> = {
-  PENDING:   { label: 'Pending Approval', color: '#92400e', bg: '#fef3c7', icon: 'pending'       },
-  APPROVED:  { label: 'Approved',         color: '#166534', bg: '#dcfce7', icon: 'check_circle'  },
-  REJECTED:  { label: 'Rejected',         color: '#991b1b', bg: '#fee2e2', icon: 'cancel'        },
-  CANCELLED: { label: 'Cancelled',        color: '#475569', bg: '#f1f5f9', icon: 'do_not_disturb'},
+  PENDING:   { label: 'attendance.regStatus.pending',   color: '#92400e', bg: '#fef3c7', icon: 'pending'       },
+  APPROVED:  { label: 'attendance.regStatus.approved',  color: '#166534', bg: '#dcfce7', icon: 'check_circle'  },
+  REJECTED:  { label: 'attendance.regStatus.rejected',  color: '#991b1b', bg: '#fee2e2', icon: 'cancel'        },
+  CANCELLED: { label: 'attendance.regStatus.cancelled', color: '#475569', bg: '#f1f5f9', icon: 'do_not_disturb'},
 };

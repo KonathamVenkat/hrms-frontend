@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DocumentTypeService } from '../../services/document-type';
@@ -15,7 +16,7 @@ import { DocumentType } from '../../models/document-type';
 @Component({
   selector: 'app-document-types',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './document-type.html',
   styleUrl: './document-type.css',
 })
@@ -23,6 +24,7 @@ export class DocumentTypes implements OnInit {
   private fb = inject(FormBuilder);
   private svc = inject(DocumentTypeService);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   docTypes = signal<DocumentType[]>([]);
   loading = signal(false);
@@ -114,7 +116,10 @@ export class DocumentTypes implements OnInit {
           if (res.success) this.docTypes.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err) => this.error.set(err?.error?.message || 'Failed to load document types.'),
+        error: (err) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('admin.documentTypes.errors.loadFailed'),
+          ),
       });
   }
 
@@ -177,9 +182,10 @@ export class DocumentTypes implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode()
-              ? `"${res.data.docTypeName}" updated`
-              : `"${res.data.docTypeName}" created`,
+            this.translate.instant(
+              this.isEditMode() ? 'admin.documentTypes.success.updated' : 'admin.documentTypes.success.created',
+              { name: res.data.docTypeName },
+            ),
           );
           this.closeModal();
           this.loadDocTypes();
@@ -188,8 +194,8 @@ export class DocumentTypes implements OnInit {
       error: (err) =>
         this.error.set(
           err.status === 409
-            ? err?.error?.message || 'Code or name already exists.'
-            : err?.error?.message || 'Operation failed.',
+            ? err?.error?.message || this.translate.instant('admin.documentTypes.errors.duplicate')
+            : err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'),
         ),
     });
   }
@@ -210,13 +216,16 @@ export class DocumentTypes implements OnInit {
     call.subscribe({
       next: () => {
         this.showSuccess(
-          dt.isActive ? `"${dt.docTypeName}" deactivated` : `"${dt.docTypeName}" activated`,
+          this.translate.instant(
+            dt.isActive ? 'admin.documentTypes.success.deactivated' : 'admin.documentTypes.success.activated',
+            { name: dt.docTypeName },
+          ),
         );
         this.cancelConfirm();
         this.loadDocTypes();
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -232,12 +241,16 @@ export class DocumentTypes implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['min']) return `Min: ${c.errors['min'].min}`;
-    if (c.errors['max']) return `Max: ${c.errors['max'].max}`;
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    if (c.errors['pattern']) return 'Uppercase letters, numbers and underscores only';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['min']) return this.translate.instant('common.validation.min', { count: c.errors['min'].min });
+    if (c.errors['max']) return this.translate.instant('common.validation.max', { count: c.errors['max'].max });
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('admin.workShifts.errors.patternCode');
+    return this.translate.instant('common.validation.invalid');
   }
   private showSuccess(msg: string): void {
     this.successMsg.set(msg);

@@ -200,10 +200,10 @@
   cursor: pointer;
   font-family: 'Outfit', sans-serif;
   transition: all 0.15s;
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
 }
 .tab-btn:last-child {
-  border-right: none;
+  border-inline-end: none;
 }
 .tab-btn.active {
   background: var(--teal);
@@ -852,7 +852,7 @@ input.readonly-inp {
 .toggle-slider::after {
   content: '';
   position: absolute;
-  left: 3px;
+  inset-inline-start: 3px;
   top: 3px;
   width: 16px;
   height: 16px;

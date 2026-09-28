@@ -2,14 +2,14 @@
   <!-- ── Page header ────────────────────────────────────── -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Leave Approval</h1>
+      <h1 class="page-title">{{ 'leave.approval.title' | translate }}</h1>
       @if (totalElements() > 0) {
         <span class="count-badge">{{ totalElements() }}</span>
       }
       @if (filterStatus() === 'PENDING' && pendingCount() > 0) {
         <span class="pending-chip">
           <span class="material-icons">hourglass_empty</span>
-          {{ pendingCount() }} awaiting action
+          {{ 'leave.approval.awaitingActionCount' | translate: { count: pendingCount() } }}
         </span>
       }
     </div>
@@ -26,7 +26,7 @@
           (click)="filterStatus.set(s); onFilterChange()"
         >
           @if (s === '') {
-            All
+            {{ 'common.all' | translate }}
           } @else {
             {{ s }}
           }
@@ -37,10 +37,11 @@
     <!-- Leave type -->
     <select
       class="filter-select"
+      [attr.aria-label]="'leave.approval.typeFilterLabel' | translate"
       [value]="filterLeaveType()"
       (change)="filterLeaveType.set($any($event.target).value); onFilterChange()"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'leave.list.allTypes' | translate }}</option>
       @for (lt of leaveTypes; track lt) {
         <option [value]="lt">{{ lt }}</option>
       }
@@ -63,7 +64,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading leave requests...</span>
+      <span>{{ 'leave.list.loadingText' | translate }}</span>
     </div>
   }
 
@@ -73,12 +74,12 @@
       <span class="material-icons">task_alt</span>
       <p>
         @if (filterStatus() === 'PENDING') {
-          No pending leave requests
+          {{ 'leave.approval.emptyPendingTitle' | translate }}
         } @else {
-          No leave requests found
+          {{ 'leave.list.emptyTitle' | translate }}
         }
       </p>
-      <small>All caught up!</small>
+      <small>{{ 'leave.approval.allCaughtUp' | translate }}</small>
     </div>
   }
 
@@ -116,19 +117,20 @@
               <span class="type-dot" [style.background]="getTypeColor(leave.leaveTypeCode)"> </span>
               <span class="type-name">{{ leave.leaveTypeName }}</span>
               <span class="days-chip">
-                {{ leave.totalDays }} day{{ leave.totalDays !== 1 ? 's' : '' }}
+                {{ leave.totalDays }}
+                {{ (leave.totalDays !== 1 ? 'leave.list.daysPlural' : 'leave.list.daySingular') | translate }}
               </span>
             </div>
 
             <!-- Dates -->
             <div class="dates-row">
               <div class="date-item">
-                <span class="date-label">From</span>
+                <span class="date-label">{{ 'leave.list.dateFrom' | translate }}</span>
                 <span class="date-val">{{ leave.startDate }}</span>
               </div>
               <span class="material-icons date-arrow">arrow_forward</span>
               <div class="date-item">
-                <span class="date-label">To</span>
+                <span class="date-label">{{ 'leave.list.dateTo' | translate }}</span>
                 <span class="date-val">{{ leave.endDate }}</span>
               </div>
             </div>
@@ -140,7 +142,9 @@
             </div>
 
             <!-- Submitted date -->
-            <p class="submitted-date">Submitted: {{ leave.createdAt | slice: 0 : 10 }}</p>
+            <p class="submitted-date">
+              {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
+            </p>
 
             <!-- Approval info (for non-pending) -->
             @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
@@ -154,8 +158,13 @@
                 </span>
                 <div>
                   <span class="approval-by">
-                    {{ leave.status === 'APPROVED' ? 'Approved' : 'Rejected' }}
-                    by <strong>{{ leave.approvedBy }}</strong>
+                    {{
+                      (leave.status === 'APPROVED'
+                        ? 'leave.list.statusApproved'
+                        : 'leave.list.statusRejected'
+                      ) | translate
+                    }}
+                    {{ 'leave.list.byConnector' | translate }} <strong>{{ leave.approvedBy }}</strong>
                   </span>
                   @if (leave.remarks) {
                     <span class="approval-remarks">— "{{ leave.remarks }}"</span>
@@ -174,7 +183,7 @@
                 (click)="openReject(leave)"
               >
                 <span class="material-icons">close</span>
-                Reject
+                {{ 'leave.approval.rejectButton' | translate }}
               </button>
               <button
                 class="btn-approve"
@@ -186,7 +195,7 @@
                 } @else {
                   <span class="material-icons">check</span>
                 }
-                Approve
+                {{ 'leave.approval.approveButton' | translate }}
               </button>
             </div>
           }
@@ -198,7 +207,10 @@
     @if (totalPages() > 1) {
       <div class="pagination">
         <span class="pag-info">
-          Showing {{ showingFrom }}–{{ showingTo }} of {{ totalElements() }}
+          {{
+            'leave.list.showing'
+              | translate: { from: showingFrom, to: showingTo, total: totalElements() }
+          }}
         </span>
         <div class="pag-btns">
           <button
@@ -249,7 +261,12 @@
         </div>
         <div>
           <h2 class="modal-title">
-            {{ actionType() === 'APPROVED' ? 'Approve' : 'Reject' }} Leave Request
+            {{
+              (actionType() === 'APPROVED'
+                ? 'leave.approval.modalTitleApprove'
+                : 'leave.approval.modalTitleReject'
+              ) | translate
+            }}
           </h2>
           <p class="modal-sub">
             {{ selectedLeave()!.employeeName ?? selectedLeave()!.employeeCode }}
@@ -263,25 +280,28 @@
       <!-- Leave summary -->
       <div class="modal-summary">
         <div class="summary-row">
-          <span class="summary-label">Leave Type</span>
+          <span class="summary-label">{{ 'leave.approval.summaryLeaveType' | translate }}</span>
           <span class="summary-val">{{ selectedLeave()!.leaveTypeName }}</span>
         </div>
         <div class="summary-row">
-          <span class="summary-label">Duration</span>
+          <span class="summary-label">{{ 'leave.approval.summaryDuration' | translate }}</span>
           <span class="summary-val">
             {{ selectedLeave()!.startDate }} → {{ selectedLeave()!.endDate }}
-            <span class="days-tag"> {{ selectedLeave()!.totalDays }} day(s) </span>
+            <span class="days-tag">
+              {{ selectedLeave()!.totalDays }} {{ 'leave.list.daysUnitParenthetical' | translate }}
+            </span>
           </span>
         </div>
         <div class="summary-row">
-          <span class="summary-label">Reason</span>
+          <span class="summary-label">{{ 'leave.approval.summaryReason' | translate }}</span>
           <span class="summary-val">{{ selectedLeave()!.reason }}</span>
         </div>
         @if (selectedLeave()!.balanceAvailable != null) {
           <div class="summary-row">
-            <span class="summary-label">Balance</span>
+            <span class="summary-label">{{ 'leave.approval.summaryBalance' | translate }}</span>
             <span class="summary-val">
-              {{ selectedLeave()!.balanceAvailable | number: '1.1-1' }} days available
+              {{ selectedLeave()!.balanceAvailable | number: '1.1-1' }}
+              {{ 'leave.approval.daysAvailable' | translate }}
             </span>
           </div>
         }
@@ -290,35 +310,39 @@
       <!-- Remarks form -->
       <form [formGroup]="remarksForm" (ngSubmit)="confirmAction()" class="modal-body">
         <div class="field">
-          <label>
-            Remarks
+          <label for="approval-remarks">
+            {{ 'leave.approval.remarksLabel' | translate }}
             @if (actionType() === 'REJECTED') {
-              <span class="req">* Required for rejection</span>
+              <span class="req">{{ 'leave.approval.remarksRequiredForRejection' | translate }}</span>
             } @else {
-              <span class="opt">(optional)</span>
+              <span class="opt">{{ 'leave.approval.remarksOptional' | translate }}</span>
             }
           </label>
           <textarea
+            id="approval-remarks"
             formControlName="remarks"
             rows="3"
             [placeholder]="
-              actionType() === 'APPROVED'
-                ? 'Optional note for the employee...'
-                : 'Reason for rejection (required)...'
+              (actionType() === 'APPROVED'
+                ? 'leave.approval.remarksPlaceholderApprove'
+                : 'leave.approval.remarksPlaceholderReject'
+              ) | translate
             "
           >
           </textarea>
           @if (remarksForm.get('remarks')?.invalid && remarksForm.get('remarks')?.touched) {
             <span class="field-error">
               @if (remarksForm.get('remarks')?.errors?.['required']) {
-                Rejection reason is required
+                {{ 'leave.approval.rejectionReasonRequired' | translate }}
               }
             </span>
           }
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">
+            {{ 'common.cancel' | translate }}
+          </button>
           <button
             type="submit"
             class="btn-action"
@@ -328,13 +352,18 @@
           >
             @if (processing() !== null) {
               <div class="btn-spinner"></div>
-              <span>Processing...</span>
+              <span>{{ 'leave.approval.processingText' | translate }}</span>
             } @else {
               <span class="material-icons">
                 {{ actionType() === 'APPROVED' ? 'check' : 'close' }}
               </span>
               <span>
-                {{ actionType() === 'APPROVED' ? 'Confirm Approve' : 'Confirm Reject' }}
+                {{
+                  (actionType() === 'APPROVED'
+                    ? 'leave.approval.confirmApproveButton'
+                    : 'leave.approval.confirmRejectButton'
+                  ) | translate
+                }}
               </span>
             }
           </button>

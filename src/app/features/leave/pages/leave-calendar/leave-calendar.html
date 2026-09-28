@@ -2,7 +2,7 @@
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="cal-header">
     <div class="header-left">
-      <h1 class="page-title">Leave Calendar</h1>
+      <h1 class="page-title">{{ 'leave.calendar.title' | translate }}</h1>
     </div>
     <!-- Month navigation -->
     <div class="month-nav">
@@ -13,7 +13,9 @@
       <button class="nav-btn" (click)="nextMonth()">
         <span class="material-icons">chevron_right</span>
       </button>
-      <button class="today-btn" (click)="goToToday()">Today</button>
+      <button class="today-btn" (click)="goToToday()">
+        {{ 'leave.calendar.todayButton' | translate }}
+      </button>
     </div>
   </div>
 
@@ -24,28 +26,28 @@
         <span class="material-icons stat-icon approved-icon">check_circle</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalApproved }}</span>
-          <span class="stat-lbl">Approved</span>
+          <span class="stat-lbl">{{ 'leave.calendar.statApproved' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
         <span class="material-icons stat-icon pending-icon">hourglass_empty</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalPending }}</span>
-          <span class="stat-lbl">Pending</span>
+          <span class="stat-lbl">{{ 'leave.calendar.statPending' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
         <span class="material-icons stat-icon holiday-icon">celebration</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalHolidays }}</span>
-          <span class="stat-lbl">Holidays</span>
+          <span class="stat-lbl">{{ 'leave.calendar.statHolidays' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
         <span class="material-icons stat-icon today-icon">person_off</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.onLeaveToday }}</span>
-          <span class="stat-lbl">On Leave Today</span>
+          <span class="stat-lbl">{{ 'leave.calendar.statOnLeaveToday' | translate }}</span>
         </div>
       </div>
     </div>
@@ -62,7 +64,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading calendar...</span>
+      <span>{{ 'leave.calendar.loadingText' | translate }}</span>
     </div>
   }
 
@@ -75,7 +77,7 @@
         <!-- Week day headers -->
         <div class="cal-weekdays">
           @for (d of weekDays; track d) {
-            <div class="weekday-header">{{ d }}</div>
+            <div class="weekday-header">{{ ('leave.calendar.weekdays.' + d) | translate }}</div>
           }
         </div>
 
@@ -130,7 +132,7 @@
         <div class="panel-card">
           <div class="panel-card-header">
             <span class="material-icons">person_off</span>
-            On Leave Today
+            {{ 'leave.calendar.statOnLeaveToday' | translate }}
             @if (calendar()!.todaysLeaves.length > 0) {
               <span class="badge">{{ calendar()!.todaysLeaves.length }}</span>
             }
@@ -139,7 +141,7 @@
           @if (calendar()!.todaysLeaves.length === 0) {
             <div class="panel-empty">
               <span class="material-icons">check_circle_outline</span>
-              <span>Everyone is in today</span>
+              <span>{{ 'leave.calendar.everyoneIn' | translate }}</span>
             </div>
           } @else {
             <div class="today-leaves">
@@ -162,44 +164,44 @@
         <div class="panel-card">
           <div class="panel-card-header">
             <span class="material-icons">info_outline</span>
-            Legend
+            {{ 'leave.calendar.legendTitle' | translate }}
           </div>
           <div class="legend-list">
             <div class="legend-item">
               <span class="legend-dot" style="background: #13c9b4"></span>
-              <span>Annual Leave</span>
+              <span>{{ 'leave.calendar.legendAnnual' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #e11d48"></span>
-              <span>Sick Leave</span>
+              <span>{{ 'leave.calendar.legendSick' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #f59e0b"></span>
-              <span>Casual Leave</span>
+              <span>{{ 'leave.calendar.legendCasual' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #8b5cf6"></span>
-              <span>Maternity Leave</span>
+              <span>{{ 'leave.calendar.legendMaternity' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #06b6d4"></span>
-              <span>Paternity Leave</span>
+              <span>{{ 'leave.calendar.legendPaternity' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot" style="background: #f97316"></span>
-              <span>Hajj Leave</span>
+              <span>{{ 'leave.calendar.legendHajj' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-swatch holiday-swatch"></span>
-              <span>Public Holiday</span>
+              <span>{{ 'leave.calendar.legendPublicHoliday' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-swatch weekend-swatch"></span>
-              <span>Weekend (Fri–Sat)</span>
+              <span>{{ 'leave.calendar.legendWeekend' | translate }}</span>
             </div>
             <div class="legend-item">
               <span class="legend-dot pending-dot"></span>
-              <span>Pending (dashed)</span>
+              <span>{{ 'leave.calendar.legendPending' | translate }}</span>
             </div>
           </div>
         </div>
@@ -218,13 +220,13 @@
           </div>
           <div class="popup-tags">
             @if (selectedDay()!.isToday) {
-              <span class="tag-today">Today</span>
+              <span class="tag-today">{{ 'leave.calendar.todayButton' | translate }}</span>
             }
             @if (selectedDay()!.isHoliday) {
-              <span class="tag-holiday">Holiday</span>
+              <span class="tag-holiday">{{ 'leave.calendar.tagHoliday' | translate }}</span>
             }
             @if (selectedDay()!.isWeekend) {
-              <span class="tag-weekend">Weekend</span>
+              <span class="tag-weekend">{{ 'leave.calendar.tagWeekend' | translate }}</span>
             }
           </div>
           <button class="popup-close" (click)="closePopup()">
@@ -237,7 +239,7 @@
           <div class="popup-section">
             <p class="popup-section-title">
               <span class="material-icons">celebration</span>
-              Holidays
+              {{ 'leave.calendar.sectionHolidays' | translate }}
             </p>
             @for (h of selectedDay()!.holidays; track h.holidayId) {
               <div class="popup-holiday">
@@ -260,7 +262,10 @@
           <div class="popup-section">
             <p class="popup-section-title">
               <span class="material-icons">people</span>
-              Employees on Leave ({{ selectedDay()!.leaves.length }})
+              {{
+                'leave.calendar.sectionEmployeesOnLeave'
+                  | translate: { count: selectedDay()!.leaves.length }
+              }}
             </p>
             <div class="popup-leaves">
               @for (l of selectedDay()!.leaves; track l.employeeId) {
@@ -293,7 +298,7 @@
         @if (selectedDay()!.leaves.length === 0 && selectedDay()!.holidays.length === 0) {
           <div class="popup-empty">
             <span class="material-icons">event_available</span>
-            <span>No leaves or holidays</span>
+            <span>{{ 'leave.calendar.noLeavesOrHolidays' | translate }}</span>
           </div>
         }
       </div>

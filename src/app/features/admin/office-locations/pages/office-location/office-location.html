@@ -1,14 +1,14 @@
 <div class="admin-page">
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">Office Locations</h1>
+      <h1 class="page-title">{{ 'admin.officeLocations.title' | translate }}</h1>
       <div class="stat-chips">
-        <span class="chip chip-total">{{ locations().length }} Total</span>
-        <span class="chip chip-active">{{ activeCount() }} Active</span>
+        <span class="chip chip-total">{{ 'admin.officeLocations.totalChip' | translate: { count: locations().length } }}</span>
+        <span class="chip chip-active">{{ 'admin.officeLocations.activeChip' | translate: { count: activeCount() } }}</span>
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span> Add Location
+      <span class="material-icons">add</span> {{ 'admin.officeLocations.addLocation' | translate }}
     </button>
   </div>
 
@@ -28,7 +28,7 @@
       <span class="material-icons">search</span>
       <input
         type="text"
-        placeholder="Search locations..."
+        [placeholder]="'admin.officeLocations.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -38,7 +38,7 @@
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
-      <option value="">All Types</option>
+      <option value="">{{ 'admin.officeLocations.allTypes' | translate }}</option>
       @for (t of locationTypes; track t) {
         <option [value]="t">{{ t.replace('_', ' ') }}</option>
       }
@@ -49,21 +49,21 @@
         [class.active]="filterActive() === 'all'"
         (click)="filterActive.set('all')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'active'"
         (click)="filterActive.set('active')"
       >
-        Active
+        {{ 'common.active' | translate }}
       </button>
       <button
         class="tab-btn"
         [class.active]="filterActive() === 'inactive'"
         (click)="filterActive.set('inactive')"
       >
-        Inactive
+        {{ 'common.inactive' | translate }}
       </button>
     </div>
   </div>
@@ -71,7 +71,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading...</span>
+      <span>{{ 'common.loading' | translate }}</span>
     </div>
   }
 
@@ -80,8 +80,8 @@
       @if (filtered().length === 0) {
         <div class="empty-card">
           <span class="material-icons">location_off</span>
-          <p>No locations found</p>
-          <small>Add office locations above</small>
+          <p>{{ 'admin.officeLocations.emptyTitle' | translate }}</p>
+          <small>{{ 'admin.officeLocations.emptyHint' | translate }}</small>
         </div>
       }
       @for (loc of filtered(); track loc.locationId) {
@@ -94,7 +94,7 @@
               </span>
             </div>
             <div class="card-actions">
-              <button class="act-btn btn-edit" (click)="openEdit(loc)">
+              <button class="act-btn btn-edit" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(loc)">
                 <span class="material-icons">edit</span>
               </button>
               <button
@@ -139,7 +139,7 @@
               [class.status-active]="loc.isActive"
               [class.status-inactive]="!loc.isActive"
             >
-              <span class="status-dot"></span>{{ loc.isActive ? 'Active' : 'Inactive' }}
+              <span class="status-dot"></span>{{ (loc.isActive ? 'common.active' : 'common.inactive') | translate }}
             </span>
             @if (loc.timezone) {
               <span class="tz-badge">{{ loc.timezone }}</span>
@@ -156,7 +156,7 @@
   <div class="modal-backdrop">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title">{{ isEditMode() ? 'Edit Location' : 'Add Location' }}</h2>
+        <h2 class="modal-title">{{ (isEditMode() ? 'admin.officeLocations.editTitle' : 'admin.officeLocations.addLocation') | translate }}</h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
@@ -170,15 +170,15 @@
         <div class="modal-body">
           <div class="field-row">
             <div class="field">
-              <label>Code <span class="req">*</span></label>
-              <input formControlName="locationCode" placeholder="e.g. HQ" />
+              <label for="ol-code">{{ 'admin.officeLocations.code' | translate }} <span class="req">*</span></label>
+              <input id="ol-code" formControlName="locationCode" [placeholder]="'admin.officeLocations.codePlaceholder' | translate" />
               @if (isInvalid('locationCode')) {
                 <span class="field-error">{{ getError('locationCode') }}</span>
               }
             </div>
             <div class="field">
-              <label>Type <span class="req">*</span></label>
-              <select formControlName="locationType">
+              <label for="ol-type">{{ 'admin.officeLocations.type' | translate }} <span class="req">*</span></label>
+              <select id="ol-type" formControlName="locationType">
                 @for (t of locationTypes; track t) {
                   <option [value]="t">{{ t.replace('_', ' ') }}</option>
                 }
@@ -187,42 +187,42 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Location Name (EN) <span class="req">*</span></label>
-              <input formControlName="locationName" placeholder="e.g. Head Office - Muscat" />
+              <label for="ol-name-en">{{ 'admin.officeLocations.nameEn' | translate }} <span class="req">*</span></label>
+              <input id="ol-name-en" formControlName="locationName" [placeholder]="'admin.officeLocations.nameEnPlaceholder' | translate" />
               @if (isInvalid('locationName')) {
                 <span class="field-error">{{ getError('locationName') }}</span>
               }
             </div>
             <div class="field">
-              <label>Location Name (AR) <span class="req">*</span></label>
-              <input formControlName="locationNameAr" placeholder="e.g. المقر الرئيسي" dir="rtl" />
+              <label for="ol-name-ar">{{ 'admin.officeLocations.nameAr' | translate }} <span class="req">*</span></label>
+              <input id="ol-name-ar" formControlName="locationNameAr" placeholder="e.g. المقر الرئيسي" dir="rtl" />
               @if (isInvalid('locationNameAr')) {
                 <span class="field-error">{{ getError('locationNameAr') }}</span>
               }
             </div>
           </div>
           <div class="field">
-            <label>Address Line 1 <span class="req">*</span></label>
-            <input formControlName="addressLine1" placeholder="Street address" />
+            <label for="ol-address1">{{ 'admin.officeLocations.addressLine1' | translate }} <span class="req">*</span></label>
+            <input id="ol-address1" formControlName="addressLine1" [placeholder]="'admin.officeLocations.addressLine1Placeholder' | translate" />
             @if (isInvalid('addressLine1')) {
               <span class="field-error">{{ getError('addressLine1') }}</span>
             }
           </div>
           <div class="field">
-            <label>Address Line 2</label>
-            <input formControlName="addressLine2" placeholder="Building, Floor (optional)" />
+            <label for="ol-address2">{{ 'admin.officeLocations.addressLine2' | translate }}</label>
+            <input id="ol-address2" formControlName="addressLine2" [placeholder]="'admin.officeLocations.addressLine2Placeholder' | translate" />
           </div>
           <div class="field-row">
             <div class="field">
-              <label>City <span class="req">*</span></label>
-              <input formControlName="city" placeholder="e.g. Muscat" />
+              <label for="ol-city">{{ 'admin.officeLocations.city' | translate }} <span class="req">*</span></label>
+              <input id="ol-city" formControlName="city" [placeholder]="'admin.officeLocations.cityPlaceholder' | translate" />
               @if (isInvalid('city')) {
                 <span class="field-error">{{ getError('city') }}</span>
               }
             </div>
             <div class="field">
-              <label>Country <span class="req">*</span></label>
-              <input formControlName="country" />
+              <label for="ol-country">{{ 'admin.officeLocations.country' | translate }} <span class="req">*</span></label>
+              <input id="ol-country" formControlName="country" />
               @if (isInvalid('country')) {
                 <span class="field-error">{{ getError('country') }}</span>
               }
@@ -230,11 +230,11 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Phone</label><input formControlName="phone" placeholder="+968 2xxx xxxx" />
+              <label for="ol-phone">{{ 'admin.officeLocations.phone' | translate }}</label><input id="ol-phone" formControlName="phone" placeholder="+968 2xxx xxxx" />
             </div>
             <div class="field">
-              <label>Email</label>
-              <input type="email" formControlName="email" placeholder="office@company.com" />
+              <label for="ol-email">{{ 'admin.officeLocations.email' | translate }}</label>
+              <input id="ol-email" type="email" formControlName="email" placeholder="office@company.com" />
               @if (isInvalid('email')) {
                 <span class="field-error">{{ getError('email') }}</span>
               }
@@ -242,19 +242,19 @@
           </div>
           <div class="field-row">
             <div class="field">
-              <label>Timezone</label>
-              <input formControlName="timezone" placeholder="Asia/Muscat" />
+              <label for="ol-timezone">{{ 'admin.officeLocations.timezone' | translate }}</label>
+              <input id="ol-timezone" formControlName="timezone" placeholder="Asia/Muscat" />
             </div>
             <div class="field">
-              <label>Sort Order</label>
-              <input type="number" formControlName="sortOrder" min="0" />
+              <label for="ol-sort-order">{{ 'admin.officeLocations.sortOrder' | translate }}</label>
+              <input id="ol-sort-order" type="number" formControlName="sortOrder" min="0" />
             </div>
           </div>
           @if (isEditMode()) {
             <label class="toggle-item">
               <div class="toggle-info">
-                <span class="toggle-label">Active</span>
-                <span class="toggle-hint">Inactive locations cannot be assigned</span>
+                <span class="toggle-label">{{ 'common.active' | translate }}</span>
+                <span class="toggle-hint">{{ 'admin.officeLocations.activeHint' | translate }}</span>
               </div>
               <div class="toggle-wrap">
                 <input type="checkbox" formControlName="isActive" class="toggle-inp" />
@@ -264,14 +264,14 @@
           }
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>Saving...</span>
+              <span>{{ 'admin.officeLocations.saving' | translate }}</span>
             } @else {
               <span class="material-icons">save</span
-              ><span>{{ isEditMode() ? 'Update' : 'Add Location' }}</span>
+              ><span>{{ (isEditMode() ? 'admin.officeLocations.update' : 'admin.officeLocations.addLocation') | translate }}</span>
             }
           </button>
         </div>
@@ -291,20 +291,20 @@
         <span class="material-icons">location_on</span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }} Location?
+        {{ (confirmItem()?.isActive ? 'admin.officeLocations.deactivateTitle' : 'admin.officeLocations.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         <strong>{{ confirmItem()?.locationName }}</strong>
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-danger]="confirmItem()?.isActive"
           [class.btn-success]="!confirmItem()?.isActive"
           (click)="confirmToggle()"
         >
-          {{ confirmItem()?.isActive ? 'Deactivate' : 'Activate' }}
+          {{ (confirmItem()?.isActive ? 'admin.officeLocations.deactivate' : 'admin.officeLocations.activate') | translate }}
         </button>
       </div>
     </div>

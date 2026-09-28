@@ -114,10 +114,10 @@
   <div class="rail-bottom" *ngIf="!loading()">
     <button
       class="rail-btn logout-btn"
-      title="Logout"
+      [attr.title]="'layout.sidebar.logout' | translate"
       (click)="navigate('/auth/login')">
       <span class="material-icons rail-icon">power_settings_new</span>
-      <span class="rail-tooltip">Logout</span>
+      <span class="rail-tooltip">{{ 'layout.sidebar.logout' | translate }}</span>
     </button>
   </div>
 

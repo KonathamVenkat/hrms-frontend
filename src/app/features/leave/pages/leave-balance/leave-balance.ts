@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ import { LeaveBalance, InitializationResult } from '../../models/leave-balance.m
 @Component({
   selector: 'app-leave-balance',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './leave-balance.html',
   styleUrl: './leave-balance.css',
 })
@@ -24,6 +25,7 @@ export class LeaveBalancePage implements OnInit {
   private fb = inject(FormBuilder);
   private svc = inject(LeaveBalanceService);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   balances = signal<LeaveBalance[]>([]);
@@ -76,9 +78,9 @@ export class LeaveBalancePage implements OnInit {
     'STUDY',
   ];
   readonly adjustmentTypes = [
-    { value: 'GRANT', label: 'Grant Days', desc: 'Add days to total allocation' },
-    { value: 'DEDUCT', label: 'Deduct Days', desc: 'Remove days from total allocation' },
-    { value: 'RESET', label: 'Reset Balance', desc: 'Set total to exact value' },
+    { value: 'GRANT', labelKey: 'leave.balance.adjType.grant.label', descKey: 'leave.balance.adjType.grant.desc' },
+    { value: 'DEDUCT', labelKey: 'leave.balance.adjType.deduct.label', descKey: 'leave.balance.adjType.deduct.desc' },
+    { value: 'RESET', labelKey: 'leave.balance.adjType.reset.label', descKey: 'leave.balance.adjType.reset.desc' },
   ];
 
   ngOnInit(): void {
@@ -117,7 +119,10 @@ export class LeaveBalancePage implements OnInit {
         next: (res) => {
           if (res.success) this.balances.set(res.data);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to load balances.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.balance.errors.loadFailed'),
+          ),
       });
   }
 
@@ -152,13 +157,18 @@ export class LeaveBalancePage implements OnInit {
           if (res.success) {
             this.initResult.set(res.data);
             this.showSuccess(
-              `Initialized ${res.data.initializedCount} employees ` +
-                `(${res.data.skippedCount} skipped)`,
+              this.translate.instant('leave.balance.initSuccessMsg', {
+                count: res.data.initializedCount,
+                skipped: res.data.skippedCount,
+              }),
             );
             this.loadBalances();
           } else this.error.set(res.message);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Initialization failed.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.balance.errors.initFailed'),
+          ),
       });
   }
 
@@ -186,8 +196,15 @@ export class LeaveBalancePage implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success) {
+            const typeLabel = this.translate.instant(
+              `leave.balance.adjType.${String(v.adjustmentType).toLowerCase()}.label`,
+            );
             this.showSuccess(
-              `${v.adjustmentType} ${v.days} days — ` + `${res.data.leaveTypeName} balance updated`,
+              this.translate.instant('leave.balance.adjustSuccessMsg', {
+                type: typeLabel,
+                days: v.days,
+                name: res.data.leaveTypeName,
+              }),
             );
             this.adjustForm.reset({
               employeeId: '',
@@ -200,7 +217,10 @@ export class LeaveBalancePage implements OnInit {
             this.loadBalances();
           } else this.error.set(res.message);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Adjustment failed.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.balance.errors.adjustFailed'),
+          ),
       });
   }
 
@@ -217,11 +237,16 @@ export class LeaveBalancePage implements OnInit {
   getError(form: FormGroup, name: string): string {
     const c = form.get(name)!;
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['min']) return `Min: ${c.errors['min'].min}`;
-    if (c.errors['max']) return `Max: ${c.errors['max'].max}`;
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['min'])
+      return this.translate.instant('common.validation.min', { count: c.errors['min'].min });
+    if (c.errors['max'])
+      return this.translate.instant('common.validation.max', { count: c.errors['max'].max });
+    if (c.errors['maxlength'])
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    return this.translate.instant('common.validation.invalid');
   }
 
   getUsedPercent(b: LeaveBalance): number {

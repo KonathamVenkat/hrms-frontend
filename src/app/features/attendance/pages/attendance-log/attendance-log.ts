@@ -17,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AttendanceService } from '../../services/attendance.service';
 import {
@@ -47,6 +48,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatSnackBarModule,
     MatTooltipModule,
     MatDividerModule,
+    TranslatePipe,
   ],
   templateUrl: './attendance-log.html',
   styleUrls: ['./attendance-log.css'],
@@ -55,6 +57,7 @@ export class AttendanceLogComponent implements OnInit {
   private readonly svc = inject(AttendanceService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── Signals ────────────────────────────────────────────────
   readonly todayLog = signal<AttendanceLogResponse | null>(null);
@@ -82,7 +85,7 @@ export class AttendanceLogComponent implements OnInit {
   readonly workingTimeDisplay = computed(() => {
     const log = this.todayLog();
     if (!log?.checkInTime) return '--';
-    if (!log.checkOutTime) return 'In Progress';
+    if (!log.checkOutTime) return this.translate.instant('attendance.log.inProgress');
     return this.formatMinutes(log.workingMinutes);
   });
 
@@ -122,18 +125,21 @@ export class AttendanceLogComponent implements OnInit {
     this.svc.checkIn({ employeeId: this.employeeId() }).subscribe({
       next: (log) => {
         this.todayLog.set(log);
-        this.snack.open('✅ Checked in at ' + this.formatTime(log.checkInTime), 'Close', {
-          duration: 4000,
-          panelClass: 'snack-success',
-        });
+        const time = this.formatTime(log.checkInTime);
+        this.snack.open(
+          '✅ ' + this.translate.instant('attendance.log.success.checkedIn', { time }),
+          this.translate.instant('attendance.log.close'),
+          { duration: 4000, panelClass: 'snack-success' },
+        );
         this.checkingIn.set(false);
         this.loadMonthlyLogs();
       },
       error: (err) => {
-        this.snack.open('❌ ' + (err.error?.message || 'Check-in failed'), 'Close', {
-          duration: 4000,
-          panelClass: 'snack-error',
-        });
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('attendance.log.errors.checkInFailed')),
+          this.translate.instant('attendance.log.close'),
+          { duration: 4000, panelClass: 'snack-error' },
+        );
         this.checkingIn.set(false);
       },
     });
@@ -145,9 +151,10 @@ export class AttendanceLogComponent implements OnInit {
     this.svc.checkOut({ employeeId: this.employeeId() }).subscribe({
       next: (log) => {
         this.todayLog.set(log);
+        const minutes = this.formatMinutes(log.workingMinutes);
         this.snack.open(
-          '✅ Checked out — Working: ' + this.formatMinutes(log.workingMinutes),
-          'Close',
+          '✅ ' + this.translate.instant('attendance.log.success.checkedOut', { minutes }),
+          this.translate.instant('attendance.log.close'),
           { duration: 4000, panelClass: 'snack-success' },
         );
         this.checkingOut.set(false);
@@ -155,10 +162,11 @@ export class AttendanceLogComponent implements OnInit {
         this.loadMonthlySummary();
       },
       error: (err) => {
-        this.snack.open('❌ ' + (err.error?.message || 'Check-out failed'), 'Close', {
-          duration: 4000,
-          panelClass: 'snack-error',
-        });
+        this.snack.open(
+          '❌ ' + (err.error?.message || this.translate.instant('attendance.log.errors.checkOutFailed')),
+          this.translate.instant('attendance.log.close'),
+          { duration: 4000, panelClass: 'snack-error' },
+        );
         this.checkingOut.set(false);
       },
     });

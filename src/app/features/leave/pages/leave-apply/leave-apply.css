@@ -346,7 +346,7 @@ textarea:focus {
 .char-count {
   font-size: 10px;
   color: var(--muted);
-  text-align: right;
+  text-align: end;
 }
 
 /* ── Actions ─────────────────────────────────────────────── */

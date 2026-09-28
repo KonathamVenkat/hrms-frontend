@@ -214,7 +214,7 @@
 .cal-day {
   min-height: 90px;
   padding: 8px;
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
   position: relative;
@@ -227,7 +227,7 @@
   background: #f8fafc;
 }
 .cal-day:nth-child(7n) {
-  border-right: none;
+  border-inline-end: none;
 }
 
 /* Day states */
@@ -283,7 +283,7 @@
 .holiday-badge {
   position: absolute;
   top: 6px;
-  right: 6px;
+  inset-inline-end: 6px;
   color: var(--purple);
 }
 .holiday-badge .material-icons {
@@ -325,7 +325,7 @@
 .leave-count {
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  inset-inline-end: 5px;
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -369,7 +369,7 @@
   color: var(--teal);
 }
 .badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   background: var(--teal);
   color: #fff;
   font-size: 10px;
@@ -546,7 +546,7 @@
   border-radius: 20px;
 }
 .popup-close {
-  margin-left: auto;
+  margin-inline-start: auto;
   width: 28px;
   height: 28px;
   border: none;
@@ -618,7 +618,7 @@
   display: block;
 }
 .holiday-type {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 10px;
   font-weight: 700;
   background: #f8fafc;

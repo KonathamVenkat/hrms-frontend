@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -21,7 +22,7 @@ import { Auth } from '../../../../core/auth/auth';
 @Component({
   selector: 'app-leave-apply',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './leave-apply.html',
   styleUrl: './leave-apply.css',
 })
@@ -32,6 +33,7 @@ export class LeaveApplyPage implements OnInit {
   private auth = inject(Auth);
   private router = inject(Router);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   balances = signal<LeaveBalance[]>([]);
@@ -119,7 +121,7 @@ export class LeaveApplyPage implements OnInit {
     const start = group.get('startDate')?.value;
     const end = group.get('endDate')?.value;
     if (start && end && end < start) {
-      return { dateRange: 'End date must be after start date' };
+      return { dateRange: 'leave.apply.errors.dateRangeInvalid' };
     }
     return null;
   }
@@ -142,7 +144,9 @@ export class LeaveApplyPage implements OnInit {
           }
         },
         error: (err: any) =>
-          this.error.set(err?.error?.message || 'Failed to load leave balances.'),
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.apply.errors.loadBalancesFailed'),
+          ),
       });
   }
 
@@ -159,12 +163,12 @@ export class LeaveApplyPage implements OnInit {
     const days = this.countWorkingDays(start, end);
 
     if (days <= 0) {
-      this.error.set('Selected dates contain no working days.');
+      this.error.set(this.translate.instant('leave.apply.errors.noWorkingDays'));
       return;
     }
 
     if (!this.isBalanceSufficient()) {
-      this.error.set('Insufficient leave balance for selected dates.');
+      this.error.set(this.translate.instant('leave.apply.errors.insufficientBalance'));
       return;
     }
 
@@ -183,14 +187,16 @@ export class LeaveApplyPage implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success) {
-            this.successMsg.set('Leave request submitted successfully!');
+            this.successMsg.set(this.translate.instant('leave.apply.success.submitted'));
             setTimeout(() => this.router.navigate(['/app/leave/requests']), 1500);
           } else {
             this.error.set(res.message);
           }
         },
         error: (err: any) =>
-          this.error.set(err?.error?.message || 'Failed to submit leave request.'),
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.apply.errors.submitFailed'),
+          ),
       });
   }
 
@@ -234,9 +240,12 @@ export class LeaveApplyPage implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['maxlength'])
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    return this.translate.instant('common.validation.invalid');
   }
 
   getMinDate(): string {

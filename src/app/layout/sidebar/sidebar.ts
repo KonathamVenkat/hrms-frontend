@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MenuService, MenuDto } from '../../core/services/menu.service';
 
 // ── Icon color map — keyed by Material icon name ──────────
@@ -48,7 +49,7 @@ const MENU_CACHE_KEY = 'ehrms_sidebar_menu';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })

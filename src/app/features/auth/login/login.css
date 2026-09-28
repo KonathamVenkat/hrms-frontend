@@ -88,21 +88,21 @@
   height: 300px;
   background: #3b82f6;
   top: -80px;
-  right: -80px;
+  inset-inline-end: -80px;
 }
 .d2 {
   width: 180px;
   height: 180px;
   background: #e11d48;
   bottom: 40px;
-  left: -50px;
+  inset-inline-start: -50px;
 }
 .d3 {
   width: 140px;
   height: 140px;
   background: #06b6d4;
   bottom: 180px;
-  right: -30px;
+  inset-inline-end: -30px;
 }
 
 /* ── Form Panel ──────────────────────────────── */
@@ -118,6 +118,12 @@
 .form-wrap {
   width: 100%;
   max-width: 420px;
+}
+
+.lang-switcher-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
 }
 
 .form-header {

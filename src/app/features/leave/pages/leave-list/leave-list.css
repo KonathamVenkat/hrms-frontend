@@ -253,16 +253,16 @@
 }
 
 .card-pending {
-  border-left: 4px solid var(--gold);
+  border-inline-start: 4px solid var(--gold);
 }
 .card-approved {
-  border-left: 4px solid var(--green);
+  border-inline-start: 4px solid var(--green);
 }
 .card-rejected {
-  border-left: 4px solid var(--red);
+  border-inline-start: 4px solid var(--red);
 }
 .card-cancelled {
-  border-left: 4px solid #94a3b8;
+  border-inline-start: 4px solid #94a3b8;
 }
 
 .card-accent {
@@ -405,7 +405,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 12px;
   font-weight: 700;
   background: var(--teal-lt);
@@ -666,6 +666,6 @@
     gap: 6px;
   }
   .days-chip {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 }

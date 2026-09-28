@@ -6,12 +6,12 @@
     <div class="header-left">
       <mat-icon class="header-icon">paid</mat-icon>
       <div>
-        <h2>Employee Salary</h2>
-        <span class="subtitle">Assign and manage salary structures per employee</span>
+        <h2>{{ 'payroll.employeeSalary.title' | translate }}</h2>
+        <span class="subtitle">{{ 'payroll.employeeSalary.subtitle' | translate }}</span>
       </div>
     </div>
     <button mat-flat-button color="primary" (click)="openAssign()" *ngIf="!showForm()">
-      <mat-icon>person_add</mat-icon> Assign Salary
+      <mat-icon>person_add</mat-icon> {{ 'payroll.employeeSalary.assignButton' | translate }}
     </button>
   </div>
 
@@ -19,10 +19,10 @@
   <mat-card class="form-card" *ngIf="showForm()">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>assignment</mat-icon> Assign Salary Structure
+        <mat-icon>assignment</mat-icon> {{ 'payroll.employeeSalary.formTitle' | translate }}
       </mat-card-title>
       <mat-card-subtitle>
-        Assigning a new salary automatically supersedes the current one (SCD Type 2)
+        {{ 'payroll.employeeSalary.formSubtitle' | translate }}
       </mat-card-subtitle>
     </mat-card-header>
 
@@ -30,42 +30,42 @@
       <form [formGroup]="form" class="form-grid">
 
         <mat-form-field appearance="outline">
-          <mat-label>Employee ID</mat-label>
-          <input matInput type="number" formControlName="employeeId" placeholder="Enter employee ID">
+          <mat-label>{{ 'payroll.employeeSalary.fields.employeeId' | translate }}</mat-label>
+          <input matInput type="number" formControlName="employeeId" [placeholder]="'payroll.employeeSalary.fields.employeeIdPlaceholder' | translate">
           <mat-icon matSuffix>badge</mat-icon>
-          <mat-error *ngIf="form.get('employeeId')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('employeeId')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Salary Structure</mat-label>
+          <mat-label>{{ 'payroll.employeeSalary.fields.structure' | translate }}</mat-label>
           <mat-select formControlName="structureId">
             <mat-option *ngFor="let s of structures()" [value]="s.structureId">
               {{ s.structureName }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="form.get('structureId')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('structureId')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Basic Salary (OMR)</mat-label>
+          <mat-label>{{ 'payroll.employeeSalary.fields.basicSalary' | translate }}</mat-label>
           <input matInput type="number" formControlName="basicSalary"
                  min="0" step="0.001" placeholder="0.000">
           <span matTextSuffix>OMR</span>
-          <mat-error *ngIf="form.get('basicSalary')?.hasError('required')">Required</mat-error>
-          <mat-error *ngIf="form.get('basicSalary')?.hasError('min')">Must be greater than 0</mat-error>
+          <mat-error *ngIf="form.get('basicSalary')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
+          <mat-error *ngIf="form.get('basicSalary')?.hasError('min')">{{ 'payroll.employeeSalary.fields.basicSalaryMin' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Effective From</mat-label>
+          <mat-label>{{ 'payroll.employeeSalary.fields.effectiveFrom' | translate }}</mat-label>
           <input matInput [matDatepicker]="picker" formControlName="effectiveFrom">
           <mat-datepicker-toggle matIconSuffix [for]="picker"/>
           <mat-datepicker #picker/>
-          <mat-error *ngIf="form.get('effectiveFrom')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="form.get('effectiveFrom')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-col">
-          <mat-label>Remarks</mat-label>
-          <input matInput formControlName="remarks" placeholder="e.g. Annual increment 2026">
+          <mat-label>{{ 'payroll.employeeSalary.fields.remarks' | translate }}</mat-label>
+          <input matInput formControlName="remarks" [placeholder]="'payroll.employeeSalary.fields.remarksPlaceholder' | translate">
         </mat-form-field>
 
       </form>
@@ -74,18 +74,23 @@
       <div class="preview-section" *ngIf="selectedStructure() && previewBasic() > 0">
         <mat-divider></mat-divider>
         <h3 class="preview-title">
-          <mat-icon>calculate</mat-icon> Estimated Salary Breakdown
-          <span class="preview-note">(Final amounts calculated at payroll run)</span>
+          <mat-icon>calculate</mat-icon> {{ 'payroll.employeeSalary.preview.title' | translate }}
+          <span class="preview-note">{{ 'payroll.employeeSalary.preview.note' | translate }}</span>
         </h3>
 
         <!-- Earnings -->
         <div class="preview-group">
-          <div class="preview-group-label earning-label">Earnings</div>
+          <div class="preview-group-label earning-label">{{ 'payroll.employeeSalary.preview.earnings' | translate }}</div>
           <div class="preview-row"
                *ngFor="let item of selectedStructure()!.items">
             <ng-container *ngIf="item.componentType === 'EARNING'">
               <span class="preview-comp-name">{{ item.componentName }}</span>
-              <span class="preview-basis">{{ item.percentage > 0 ? item.percentage + '% of Basic' : 'Fixed' }}</span>
+              <span class="preview-basis">
+                {{
+                  (item.percentage > 0 ? 'payroll.employeeSalary.preview.percentOfBasic' : 'payroll.employeeSalary.preview.fixed')
+                    | translate: { percent: item.percentage }
+                }}
+              </span>
               <span class="preview-amount earning-amount">
                 {{ item.effectiveCalcType === 'FIXED'
                     ? formatCurrency(item.amount)
@@ -97,12 +102,12 @@
 
         <!-- Statutory -->
         <div class="preview-group">
-          <div class="preview-group-label statutory-label">Statutory Deductions (PASI)</div>
+          <div class="preview-group-label statutory-label">{{ 'payroll.employeeSalary.preview.statutory' | translate }}</div>
           <div class="preview-row"
                *ngFor="let item of selectedStructure()!.items">
             <ng-container *ngIf="item.componentType === 'STATUTORY'">
               <span class="preview-comp-name">{{ item.componentName }}</span>
-              <span class="preview-basis">{{ item.percentage }}% of Basic</span>
+              <span class="preview-basis">{{ 'payroll.employeeSalary.preview.percentOfBasic' | translate: { percent: item.percentage } }}</span>
               <span class="preview-amount statutory-amount">
                 - {{ formatCurrency((previewBasic() * item.percentage) / 100) }}
               </span>
@@ -113,7 +118,7 @@
         <mat-divider></mat-divider>
         <div class="preview-totals">
           <div class="total-row">
-            <span>Basic Salary</span>
+            <span>{{ 'payroll.employeeSalary.preview.basicSalaryLabel' | translate }}</span>
             <span class="total-value">{{ formatCurrency(previewBasic()) }}</span>
           </div>
         </div>
@@ -121,10 +126,10 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">Cancel</button>
+      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
         <mat-spinner *ngIf="saving()" diameter="18"></mat-spinner>
-        <span *ngIf="!saving()"><mat-icon>save</mat-icon> Assign Salary</span>
+        <span *ngIf="!saving()"><mat-icon>save</mat-icon> {{ 'payroll.employeeSalary.assignButton' | translate }}</span>
       </button>
     </mat-card-actions>
   </mat-card>
@@ -132,7 +137,7 @@
   <!-- ── History Panel ────────────────────────────────────── -->
   <mat-card class="history-card" *ngIf="showHistory()">
     <mat-card-header>
-      <mat-card-title><mat-icon>history</mat-icon> Salary History</mat-card-title>
+      <mat-card-title><mat-icon>history</mat-icon> {{ 'payroll.employeeSalary.history.title' | translate }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="history-timeline">
@@ -144,21 +149,21 @@
               <span class="history-structure">{{ h.structureName }}</span>
               <span class="history-dates">
                 {{ h.effectiveFrom | date:'MMM d, yyyy' }}
-                {{ h.effectiveTo ? ' → ' + (h.effectiveTo | date:'MMM d, yyyy') : ' → Present' }}
+                {{ h.effectiveTo ? (' → ' + (h.effectiveTo | date:'MMM d, yyyy')) : (' → ' + ('payroll.employeeSalary.history.present' | translate)) }}
               </span>
-              <span class="current-badge" *ngIf="h.isCurrent">Current</span>
+              <span class="current-badge" *ngIf="h.isCurrent">{{ 'payroll.employeeSalary.history.current' | translate }}</span>
             </div>
             <div class="history-amounts">
               <div class="amount-item">
-                <span class="amount-label">Basic</span>
+                <span class="amount-label">{{ 'payroll.employeeSalary.history.basic' | translate }}</span>
                 <span class="amount-val">{{ formatCurrency(h.basicSalary) }}</span>
               </div>
               <div class="amount-item">
-                <span class="amount-label">Gross</span>
+                <span class="amount-label">{{ 'payroll.employeeSalary.history.gross' | translate }}</span>
                 <span class="amount-val gross">{{ formatCurrency(h.grossSalary) }}</span>
               </div>
               <div class="amount-item">
-                <span class="amount-label">Net</span>
+                <span class="amount-label">{{ 'payroll.employeeSalary.history.net' | translate }}</span>
                 <span class="amount-val net">{{ formatCurrency(h.netSalary) }}</span>
               </div>
             </div>
@@ -168,7 +173,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="closeHistory()">Close</button>
+      <button mat-stroked-button (click)="closeHistory()">{{ 'payroll.employeeSalary.history.closeButton' | translate }}</button>
     </mat-card-actions>
   </mat-card>
 
@@ -176,7 +181,7 @@
   <mat-card class="table-card" *ngIf="!showHistory()">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>list_alt</mat-icon> Current Employee Salaries
+        <mat-icon>list_alt</mat-icon> {{ 'payroll.employeeSalary.tableTitle' | translate }}
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
@@ -186,14 +191,14 @@
         <table mat-table [dataSource]="salaries()" *ngIf="!loading()" class="salary-table">
 
           <ng-container matColumnDef="employeeCode">
-            <th mat-header-cell *matHeaderCellDef>Code</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.code' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="code-chip">{{ r.employeeCode }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="employeeName">
-            <th mat-header-cell *matHeaderCellDef>Employee</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.employee' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <div class="emp-cell">
                 <div class="emp-avatar">{{ r.employeeName.charAt(0) }}</div>
@@ -203,52 +208,52 @@
           </ng-container>
 
           <ng-container matColumnDef="structureName">
-            <th mat-header-cell *matHeaderCellDef>Structure</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.structure' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="structure-pill">{{ r.structureName }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="basicSalary">
-            <th mat-header-cell *matHeaderCellDef>Basic</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.basic' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="salary-val">{{ formatCurrency(r.basicSalary) }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="grossSalary">
-            <th mat-header-cell *matHeaderCellDef>Gross</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.gross' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="salary-val gross">{{ formatCurrency(r.grossSalary) }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="netSalary">
-            <th mat-header-cell *matHeaderCellDef>Net</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.net' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="salary-val net">{{ formatCurrency(r.netSalary) }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="currency">
-            <th mat-header-cell *matHeaderCellDef>Currency</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.currency' | translate }}</th>
             <td mat-cell *matCellDef="let r">{{ r.currency }}</td>
           </ng-container>
 
           <ng-container matColumnDef="effectiveFrom">
-            <th mat-header-cell *matHeaderCellDef>Effective From</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.effectiveFrom' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               {{ r.effectiveFrom | date:'MMM d, yyyy' }}
             </td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.employeeSalary.columns.actions' | translate }}</th>
             <td mat-cell *matCellDef="let r">
-              <button mat-icon-button matTooltip="Revise Salary" (click)="openRevise(r)">
+              <button mat-icon-button [matTooltip]="'payroll.employeeSalary.reviseTooltip' | translate" (click)="openRevise(r)">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button matTooltip="View History" (click)="openHistory(r)">
+              <button mat-icon-button [matTooltip]="'payroll.employeeSalary.historyTooltip' | translate" (click)="openHistory(r)">
                 <mat-icon>history</mat-icon>
               </button>
             </td>
@@ -261,9 +266,9 @@
             <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
               <div class="empty-state">
                 <mat-icon>paid</mat-icon>
-                <p>No employee salaries assigned yet</p>
+                <p>{{ 'payroll.employeeSalary.emptyTitle' | translate }}</p>
                 <button mat-flat-button color="primary" (click)="openAssign()">
-                  Assign First Salary
+                  {{ 'payroll.employeeSalary.emptyAction' | translate }}
                 </button>
               </div>
             </td>

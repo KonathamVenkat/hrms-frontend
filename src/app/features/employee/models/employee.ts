@@ -52,7 +52,8 @@ export interface EmployeeQueryParams {
   employmentStatus?: string;
   employmentType?: string;
   gender?: string;
-  isActive?: boolean;
+  /** Omit entirely for the active-only default; pass `null` explicitly for "all" (active + inactive). */
+  isActive?: boolean | null;
   page?: number;
   size?: number;
   sortBy?: string;

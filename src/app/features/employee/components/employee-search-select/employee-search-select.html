@@ -1,0 +1,44 @@
+<div class="ess-wrap">
+  <div class="ess-input-wrap">
+    <input
+      type="text"
+      class="ess-input"
+      [attr.id]="inputId || null"
+      [placeholder]="placeholder"
+      [value]="query()"
+      [disabled]="disabled"
+      autocomplete="off"
+      (input)="onInput($any($event.target).value)"
+      (focus)="isOpen.set(true)"
+    />
+    @if (query()) {
+      <button
+        type="button"
+        class="ess-clear"
+        [attr.aria-label]="'employee.searchSelect.clearSelection' | translate"
+        (click)="clear()"
+      >
+        <span class="material-icons">close</span>
+      </button>
+    }
+  </div>
+
+  @if (isOpen()) {
+    <div class="ess-dropdown">
+      @if (loading()) {
+        <div class="ess-status">{{ 'employee.searchSelect.searching' | translate }}</div>
+      } @else if (query().trim().length > 0 && query().trim().length < 2) {
+        <div class="ess-status">{{ 'employee.searchSelect.typeMoreChars' | translate }}</div>
+      } @else if (query().trim().length >= 2 && results().length === 0) {
+        <div class="ess-status">{{ 'employee.searchSelect.noMatches' | translate }}</div>
+      } @else {
+        @for (opt of results(); track opt.employeeId) {
+          <button type="button" class="ess-option" (click)="select(opt)">
+            <span class="ess-name">{{ opt.fullNameEn }}</span>
+            <span class="ess-code">{{ opt.employeeCode }}</span>
+          </button>
+        }
+      }
+    </div>
+  }
+</div>

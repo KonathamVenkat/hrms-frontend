@@ -9,6 +9,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -21,7 +22,7 @@ import {
 @Component({
   selector: 'app-employee-documents',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-documents.html',
   styleUrl: './employee-documents.css',
 })
@@ -31,6 +32,7 @@ export class EmployeeDocumentsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private docSvc = inject(EmployeeDocumentService);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   documents = signal<EmployeeDocument[]>([]);
@@ -106,7 +108,10 @@ export class EmployeeDocumentsComponent implements OnInit {
         next: (res) => {
           if (res.success) this.documents.set(res.data);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to load documents.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.documents.errors.loadFailed'),
+          ),
       });
   }
 
@@ -210,7 +215,7 @@ export class EmployeeDocumentsComponent implements OnInit {
       return;
     }
     if (!this.isEditMode() && !this.selectedFile()) {
-      this.error.set('Please select a file to upload.');
+      this.error.set(this.translate.instant('employee.documents.errors.selectFile'));
       return;
     }
     this.saving.set(true);
@@ -234,12 +239,15 @@ export class EmployeeDocumentsComponent implements OnInit {
         .subscribe({
           next: (res) => {
             if (res.success) {
-              this.showSuccess('Document updated successfully');
+              this.showSuccess(this.translate.instant('employee.documents.success.updated'));
               this.closeModal();
               this.loadDocuments();
             } else this.error.set(res.message);
           },
-          error: (err: any) => this.error.set(err?.error?.message || 'Update failed.'),
+          error: (err: any) =>
+            this.error.set(
+              err?.error?.message || this.translate.instant('employee.documents.errors.updateFailed'),
+            ),
         });
     } else {
       const formData = new FormData();
@@ -261,12 +269,15 @@ export class EmployeeDocumentsComponent implements OnInit {
         .subscribe({
           next: (res) => {
             if (res.success) {
-              this.showSuccess('Document uploaded successfully');
+              this.showSuccess(this.translate.instant('employee.documents.success.uploaded'));
               this.closeModal();
               this.loadDocuments();
             } else this.error.set(res.message);
           },
-          error: (err: any) => this.error.set(err?.error?.message || 'Upload failed.'),
+          error: (err: any) =>
+            this.error.set(
+              err?.error?.message || this.translate.instant('employee.documents.errors.uploadFailed'),
+            ),
         });
     }
   }
@@ -297,24 +308,32 @@ export class EmployeeDocumentsComponent implements OnInit {
     if (this.confirmType() === 'verify') {
       this.docSvc.verify(this.employeeId, doc.documentId).subscribe({
         next: () => {
-          this.showSuccess(`"${doc.documentName}" verified`);
+          this.showSuccess(
+            this.translate.instant('employee.documents.success.verified', { name: doc.documentName }),
+          );
           this.cancelConfirm();
           this.loadDocuments();
         },
         error: (err: any) => {
-          this.error.set(err?.error?.message || 'Verify failed.');
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.documents.errors.verifyFailed'),
+          );
           this.cancelConfirm();
         },
       });
     } else {
       this.docSvc.delete(this.employeeId, doc.documentId).subscribe({
         next: () => {
-          this.showSuccess(`"${doc.documentName}" deleted`);
+          this.showSuccess(
+            this.translate.instant('employee.documents.success.deleted', { name: doc.documentName }),
+          );
           this.cancelConfirm();
           this.loadDocuments();
         },
         error: (err: any) => {
-          this.error.set(err?.error?.message || 'Delete failed.');
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.documents.errors.deleteFailed'),
+          );
           this.cancelConfirm();
         },
       });
@@ -334,7 +353,10 @@ export class EmployeeDocumentsComponent implements OnInit {
         // Cleanup
         URL.revokeObjectURL(url);
       },
-      error: (err: any) => this.error.set(err?.error?.message || 'Download failed.'),
+      error: (err: any) =>
+        this.error.set(
+          err?.error?.message || this.translate.instant('employee.documents.errors.downloadFailed'),
+        ),
     });
   }
 
@@ -351,9 +373,13 @@ export class EmployeeDocumentsComponent implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    return this.translate.instant('common.validation.invalid');
   }
 
   getFileIcon(ext: string): string {

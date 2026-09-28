@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { OvertimeService } from '../../services/overtime.service';
 import { OvertimeResponse, OT_TYPE_CONFIG, OT_STATUS_CONFIG } from '../../models/overtime.model';
@@ -42,6 +43,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatSnackBarModule,
     MatTooltipModule,
     MatDividerModule,
+    TranslatePipe,
   ],
   templateUrl: './overtime-approval.html',
   styleUrls: ['./overtime-approval.css'],
@@ -50,6 +52,7 @@ export class OvertimeApproval implements OnInit {
   private readonly svc = inject(OvertimeService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
 
   // ── State signals ──────────────────────────────────────
   readonly requests = signal<OvertimeResponse[]>([]);
@@ -93,11 +96,11 @@ export class OvertimeApproval implements OnInit {
   });
 
   readonly statusOptions = [
-    { value: '', label: 'All' },
-    { value: 'PENDING', label: 'Pending' },
-    { value: 'APPROVED', label: 'Approved' },
-    { value: 'REJECTED', label: 'Rejected' },
-    { value: 'CANCELLED', label: 'Cancelled' },
+    { value: '', label: 'attendance.overtimeApproval.statusOptions.all' },
+    { value: 'PENDING', label: 'attendance.overtimeApproval.statusOptions.pending' },
+    { value: 'APPROVED', label: 'attendance.overtimeApproval.statusOptions.approved' },
+    { value: 'REJECTED', label: 'attendance.overtimeApproval.statusOptions.rejected' },
+    { value: 'CANCELLED', label: 'attendance.overtimeApproval.statusOptions.cancelled' },
   ];
 
   readonly displayedColumns = [
@@ -143,7 +146,11 @@ export class OvertimeApproval implements OnInit {
         },
         error: (err) => {
           console.error('Failed to load OT requests', err);
-          this.snack.open('Failed to load requests', 'Close', { duration: 3000 });
+          this.snack.open(
+            this.translate.instant('attendance.overtimeApproval.errors.loadFailed'),
+            this.translate.instant('attendance.overtimeApproval.close'),
+            { duration: 3000 },
+          );
           this.loading.set(false);
         },
       });
@@ -175,7 +182,11 @@ export class OvertimeApproval implements OnInit {
   onApprove(req: OvertimeResponse): void {
     if (
       !confirm(
-        `Approve ${req.durationFormatted} overtime for ${req.employeeName} on ${req.otDateFormatted}?`,
+        this.translate.instant('attendance.overtimeApproval.confirmApprove', {
+          duration: req.durationFormatted,
+          name: req.employeeName,
+          date: req.otDateFormatted,
+        }),
       )
     )
       return;
@@ -189,8 +200,12 @@ export class OvertimeApproval implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            `✅ Approved — ${req.durationFormatted} OT for ${req.employeeName}`,
-            'Close',
+            '✅ ' +
+              this.translate.instant('attendance.overtimeApproval.success.approved', {
+                duration: req.durationFormatted,
+                name: req.employeeName,
+              }),
+            this.translate.instant('attendance.overtimeApproval.close'),
             { duration: 4000, panelClass: 'snack-success' },
           );
           this.processingId.set(null);
@@ -198,9 +213,11 @@ export class OvertimeApproval implements OnInit {
           this.loadPendingCount();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Approval failed'), 'Close', {
-            duration: 4000,
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.approveFailed')),
+            this.translate.instant('attendance.overtimeApproval.close'),
+            { duration: 4000 },
+          );
           this.processingId.set(null);
         },
       });
@@ -232,7 +249,9 @@ export class OvertimeApproval implements OnInit {
     if (!req) return;
 
     if (reason.length < 10) {
-      this.rejectionError.set('Rejection reason must be at least 10 characters.');
+      this.rejectionError.set(
+        this.translate.instant('attendance.overtimeApproval.errors.rejectionReasonTooShort'),
+      );
       return;
     }
 
@@ -245,18 +264,24 @@ export class OvertimeApproval implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.snack.open(`Rejected OT request for ${req.employeeName}`, 'Close', {
-            duration: 4000,
-          });
+          this.snack.open(
+            this.translate.instant('attendance.overtimeApproval.success.rejected', {
+              name: req.employeeName,
+            }),
+            this.translate.instant('attendance.overtimeApproval.close'),
+            { duration: 4000 },
+          );
           this.closeRejectDialog();
           this.processingId.set(null);
           this.loadRequests();
           this.loadPendingCount();
         },
         error: (err) => {
-          this.snack.open('❌ ' + (err.error?.message || 'Rejection failed'), 'Close', {
-            duration: 4000,
-          });
+          this.snack.open(
+            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.rejectFailed')),
+            this.translate.instant('attendance.overtimeApproval.close'),
+            { duration: 4000 },
+          );
           this.processingId.set(null);
         },
       });

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../../environments/environment';
@@ -54,13 +55,14 @@ export interface CalendarMonth {
 @Component({
   selector: 'app-leave-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './leave-calendar.html',
   styleUrl: './leave-calendar.css',
 })
 export class LeaveCalendarPage implements OnInit {
   private http = inject(HttpClient);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   calendar = signal<CalendarMonth | null>(null);
@@ -75,7 +77,7 @@ export class LeaveCalendarPage implements OnInit {
   selectedDay = signal<CalendarDay | null>(null);
 
   // ── Week headers — Mon–Sun (Oman: Sat-Fri work week) ──────
-  readonly weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  readonly weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
   // ── Computed calendar grid (7 cols) ───────────────────────
   readonly weeks = computed(() => {
@@ -110,7 +112,10 @@ export class LeaveCalendarPage implements OnInit {
           if (res.success) this.calendar.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to load calendar.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.calendar.errors.loadFailed'),
+          ),
       });
   }
 

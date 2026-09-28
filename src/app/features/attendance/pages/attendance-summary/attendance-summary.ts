@@ -16,6 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { AttendanceService } from '../../services/attendance.service';
 import { AttendanceSummaryResponse } from '../../models/attendance.model';
@@ -41,6 +42,7 @@ import { Auth } from '../../../../core/auth/auth';
     MatTooltipModule,
     MatChipsModule,
     MatDividerModule,
+    TranslatePipe,
   ],
   templateUrl: './attendance-summary.html',
   styleUrls: ['./attendance-summary.css'],
@@ -66,19 +68,20 @@ export class AttendanceSummary implements OnInit {
   });
 
   // ── Month/Year options ─────────────────────────────────────
+  // `label` values are ngx-translate keys — the template pipes them through `| translate`.
   readonly months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
+    { value: 1, label: 'common.months.january' },
+    { value: 2, label: 'common.months.february' },
+    { value: 3, label: 'common.months.march' },
+    { value: 4, label: 'common.months.april' },
+    { value: 5, label: 'common.months.may' },
+    { value: 6, label: 'common.months.june' },
+    { value: 7, label: 'common.months.july' },
+    { value: 8, label: 'common.months.august' },
+    { value: 9, label: 'common.months.september' },
+    { value: 10, label: 'common.months.october' },
+    { value: 11, label: 'common.months.november' },
+    { value: 12, label: 'common.months.december' },
   ];
 
   readonly years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);

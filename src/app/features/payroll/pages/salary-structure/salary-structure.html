@@ -4,12 +4,12 @@
     <div class="header-left">
       <mat-icon class="header-icon">account_tree</mat-icon>
       <div>
-        <h2>Salary Structures</h2>
-        <span class="subtitle">Build salary packages by combining pay components</span>
+        <h2>{{ 'payroll.salaryStructure.title' | translate }}</h2>
+        <span class="subtitle">{{ 'payroll.salaryStructure.subtitle' | translate }}</span>
       </div>
     </div>
     <button mat-flat-button color="primary" (click)="openCreate()">
-      <mat-icon>add</mat-icon> New Structure
+      <mat-icon>add</mat-icon> {{ 'payroll.salaryStructure.newButton' | translate }}
     </button>
   </div>
 
@@ -18,7 +18,7 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon>{{ editingId() ? 'edit' : 'add_circle' }}</mat-icon>
-        {{ editingId() ? 'Edit' : 'New' }} Salary Structure
+        {{ (editingId() ? 'payroll.salaryStructure.formTitleEdit' : 'payroll.salaryStructure.formTitleNew') | translate }}
       </mat-card-title>
     </mat-card-header>
 
@@ -27,28 +27,28 @@
         <!-- Structure details -->
         <div class="structure-details">
           <mat-form-field appearance="outline">
-            <mat-label>Structure Code</mat-label>
+            <mat-label>{{ 'payroll.salaryStructure.fields.structureCode' | translate }}</mat-label>
             <input
               matInput
               formControlName="structureCode"
-              placeholder="e.g. GRADE-A"
+              [placeholder]="'payroll.salaryStructure.fields.structureCodePlaceholder' | translate"
               [readonly]="!!editingId()"
             />
-            <mat-error *ngIf="form.get('structureCode')?.hasError('required')">Required</mat-error>
+            <mat-error *ngIf="form.get('structureCode')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Structure Name</mat-label>
+            <mat-label>{{ 'payroll.salaryStructure.fields.structureName' | translate }}</mat-label>
             <input
               matInput
               formControlName="structureName"
-              placeholder="e.g. Grade A - Executive Package"
+              [placeholder]="'payroll.salaryStructure.fields.structureNamePlaceholder' | translate"
             />
-            <mat-error *ngIf="form.get('structureName')?.hasError('required')">Required</mat-error>
+            <mat-error *ngIf="form.get('structureName')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-col">
-            <mat-label>Description</mat-label>
+            <mat-label>{{ 'payroll.salaryStructure.fields.description' | translate }}</mat-label>
             <input matInput formControlName="description" />
           </mat-form-field>
         </div>
@@ -57,9 +57,9 @@
 
         <!-- Components table -->
         <div class="items-header">
-          <h3>Pay Components</h3>
+          <h3>{{ 'payroll.salaryStructure.items.title' | translate }}</h3>
           <button mat-stroked-button type="button" (click)="addComponent()">
-            <mat-icon>add</mat-icon> Add Component
+            <mat-icon>add</mat-icon> {{ 'payroll.salaryStructure.items.addButton' | translate }}
           </button>
         </div>
 
@@ -68,11 +68,11 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Component</th>
-                <th>Type</th>
-                <th>Calc Type Override</th>
-                <th>Amount (OMR)</th>
-                <th>Percentage (%)</th>
+                <th>{{ 'payroll.salaryStructure.items.columns.component' | translate }}</th>
+                <th>{{ 'payroll.salaryStructure.items.columns.type' | translate }}</th>
+                <th>{{ 'payroll.salaryStructure.items.columns.calcTypeOverride' | translate }}</th>
+                <th>{{ 'payroll.salaryStructure.items.columns.amount' | translate }}</th>
+                <th>{{ 'payroll.salaryStructure.items.columns.percentage' | translate }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -106,17 +106,17 @@
                       getTypeStyle(getComponentType(item.get('componentId')?.value)).color
                     "
                   >
-                    {{ getTypeStyle(getComponentType(item.get('componentId')?.value)).label }}
+                    {{ getTypeStyle(getComponentType(item.get('componentId')?.value)).label | translate }}
                   </span>
                 </td>
 
                 <!-- Calc type override -->
                 <td class="calc-col">
                   <mat-form-field appearance="outline" class="compact-field">
-                    <mat-select formControlName="calcTypeOverride" placeholder="Use default">
-                      <mat-option [value]="null">Use default</mat-option>
+                    <mat-select formControlName="calcTypeOverride" [placeholder]="'payroll.salaryStructure.items.useDefault' | translate">
+                      <mat-option [value]="null">{{ 'payroll.salaryStructure.items.useDefault' | translate }}</mat-option>
                       <mat-option *ngFor="let ct of calcTypes" [value]="ct.value">
-                        {{ ct.label }}
+                        {{ ct.label | translate }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
@@ -157,7 +157,7 @@
                     color="warn"
                     type="button"
                     (click)="removeItem(i)"
-                    matTooltip="Remove"
+                    [matTooltip]="'payroll.salaryStructure.items.removeTooltip' | translate"
                   >
                     <mat-icon>remove_circle_outline</mat-icon>
                   </button>
@@ -166,7 +166,7 @@
 
               <tr *ngIf="itemsArray.length === 0">
                 <td colspan="7" class="empty-items">
-                  No components added. Click "Add Component" to start.
+                  {{ 'payroll.salaryStructure.items.empty' | translate }}
                 </td>
               </tr>
             </tbody>
@@ -176,10 +176,10 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">Cancel</button>
+      <button mat-stroked-button (click)="closeForm()" [disabled]="saving()">{{ 'common.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSave()" [disabled]="saving()">
         <mat-spinner *ngIf="saving()" diameter="18"></mat-spinner>
-        <span *ngIf="!saving()"><mat-icon>save</mat-icon> Save Structure</span>
+        <span *ngIf="!saving()"><mat-icon>save</mat-icon> {{ 'payroll.salaryStructure.saveButton' | translate }}</span>
       </button>
     </mat-card-actions>
   </mat-card>
@@ -204,17 +204,17 @@
           </mat-panel-title>
           <mat-panel-description>
             <span class="emp-count">
-              <mat-icon>people</mat-icon> {{ s.employeeCount }} employees
+              <mat-icon>people</mat-icon> {{ 'payroll.salaryStructure.panel.employeeCount' | translate: { count: s.employeeCount } }}
             </span>
             <span class="item-count">
-              <mat-icon>list</mat-icon> {{ s.items.length }} components
+              <mat-icon>list</mat-icon> {{ 'payroll.salaryStructure.panel.itemCount' | translate: { count: s.items.length } }}
             </span>
             <span
               class="status-chip"
               [style.background]="s.isActive ? '#dcfce7' : '#fee2e2'"
               [style.color]="s.isActive ? '#166534' : '#991b1b'"
             >
-              {{ s.isActive ? 'Active' : 'Inactive' }}
+              {{ (s.isActive ? 'common.active' : 'common.inactive') | translate }}
             </span>
           </mat-panel-description>
         </mat-expansion-panel-header>
@@ -225,12 +225,12 @@
 
           <!-- Earnings -->
           <div class="component-section">
-            <h4 class="section-title earning"><mat-icon>add_circle</mat-icon> Earnings</h4>
+            <h4 class="section-title earning"><mat-icon>add_circle</mat-icon> {{ 'payroll.salaryStructure.sections.earnings' | translate }}</h4>
             <div class="comp-rows">
               <div class="comp-row" *ngFor="let item of filterItems(s.items, 'EARNING')">
                 <span class="comp-name">{{ item.componentName }}</span>
                 <span class="comp-ar">{{ item.componentNameAr }}</span>
-                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] | translate }}</span>
                 <span class="comp-value earning-val">
                   {{
                     item.effectiveCalcType === 'FIXED'
@@ -244,12 +244,12 @@
 
           <!-- Deductions -->
           <div class="component-section" *ngIf="filterItems(s.items, 'DEDUCTION').length > 0">
-            <h4 class="section-title deduction"><mat-icon>remove_circle</mat-icon> Deductions</h4>
+            <h4 class="section-title deduction"><mat-icon>remove_circle</mat-icon> {{ 'payroll.salaryStructure.sections.deductions' | translate }}</h4>
             <div class="comp-rows">
               <div class="comp-row" *ngFor="let item of filterItems(s.items, 'DEDUCTION')">
                 <span class="comp-name">{{ item.componentName }}</span>
                 <span class="comp-ar">{{ item.componentNameAr }}</span>
-                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] | translate }}</span>
                 <span class="comp-value deduction-val">
                   {{
                     item.effectiveCalcType === 'FIXED'
@@ -264,13 +264,13 @@
           <!-- Statutory -->
           <div class="component-section" *ngIf="filterItems(s.items, 'STATUTORY').length > 0">
             <h4 class="section-title statutory">
-              <mat-icon>account_balance</mat-icon> Statutory (PASI)
+              <mat-icon>account_balance</mat-icon> {{ 'payroll.salaryStructure.sections.statutory' | translate }}
             </h4>
             <div class="comp-rows">
               <div class="comp-row" *ngFor="let item of filterItems(s.items, 'STATUTORY')">
                 <span class="comp-name">{{ item.componentName }}</span>
                 <span class="comp-ar">{{ item.componentNameAr }}</span>
-                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] }}</span>
+                <span class="comp-basis">{{ calcLabels[item.effectiveCalcType] | translate }}</span>
                 <span class="comp-value statutory-val">{{ item.percentage }}%</span>
               </div>
             </div>
@@ -278,14 +278,14 @@
 
           <!-- Actions -->
           <div class="panel-actions">
-            <button mat-stroked-button (click)="openEdit(s)"><mat-icon>edit</mat-icon> Edit</button>
+            <button mat-stroked-button (click)="openEdit(s)"><mat-icon>edit</mat-icon> {{ 'common.edit' | translate }}</button>
             <button
               mat-stroked-button
               [color]="s.isActive ? 'warn' : 'primary'"
               (click)="toggleActive(s)"
             >
               <mat-icon>{{ s.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
-              {{ s.isActive ? 'Deactivate' : 'Activate' }}
+              {{ (s.isActive ? 'payroll.salaryStructure.deactivate' : 'payroll.salaryStructure.activate') | translate }}
             </button>
           </div>
         </div>
@@ -296,9 +296,9 @@
     <mat-card class="empty-card" *ngIf="!loading() && structures().length === 0">
       <mat-card-content class="empty-content">
         <mat-icon>account_tree</mat-icon>
-        <p>No salary structures defined yet</p>
+        <p>{{ 'payroll.salaryStructure.emptyTitle' | translate }}</p>
         <button mat-flat-button color="primary" (click)="openCreate()">
-          Create First Structure
+          {{ 'payroll.salaryStructure.emptyAction' | translate }}
         </button>
       </mat-card-content>
     </mat-card>

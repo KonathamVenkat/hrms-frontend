@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ import { LeaveType } from '../../models/leave-type';
 @Component({
   selector: 'app-leave-types',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './leave-types.html',
   styleUrl: './leave-types.css',
 })
@@ -24,6 +25,7 @@ export class LeaveTypes implements OnInit {
   private fb = inject(FormBuilder);
   private ltService = inject(LeaveTypeService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   leaveTypes = signal<LeaveType[]>([]);
@@ -123,7 +125,10 @@ export class LeaveTypes implements OnInit {
           if (res.success) this.leaveTypes.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err) => this.error.set(err?.error?.message || 'Failed to load leave types.'),
+        error: (err) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('admin.leaveTypes.errors.loadFailed'),
+          ),
       });
   }
 
@@ -216,9 +221,10 @@ export class LeaveTypes implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode()
-              ? `"${res.data.nameEn}" updated successfully`
-              : `"${res.data.nameEn}" created successfully`,
+            this.translate.instant(
+              this.isEditMode() ? 'admin.leaveTypes.success.updated' : 'admin.leaveTypes.success.created',
+              { name: res.data.nameEn },
+            ),
           );
           this.closeModal();
           this.loadLeaveTypes();
@@ -229,8 +235,8 @@ export class LeaveTypes implements OnInit {
       error: (err) =>
         this.error.set(
           err.status === 409
-            ? err?.error?.message || 'Code or name already exists.'
-            : err?.error?.message || 'Operation failed.',
+            ? err?.error?.message || this.translate.instant('admin.leaveTypes.errors.duplicate')
+            : err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'),
         ),
     });
   }
@@ -256,12 +262,17 @@ export class LeaveTypes implements OnInit {
 
     call.subscribe({
       next: () => {
-        this.showSuccess(lt.isActive ? `"${lt.nameEn}" deactivated` : `"${lt.nameEn}" activated`);
+        this.showSuccess(
+          this.translate.instant(
+            lt.isActive ? 'admin.leaveTypes.success.deactivated' : 'admin.leaveTypes.success.activated',
+            { name: lt.nameEn },
+          ),
+        );
         this.cancelConfirm();
         this.loadLeaveTypes();
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -280,12 +291,16 @@ export class LeaveTypes implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['min']) return `Min value: ${c.errors['min'].min}`;
-    if (c.errors['max']) return `Max value: ${c.errors['max'].max}`;
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    if (c.errors['pattern']) return 'Uppercase letters, numbers and underscores only';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['min']) return this.translate.instant('common.validation.min', { count: c.errors['min'].min });
+    if (c.errors['max']) return this.translate.instant('common.validation.max', { count: c.errors['max'].max });
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('admin.workShifts.errors.patternCode');
+    return this.translate.instant('common.validation.invalid');
   }
 
   private showSuccess(msg: string): void {

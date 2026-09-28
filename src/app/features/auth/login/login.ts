@@ -12,6 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LanguageSwitcher } from '../../../core/components/language-switcher/language-switcher';
 
 const isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
 
@@ -38,6 +40,8 @@ function storageRemove(key: string): void {
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    LanguageSwitcher,
+    TranslatePipe,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -47,6 +51,7 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private snackBar = inject(MatSnackBar);
+  private translate = inject(TranslateService);
 
   // ✅ Initialize at declaration — template always has a valid FormGroup
   loginForm: FormGroup = this.fb.group({
@@ -85,14 +90,18 @@ export class LoginComponent implements OnInit {
   }
 
   getUsernameError(): string {
-    if (this.usernameCtrl.hasError('required')) return 'Username is required';
-    if (this.usernameCtrl.hasError('minlength')) return 'Minimum 3 characters';
+    if (this.usernameCtrl.hasError('required'))
+      return this.translate.instant('auth.login.errors.usernameRequired');
+    if (this.usernameCtrl.hasError('minlength'))
+      return this.translate.instant('common.validation.minLength', { count: 3 });
     return '';
   }
 
   getPasswordError(): string {
-    if (this.passwordCtrl.hasError('required')) return 'Password is required';
-    if (this.passwordCtrl.hasError('minlength')) return 'Minimum 6 characters';
+    if (this.passwordCtrl.hasError('required'))
+      return this.translate.instant('auth.login.errors.passwordRequired');
+    if (this.passwordCtrl.hasError('minlength'))
+      return this.translate.instant('common.validation.minLength', { count: 6 });
     return '';
   }
 
@@ -122,20 +131,24 @@ export class LoginComponent implements OnInit {
             storageSet('hrms_user', JSON.stringify(err.data.user));
             storageSet('hrms_token_expiry', String(Date.now() + err.data.expiresIn * 1000));
             this.router.navigateByUrl('/app/dashboard');
-            this.snackBar.open(`Welcome back, ${err.data.user.fullName}!`, 'Close', {
-              duration: 3000,
-            });
+            this.snackBar.open(
+              this.translate.instant('auth.login.welcomeBack', {
+                name: err.data.user.fullName,
+              }),
+              this.translate.instant('auth.login.close'),
+              { duration: 3000 },
+            );
           } else {
-            this.errorMsg.set(err.message || 'Login failed.');
+            this.errorMsg.set(err.message || this.translate.instant('auth.login.errors.loginFailed'));
           }
         },
         error: (err) => {
           this.errorMsg.set(
             err.status === 401
-              ? 'Invalid username or password.'
+              ? this.translate.instant('auth.login.errors.invalidCredentials')
               : err.status === 0
-                ? 'Cannot reach server. Check connection.'
-                : err?.error?.message || 'Unexpected error.',
+                ? this.translate.instant('auth.login.errors.cannotReachServer')
+                : err?.error?.message || this.translate.instant('auth.login.errors.unexpectedError'),
           );
         },
       });

@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -10,7 +11,7 @@ import { LeaveRequest } from '../../models/leave-request.model';
 @Component({
   selector: 'app-leave-approval',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './leave-approval.html',
   styleUrl: './leave-approval.css',
 })
@@ -18,6 +19,7 @@ export class LeaveApprovalPage implements OnInit {
   private leaveSvc = inject(LeaveRequestService);
   private fb = inject(FormBuilder);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   leaves = signal<LeaveRequest[]>([]);
@@ -94,7 +96,9 @@ export class LeaveApprovalPage implements OnInit {
           }
         },
         error: (err: any) =>
-          this.error.set(err?.error?.message || 'Failed to load leave requests.'),
+          this.error.set(
+            err?.error?.message || this.translate.instant('leave.approval.errors.loadFailed'),
+          ),
       });
   }
 
@@ -165,9 +169,15 @@ export class LeaveApprovalPage implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success) {
-            const action = this.actionType() === 'APPROVED' ? 'approved' : 'rejected';
+            const actionKey =
+              this.actionType() === 'APPROVED'
+                ? 'leave.approval.actionApprovedPast'
+                : 'leave.approval.actionRejectedPast';
             this.showSuccess(
-              `Leave request ${action} for ${leave.employeeName ?? leave.employeeCode}`,
+              this.translate.instant('leave.approval.actionSuccessMsg', {
+                action: this.translate.instant(actionKey),
+                name: leave.employeeName ?? leave.employeeCode,
+              }),
             );
             this.closeModal();
             this.loadLeaves();
@@ -176,7 +186,7 @@ export class LeaveApprovalPage implements OnInit {
           }
         },
         error: (err: any) => {
-          this.error.set(err?.error?.message || 'Action failed.');
+          this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
           this.closeModal();
         },
       });

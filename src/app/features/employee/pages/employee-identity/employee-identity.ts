@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, signal, inject, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -10,7 +11,7 @@ import { IdentityInfo } from '../../models/identity.model';
 @Component({
   selector: 'app-employee-identity',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-identity.html',
   styleUrl: './employee-identity.css',
 })
@@ -20,6 +21,7 @@ export class EmployeeIdentityComponent implements OnInit {
   private fb = inject(FormBuilder);
   private identitySvc = inject(IdentityService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   identity = signal<IdentityInfo | null>(null);
@@ -29,6 +31,12 @@ export class EmployeeIdentityComponent implements OnInit {
   successMsg = signal<string | null>(null);
   editMode = signal(false);
   hasData = signal(false);
+
+  // ── PII masking ─────────────────────────────────────────────
+  // National ID / SSN / Biometric ID are masked by default in both view and
+  // edit mode; each has its own reveal toggle (same pattern as a password field).
+  private readonly maskedFields = ['nationalId', 'socialSecurityNumber', 'biometricId'] as const;
+  private revealed = signal<ReadonlySet<string>>(new Set());
 
   form!: FormGroup;
 
@@ -80,7 +88,10 @@ export class EmployeeIdentityComponent implements OnInit {
             this.hasData.set(!!res.data?.employeeIdentityId);
           }
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to load identity info.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.identity.errors.loadFailed'),
+          ),
       });
   }
 
@@ -102,12 +113,14 @@ export class EmployeeIdentityComponent implements OnInit {
       biometricId: info?.biometricId ?? '',
     });
     this.error.set(null);
+    this.revealed.set(new Set());
     this.editMode.set(true);
   }
 
   cancelEdit(): void {
     this.editMode.set(false);
     this.error.set(null);
+    this.revealed.set(new Set());
   }
 
   // ── Submit ────────────────────────────────────────────────
@@ -140,12 +153,16 @@ export class EmployeeIdentityComponent implements OnInit {
             this.identity.set(res.data);
             this.hasData.set(true);
             this.editMode.set(false);
-            this.showSuccess('Identity information saved successfully');
+            this.revealed.set(new Set());
+            this.showSuccess(this.translate.instant('employee.identity.success.saved'));
           } else {
             this.error.set(res.message);
           }
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to save identity info.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.identity.errors.saveFailed'),
+          ),
       });
   }
 
@@ -183,5 +200,37 @@ export class EmployeeIdentityComponent implements OnInit {
 
   getValue(val?: string): string {
     return val && val.trim() ? val.trim() : '—';
+  }
+
+  // ── PII masking ─────────────────────────────────────────────
+  isRevealed(field: string): boolean {
+    return this.revealed().has(field);
+  }
+
+  toggleReveal(field: string): void {
+    const next = new Set(this.revealed());
+    if (next.has(field)) {
+      next.delete(field);
+    } else {
+      next.add(field);
+    }
+    this.revealed.set(next);
+  }
+
+  /** View-mode display: masked unless the viewer has revealed this field. */
+  displayValue(val: string | undefined | null, field: string): string {
+    if (!val || !val.trim()) return '—';
+    return this.isRevealed(field) ? val.trim() : this.maskValue(val.trim());
+  }
+
+  /** Input type for edit-mode masked fields — 'password' until revealed. */
+  inputType(field: string): 'text' | 'password' {
+    return this.isRevealed(field) ? 'text' : 'password';
+  }
+
+  private maskValue(val: string): string {
+    if (val.length <= 4) return '•'.repeat(val.length);
+    const dotCount = Math.min(val.length - 4, 8);
+    return '•'.repeat(dotCount) + val.slice(-4);
   }
 }

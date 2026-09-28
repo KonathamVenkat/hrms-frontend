@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OfficeLocationService } from '../../services/office-location';
@@ -15,7 +16,7 @@ import { OfficeLocation } from '../../models/office-location';
 @Component({
   selector: 'app-office-locations',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './office-location.html',
   styleUrl: './office-location.css',
 })
@@ -23,6 +24,7 @@ export class OfficeLocations implements OnInit {
   private fb = inject(FormBuilder);
   private svc = inject(OfficeLocationService);
   private destroy = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   locations = signal<OfficeLocation[]>([]);
   loading = signal(false);
@@ -109,7 +111,10 @@ export class OfficeLocations implements OnInit {
           if (res.success) this.locations.set(res.data);
           else this.error.set(res.message);
         },
-        error: (err) => this.error.set(err?.error?.message || 'Failed to load locations.'),
+        error: (err) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('admin.officeLocations.errors.loadFailed'),
+          ),
       });
   }
 
@@ -181,9 +186,10 @@ export class OfficeLocations implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode()
-              ? `"${res.data.locationName}" updated`
-              : `"${res.data.locationName}" created`,
+            this.translate.instant(
+              this.isEditMode() ? 'admin.officeLocations.success.updated' : 'admin.officeLocations.success.created',
+              { name: res.data.locationName },
+            ),
           );
           this.closeModal();
           this.loadLocations();
@@ -192,8 +198,8 @@ export class OfficeLocations implements OnInit {
       error: (err) =>
         this.error.set(
           err.status === 409
-            ? err?.error?.message || 'Code or name already exists.'
-            : err?.error?.message || 'Operation failed.',
+            ? err?.error?.message || this.translate.instant('admin.officeLocations.errors.duplicate')
+            : err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'),
         ),
     });
   }
@@ -216,13 +222,16 @@ export class OfficeLocations implements OnInit {
     call.subscribe({
       next: () => {
         this.showSuccess(
-          loc.isActive ? `"${loc.locationName}" deactivated` : `"${loc.locationName}" activated`,
+          this.translate.instant(
+            loc.isActive ? 'admin.officeLocations.success.deactivated' : 'admin.officeLocations.success.activated',
+            { name: loc.locationName },
+          ),
         );
         this.cancelConfirm();
         this.loadLocations();
       },
       error: (err) => {
-        this.error.set(err?.error?.message || 'Toggle failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -238,11 +247,15 @@ export class OfficeLocations implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['email']) return 'Invalid email';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    if (c.errors['pattern']) return 'Uppercase letters, numbers and underscores only';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['email']) return this.translate.instant('common.validation.email');
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('admin.workShifts.errors.patternCode');
+    return this.translate.instant('common.validation.invalid');
   }
   private showSuccess(msg: string): void {
     this.successMsg.set(msg);

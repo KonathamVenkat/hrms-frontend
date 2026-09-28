@@ -4,13 +4,13 @@
     <div class="header-left">
       <mat-icon class="header-icon">assignment_late</mat-icon>
       <div>
-        <h2>Attendance Request</h2>
-        <span class="subtitle">Submit regularization for missed or incorrect punches</span>
+        <h2>{{ 'attendance.request.title' | translate }}</h2>
+        <span class="subtitle">{{ 'attendance.request.subtitle' | translate }}</span>
       </div>
     </div>
     <button mat-flat-button color="primary" (click)="toggleForm()">
       <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
-      {{ showForm() ? 'Cancel' : 'New Request' }}
+      {{ (showForm() ? 'attendance.request.cancel' : 'attendance.request.newRequest') | translate }}
     </button>
   </div>
 
@@ -19,44 +19,44 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon>edit_calendar</mat-icon>
-        New Regularization Request
+        {{ 'attendance.request.formTitle' | translate }}
       </mat-card-title>
-      <mat-card-subtitle> Requests can only be submitted for the last 30 days </mat-card-subtitle>
+      <mat-card-subtitle> {{ 'attendance.request.formSubtitle' | translate }} </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="submitForm" class="request-form">
         <!-- Row 1: Date -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Attendance Date</mat-label>
+          <mat-label>{{ 'attendance.request.attendanceDate' | translate }}</mat-label>
           <input
             matInput
             [matDatepicker]="datePicker"
             formControlName="attendanceDate"
             [max]="maxDate"
             [min]="minDate"
-            placeholder="Select date"
+            [placeholder]="'attendance.request.selectDate' | translate"
           />
           <mat-datepicker-toggle matIconSuffix [for]="datePicker" />
           <mat-datepicker #datePicker />
           <mat-error *ngIf="submitForm.get('attendanceDate')?.hasError('required')">
-            Date is required
+            {{ 'attendance.request.dateRequired' | translate }}
           </mat-error>
         </mat-form-field>
 
         <!-- Row 2: Times -->
         <div class="time-row">
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Check-In Time</mat-label>
+            <mat-label>{{ 'attendance.request.checkInTime' | translate }}</mat-label>
             <input matInput type="time" formControlName="requestedInTime" />
             <mat-icon matSuffix>login</mat-icon>
             <mat-error *ngIf="submitForm.get('requestedInTime')?.hasError('required')">
-              Check-in time is required
+              {{ 'attendance.request.checkInTimeRequired' | translate }}
             </mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Check-Out Time (Optional)</mat-label>
+            <mat-label>{{ 'attendance.request.checkOutTimeOptional' | translate }}</mat-label>
             <input matInput type="time" formControlName="requestedOutTime" />
             <mat-icon matSuffix>logout</mat-icon>
           </mat-form-field>
@@ -64,30 +64,30 @@
 
         <!-- Row 3: Reason -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Reason</mat-label>
+          <mat-label>{{ 'attendance.request.reason' | translate }}</mat-label>
           <textarea
             matInput
             formControlName="reason"
             rows="3"
-            placeholder="Explain why you missed punching in/out (min 10 characters)"
+            [placeholder]="'attendance.request.reasonPlaceholder' | translate"
           >
           </textarea>
           <mat-hint align="end"> {{ submitForm.get('reason')?.value?.length || 0 }}/500 </mat-hint>
           <mat-error *ngIf="submitForm.get('reason')?.hasError('required')">
-            Reason is required
+            {{ 'attendance.request.reasonRequired' | translate }}
           </mat-error>
           <mat-error *ngIf="submitForm.get('reason')?.hasError('minlength')">
-            Reason must be at least 10 characters
+            {{ 'attendance.request.reasonMinLength' | translate }}
           </mat-error>
         </mat-form-field>
       </form>
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">Cancel</button>
+      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">{{ 'attendance.request.cancel' | translate }}</button>
       <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="submitting()">
         <mat-spinner *ngIf="submitting()" diameter="18"></mat-spinner>
-        <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> Submit Request </span>
+        <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> {{ 'attendance.request.submitRequest' | translate }} </span>
       </button>
     </mat-card-actions>
   </mat-card>
@@ -98,21 +98,21 @@
       <mat-card-content>
         <mat-icon>pending</mat-icon>
         <span class="mini-num">{{ pendingCount() }}</span>
-        <span class="mini-label">Pending</span>
+        <span class="mini-label">{{ 'attendance.request.pending' | translate }}</span>
       </mat-card-content>
     </mat-card>
     <mat-card class="mini-stat approved">
       <mat-card-content>
         <mat-icon>check_circle</mat-icon>
         <span class="mini-num">{{ approvedCount() }}</span>
-        <span class="mini-label">Approved</span>
+        <span class="mini-label">{{ 'attendance.request.approved' | translate }}</span>
       </mat-card-content>
     </mat-card>
     <mat-card class="mini-stat rejected">
       <mat-card-content>
         <mat-icon>cancel</mat-icon>
         <span class="mini-num">{{ rejectedCount() }}</span>
-        <span class="mini-label">Rejected</span>
+        <span class="mini-label">{{ 'attendance.request.rejected' | translate }}</span>
       </mat-card-content>
     </mat-card>
   </div>
@@ -120,7 +120,7 @@
   <!-- ── Requests Table ──────────────────────────────────── -->
   <mat-card class="table-card">
     <mat-card-header>
-      <mat-card-title> <mat-icon>list_alt</mat-icon> My Requests </mat-card-title>
+      <mat-card-title> <mat-icon>list_alt</mat-icon> {{ 'attendance.request.myRequests' | translate }} </mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
@@ -132,7 +132,7 @@
         <table mat-table [dataSource]="myRequests()" *ngIf="!loading()" class="req-table">
           <!-- Date -->
           <ng-container matColumnDef="attendanceDate">
-            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.date' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               {{ row.attendanceDateFormatted }}
             </td>
@@ -140,7 +140,7 @@
 
           <!-- Check In -->
           <ng-container matColumnDef="requestedInTime">
-            <th mat-header-cell *matHeaderCellDef>Check In</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.checkIn' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="time-chip in">{{ formatTime(row.requestedInTime) }}</span>
             </td>
@@ -148,7 +148,7 @@
 
           <!-- Check Out -->
           <ng-container matColumnDef="requestedOutTime">
-            <th mat-header-cell *matHeaderCellDef>Check Out</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.checkOut' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="time-chip out" *ngIf="row.requestedOutTime">
                 {{ formatTime(row.requestedOutTime) }}
@@ -159,7 +159,7 @@
 
           <!-- Reason -->
           <ng-container matColumnDef="reason">
-            <th mat-header-cell *matHeaderCellDef>Reason</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.reason' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span class="reason-text" [matTooltip]="row.reason" matTooltipPosition="above">
                 {{ row.reason.length > 40 ? row.reason.slice(0, 40) + '...' : row.reason }}
@@ -169,7 +169,7 @@
 
           <!-- Status -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.status' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span
                 class="status-chip"
@@ -177,7 +177,7 @@
                 [style.color]="getStatusStyle(row.status).color"
               >
                 <mat-icon class="status-icon">{{ getStatusStyle(row.status).icon }}</mat-icon>
-                {{ getStatusStyle(row.status).label }}
+                {{ getStatusStyle(row.status).label | translate }}
               </span>
               <!-- Rejection reason tooltip -->
               <div class="rejection-reason" *ngIf="row.rejectionReason">
@@ -189,7 +189,7 @@
 
           <!-- Reviewed By -->
           <ng-container matColumnDef="reviewedBy">
-            <th mat-header-cell *matHeaderCellDef>Reviewed By</th>
+            <th mat-header-cell *matHeaderCellDef>{{ 'attendance.request.columns.reviewedBy' | translate }}</th>
             <td mat-cell *matCellDef="let row">
               <span *ngIf="row.reviewedByName" class="reviewer">
                 {{ row.reviewedByName }}
@@ -207,7 +207,7 @@
                 color="warn"
                 *ngIf="row.status === 'PENDING'"
                 (click)="onCancel(row.regId)"
-                matTooltip="Cancel Request"
+                [matTooltip]="'attendance.request.cancelRequest' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>
@@ -226,8 +226,8 @@
             <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
               <div class="empty-state">
                 <mat-icon>assignment</mat-icon>
-                <p>No regularization requests found</p>
-                <button mat-stroked-button (click)="toggleForm()">Submit your first request</button>
+                <p>{{ 'attendance.request.emptyTitle' | translate }}</p>
+                <button mat-stroked-button (click)="toggleForm()">{{ 'attendance.request.emptyAction' | translate }}</button>
               </div>
             </td>
           </tr>

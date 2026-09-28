@@ -2,30 +2,30 @@
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="section-header">
     <div class="header-left">
-      <h2 class="section-title">Documents</h2>
+      <h2 class="section-title">{{ 'employee.documents.title' | translate }}</h2>
       <div class="doc-stats">
-        <span class="stat-chip chip-total"> {{ documents().length }} uploaded </span>
+        <span class="stat-chip chip-total"> {{ 'employee.documents.uploadedCount' | translate: { count: documents().length } }} </span>
         @if (expiredCount() > 0) {
           <span class="stat-chip chip-expired">
             <span class="material-icons">warning</span>
-            {{ expiredCount() }} expired
+            {{ 'employee.documents.expiredCount' | translate: { count: expiredCount() } }}
           </span>
         }
         @if (expiringSoonCount() > 0) {
           <span class="stat-chip chip-expiring">
             <span class="material-icons">schedule</span>
-            {{ expiringSoonCount() }} expiring soon
+            {{ 'employee.documents.expiringSoonCount' | translate: { count: expiringSoonCount() } }}
           </span>
         }
         <span class="stat-chip chip-verified">
           <span class="material-icons">verified</span>
-          {{ verifiedCount() }} verified
+          {{ 'employee.documents.verifiedCount' | translate: { count: verifiedCount() } }}
         </span>
       </div>
     </div>
     <button class="btn-upload" (click)="openUpload()">
       <span class="material-icons">upload_file</span>
-      Upload Document
+      {{ 'employee.documents.uploadDocument' | translate }}
     </button>
   </div>
 
@@ -49,7 +49,7 @@
         [class.active]="filterCategory() === ''"
         (click)="filterCategory.set('')"
       >
-        All
+        {{ 'common.all' | translate }}
       </button>
       @for (cat of categories(); track cat) {
         <button
@@ -67,7 +67,7 @@
   @if (loading()) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <span>Loading documents...</span>
+      <span>{{ 'employee.documents.loading' | translate }}</span>
     </div>
   }
 
@@ -75,11 +75,11 @@
   @if (!loading() && documents().length === 0) {
     <div class="empty-state">
       <span class="material-icons">folder_open</span>
-      <p>No documents uploaded yet</p>
-      <small>Upload passport, visa, contracts and other documents</small>
+      <p>{{ 'employee.documents.emptyTitle' | translate }}</p>
+      <small>{{ 'employee.documents.emptyHint' | translate }}</small>
       <button class="btn-upload-sm" (click)="openUpload()">
         <span class="material-icons">upload_file</span>
-        Upload Document
+        {{ 'employee.documents.uploadDocument' | translate }}
       </button>
     </div>
   }
@@ -111,24 +111,24 @@
                 </span>
               }
               @if (doc.isExpired) {
-                <span class="expiry-badge badge-expired">Expired</span>
+                <span class="expiry-badge badge-expired">{{ 'employee.documents.expiredBadge' | translate }}</span>
               } @else if (doc.isExpiringSoon) {
-                <span class="expiry-badge badge-soon">Expiring Soon</span>
+                <span class="expiry-badge badge-soon">{{ 'employee.documents.expiringSoonBadge' | translate }}</span>
               }
             </div>
             <div class="doc-actions">
-              <button class="act-btn btn-download" title="Download" (click)="downloadDocument(doc)">
+              <button class="act-btn btn-download" [title]="'employee.documents.download' | translate" (click)="downloadDocument(doc)">
                 <span class="material-icons">download</span>
               </button>
-              <button class="act-btn btn-edit" title="Edit" (click)="openEdit(doc)">
+              <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(doc)">
                 <span class="material-icons">edit</span>
               </button>
               @if (!doc.isVerified) {
-                <button class="act-btn btn-verify" title="Verify" (click)="openVerify(doc)">
+                <button class="act-btn btn-verify" [title]="'employee.documents.verify' | translate" (click)="openVerify(doc)">
                   <span class="material-icons">verified_user</span>
                 </button>
               }
-              <button class="act-btn btn-delete" title="Delete" (click)="openDelete(doc)">
+              <button class="act-btn btn-delete" [title]="'employee.documents.delete' | translate" (click)="openDelete(doc)">
                 <span class="material-icons">delete_outline</span>
               </button>
             </div>
@@ -151,13 +151,13 @@
             <div class="doc-dates">
               @if (doc.issueDate) {
                 <div class="date-item">
-                  <span class="date-label">Issued</span>
+                  <span class="date-label">{{ 'employee.documents.issued' | translate }}</span>
                   <span class="date-val">{{ doc.issueDate }}</span>
                 </div>
               }
               @if (doc.expiryDate) {
                 <div class="date-item">
-                  <span class="date-label">Expires</span>
+                  <span class="date-label">{{ 'employee.documents.expires' | translate }}</span>
                   <span
                     class="date-val"
                     [class.text-danger]="doc.isExpired"
@@ -191,7 +191,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2 class="modal-title">
-          {{ isEditMode() ? 'Edit Document Info' : 'Upload Document' }}
+          {{ (isEditMode() ? 'employee.documents.modal.editTitle' : 'employee.documents.modal.uploadTitle') | translate }}
         </h2>
         <button class="modal-close" (click)="closeModal()">
           <span class="material-icons">close</span>
@@ -219,8 +219,8 @@
             >
               @if (!selectedFile()) {
                 <span class="material-icons drop-icon">upload_file</span>
-                <p class="drop-text">Drag & drop or click to browse</p>
-                <small class="drop-hint">PDF, JPG, PNG, DOC — max 50MB</small>
+                <p class="drop-text">{{ 'employee.documents.dropzone.text' | translate }}</p>
+                <small class="drop-hint">{{ 'employee.documents.dropzone.hint' | translate }}</small>
               } @else {
                 <div class="selected-file">
                   <span
@@ -256,9 +256,9 @@
           <!-- Document Type -->
           <div class="field-row">
             <div class="field">
-              <label>Document Type <span class="req">*</span></label>
-              <select formControlName="docTypeId" [attr.disabled]="isEditMode() ? true : null">
-                <option value="">Select type</option>
+              <label for="doc-type-id">{{ 'employee.documents.fields.documentType' | translate }} <span class="req">*</span></label>
+              <select id="doc-type-id" formControlName="docTypeId" [attr.disabled]="isEditMode() ? true : null">
+                <option value="">{{ 'employee.documents.fields.selectType' | translate }}</option>
                 @for (dt of docTypes(); track dt.docTypeId) {
                   <option [value]="dt.docTypeId">{{ dt.docTypeName }} ({{ dt.category }})</option>
                 }
@@ -268,8 +268,8 @@
               }
             </div>
             <div class="field">
-              <label>Document Name <span class="req">*</span></label>
-              <input formControlName="documentName" placeholder="e.g. Passport - John Doe" />
+              <label for="doc-name">{{ 'employee.documents.fields.documentName' | translate }} <span class="req">*</span></label>
+              <input id="doc-name" formControlName="documentName" [placeholder]="'employee.documents.fields.documentNamePlaceholder' | translate" />
               @if (isInvalid('documentName')) {
                 <span class="field-error">{{ getError('documentName') }}</span>
               }
@@ -279,45 +279,45 @@
           <!-- Document number + Issued by -->
           <div class="field-row">
             <div class="field">
-              <label>Document Number</label>
-              <input formControlName="documentNumber" placeholder="e.g. A12345678" />
+              <label for="doc-number">{{ 'employee.documents.fields.documentNumber' | translate }}</label>
+              <input id="doc-number" formControlName="documentNumber" [placeholder]="'employee.documents.fields.documentNumberPlaceholder' | translate" />
             </div>
             <div class="field">
-              <label>Issued By</label>
-              <input formControlName="issuedBy" placeholder="e.g. Royal Oman Police" />
+              <label for="doc-issued-by">{{ 'employee.documents.fields.issuedBy' | translate }}</label>
+              <input id="doc-issued-by" formControlName="issuedBy" [placeholder]="'employee.documents.fields.issuedByPlaceholder' | translate" />
             </div>
           </div>
 
           <!-- Dates -->
           <div class="field-row">
             <div class="field">
-              <label>Issue Date</label>
-              <input type="date" formControlName="issueDate" />
+              <label for="doc-issue-date">{{ 'employee.documents.fields.issueDate' | translate }}</label>
+              <input id="doc-issue-date" type="date" formControlName="issueDate" />
             </div>
             <div class="field">
-              <label>Expiry Date</label>
-              <input type="date" formControlName="expiryDate" />
+              <label for="doc-expiry-date">{{ 'employee.documents.fields.expiryDate' | translate }}</label>
+              <input id="doc-expiry-date" type="date" formControlName="expiryDate" />
             </div>
           </div>
 
           <!-- Notes -->
           <div class="field">
-            <label>Notes</label>
-            <textarea formControlName="notes" placeholder="Optional notes..." rows="2"></textarea>
+            <label for="doc-notes">{{ 'employee.documents.fields.notes' | translate }}</label>
+            <textarea id="doc-notes" formControlName="notes" [placeholder]="'employee.documents.fields.notesPlaceholder' | translate" rows="2"></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="button" class="btn-cancel" (click)="closeModal()">{{ 'common.cancel' | translate }}</button>
           <button type="submit" class="btn-save" [disabled]="saving()">
             @if (saving()) {
               <div class="btn-spinner"></div>
-              <span>{{ isEditMode() ? 'Saving...' : 'Uploading...' }}</span>
+              <span>{{ (isEditMode() ? 'employee.documents.saving' : 'employee.documents.uploading') | translate }}</span>
             } @else {
               <span class="material-icons">
                 {{ isEditMode() ? 'save' : 'upload_file' }}
               </span>
-              <span>{{ isEditMode() ? 'Save Changes' : 'Upload' }}</span>
+              <span>{{ (isEditMode() ? 'employee.documents.saveChanges' : 'employee.documents.upload') | translate }}</span>
             }
           </button>
         </div>
@@ -342,25 +342,25 @@
         </span>
       </div>
       <h3 class="confirm-title">
-        {{ confirmType() === 'verify' ? 'Verify Document?' : 'Delete Document?' }}
+        {{ (confirmType() === 'verify' ? 'employee.documents.confirm.verifyTitle' : 'employee.documents.confirm.deleteTitle') | translate }}
       </h3>
       <p class="confirm-msg">
         <strong>{{ confirmItem()?.documentName }}</strong>
         @if (confirmType() === 'verify') {
-          <br /><small>Mark this document as verified by HR.</small>
+          <br /><small>{{ 'employee.documents.confirm.verifyHint' | translate }}</small>
         } @else {
-          <br /><small>This document will be removed from the employee profile.</small>
+          <br /><small>{{ 'employee.documents.confirm.deleteHint' | translate }}</small>
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">Cancel</button>
+        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
           class="btn-confirm"
           [class.btn-verify-confirm]="confirmType() === 'verify'"
           [class.btn-danger]="confirmType() === 'delete'"
           (click)="confirmAction()"
         >
-          {{ confirmType() === 'verify' ? 'Verify' : 'Delete' }}
+          {{ (confirmType() === 'verify' ? 'employee.documents.confirm.verifyAction' : 'employee.documents.confirm.deleteAction') | translate }}
         </button>
       </div>
     </div>

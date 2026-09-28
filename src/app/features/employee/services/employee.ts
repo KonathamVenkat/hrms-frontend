@@ -27,7 +27,10 @@ export class EmployeeService {
       employmentStatus: params.employmentStatus || null,
       employmentType: params.employmentType || null,
       gender: params.gender || null,
-      isActive: params.isActive ?? null,
+      // undefined (caller didn't specify) defaults to active-only — the safe
+      // default for lookups/dropdowns. Pass `null` explicitly to mean "all
+      // (active + inactive)", as the employee-list screen's own filter does.
+      isActive: params.isActive === undefined ? true : params.isActive,
       page: params.page ?? 0,
       size: params.size ?? 10,
       sortBy: params.sortBy || 'id',
@@ -73,5 +76,14 @@ export class EmployeeService {
     payload: Partial<CreateEmployeePayload>,
   ): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.baseUrl}/${id}`, payload);
+  }
+
+  // ── Deactivate / Reactivate (HR_ADMIN only) ───────────────
+  deactivateEmployee(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  reactivateEmployee(id: number): Observable<ApiResponse<Employee>> {
+    return this.http.patch<ApiResponse<Employee>>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 }

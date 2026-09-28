@@ -7,6 +7,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ import { EmployeeAddress } from '../../models/address.model';
 @Component({
   selector: 'app-employee-addresses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-addresses.html',
   styleUrl: './employee-addresses.css',
 })
@@ -26,6 +27,7 @@ export class EmployeeAddressesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private addressSvc = inject(AddressService);
   private destroyRef = inject(DestroyRef);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   addresses = signal<EmployeeAddress[]>([]);
@@ -83,7 +85,10 @@ export class EmployeeAddressesComponent implements OnInit {
         next: (res) => {
           if (res.success) this.addresses.set(res.data);
         },
-        error: (err: any) => this.error.set(err?.error?.message || 'Failed to load addresses.'),
+        error: (err: any) =>
+          this.error.set(
+            err?.error?.message || this.translate.instant('employee.addresses.errors.loadFailed'),
+          ),
       });
   }
 
@@ -156,14 +161,19 @@ export class EmployeeAddressesComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.showSuccess(
-            this.isEditMode() ? 'Address updated successfully' : 'Address added successfully',
+            this.translate.instant(
+              this.isEditMode()
+                ? 'employee.addresses.success.updated'
+                : 'employee.addresses.success.added',
+            ),
           );
           this.closeModal();
           this.loadAddresses();
         } else this.error.set(res.message);
       },
 
-      error: (err: any) => this.error.set(err?.error?.message || 'Operation failed.'),
+      error: (err: any) =>
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed')),
     });
   }
 
@@ -198,15 +208,18 @@ export class EmployeeAddressesComponent implements OnInit {
     call.subscribe({
       next: () => {
         this.showSuccess(
-          this.confirmType() === 'primary'
-            ? `${addr.addressType} set as primary address`
-            : `${addr.addressType} address removed`,
+          this.translate.instant(
+            this.confirmType() === 'primary'
+              ? 'employee.addresses.success.setPrimary'
+              : 'employee.addresses.success.removed',
+            { type: addr.addressType },
+          ),
         );
         this.cancelConfirm();
         this.loadAddresses();
       },
       error: (err: any) => {
-        this.error.set(err?.error?.message || 'Operation failed.');
+        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -225,10 +238,14 @@ export class EmployeeAddressesComponent implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'Required';
-    if (c.errors['maxlength']) return `Max ${c.errors['maxlength'].requiredLength} chars`;
-    if (c.errors['pattern']) return 'Invalid format';
-    return 'Invalid';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('common.validation.pattern');
+    return this.translate.instant('common.validation.invalid');
   }
 
   isTypeUsed(type: string): boolean {

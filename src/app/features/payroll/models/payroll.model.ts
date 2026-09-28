@@ -116,16 +116,18 @@ export interface EmployeeSalaryRequest {
 }
 
 // ── Display configs ────────────────────────────────────────
+// `label` values are ngx-translate keys — reusing the existing `payroll.salaryComponent.types.*`
+// / `payroll.salaryComponent.calcTypes.*` keys — templates must pipe them through `| translate`.
 export const COMPONENT_TYPE_CONFIG: Record<ComponentType,
   { label: string; color: string; bg: string }> = {
-  EARNING:   { label: 'Earning',   color: '#166534', bg: '#dcfce7' },
-  DEDUCTION: { label: 'Deduction', color: '#991b1b', bg: '#fee2e2' },
-  STATUTORY: { label: 'Statutory', color: '#92400e', bg: '#fef3c7' },
+  EARNING:   { label: 'payroll.salaryComponent.types.earning',   color: '#166534', bg: '#dcfce7' },
+  DEDUCTION: { label: 'payroll.salaryComponent.types.deduction', color: '#991b1b', bg: '#fee2e2' },
+  STATUTORY: { label: 'payroll.salaryComponent.types.statutory', color: '#92400e', bg: '#fef3c7' },
 };
 
 export const CALC_TYPE_LABELS: Record<CalculationType, string> = {
-  FIXED:               'Fixed Amount',
-  PERCENTAGE_OF_BASIC: '% of Basic',
-  PERCENTAGE_OF_GROSS: '% of Gross',
-  FORMULA:             'Formula',
+  FIXED:               'payroll.salaryComponent.calcTypes.fixed',
+  PERCENTAGE_OF_BASIC: 'payroll.salaryComponent.calcTypes.percentOfBasic',
+  PERCENTAGE_OF_GROSS: 'payroll.salaryComponent.calcTypes.percentOfGross',
+  FORMULA:             'payroll.salaryComponent.calcTypes.formula',
 };

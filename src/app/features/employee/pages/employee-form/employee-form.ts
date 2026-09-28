@@ -6,18 +6,22 @@ import {
   Validators,
   ReactiveFormsModule,
   AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { EmployeeService } from '../../services/employee';
+import { Auth } from '../../../../core/auth/auth';
+import { getHttpErrorMessage } from '../../../../core/utils/http-error-message';
 
 @Component({
   selector: 'app-employee-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-form.html',
   styleUrl: './employee-form.css',
 })
@@ -27,6 +31,8 @@ export class EmployeeForm implements OnInit {
   private route = inject(ActivatedRoute);
   private empService = inject(EmployeeService);
   private destroyRef = inject(DestroyRef);
+  private auth = inject(Auth);
+  private translate = inject(TranslateService);
 
   // ── State ─────────────────────────────────────────────────
   form!: FormGroup;
@@ -42,6 +48,10 @@ export class EmployeeForm implements OnInit {
   employeeCode = signal<string>('');
   workEmailReadOnly = signal<string>('');
 
+  // ── Role field is admin-only when editing an existing employee ────
+  // (backend rejects a role change on PUT unless the caller is HR_ADMIN)
+  isHrAdmin = signal(false);
+
   // ── Enum options ──────────────────────────────────────────
   readonly genders = ['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'];
   readonly bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
@@ -56,7 +66,15 @@ export class EmployeeForm implements OnInit {
     'RETIRED',
     'ON_HOLD',
   ];
+  // A brand-new employee can only start as PROBATION or ACTIVE — the rest of
+  // the lifecycle (NOTICE_PERIOD, TERMINATED, etc.) only makes sense once an
+  // employee already exists, and is only reachable via editing an existing one.
+  readonly creatableStatuses = ['PROBATION', 'ACTIVE'];
   readonly roles = ['HR_ADMIN', 'HR_MANAGER', 'EMPLOYEE'];
+
+  get statusOptions(): string[] {
+    return this.isEdit() ? this.empStatuses : this.creatableStatuses;
+  }
 
   // ── Lifecycle ─────────────────────────────────────────────
   ngOnInit(): void {
@@ -65,6 +83,8 @@ export class EmployeeForm implements OnInit {
       this.isEdit.set(true);
       this.empId.set(+idParam);
     }
+
+    this.isHrAdmin.set(this.auth.getRole() === 'HR_ADMIN');
 
     this.buildForm();
 
@@ -97,9 +117,9 @@ export class EmployeeForm implements OnInit {
       workPhone: ['', Validators.maxLength(30)],
 
       // Employment
-      hireDate: ['', Validators.required],
-      probationEndDate: [''],
-      confirmationDate: [''],
+      hireDate: ['', [Validators.required, this.hireDateValidator]],
+      probationEndDate: ['', this.probationEndValidator],
+      confirmationDate: ['', this.confirmationDateValidator],
       employmentType: ['FULL_TIME', Validators.required],
       employmentStatus: ['PROBATION', Validators.required],
 
@@ -121,7 +141,47 @@ export class EmployeeForm implements OnInit {
       this.ctrl('username').updateValueAndValidity();
       this.ctrl('password').updateValueAndValidity();
     }
+
+    // Only HR_ADMIN may change an existing employee's role — matches the
+    // backend, which rejects a role change on PUT from any other role.
+    if (this.isEdit() && !this.isHrAdmin()) {
+      this.ctrl('role').disable();
+    }
+
+    // Cross-field date validators only look at sibling values when they
+    // themselves run — re-run the dependent control whenever the one it
+    // depends on changes.
+    this.ctrl('dateOfBirth')
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.ctrl('hireDate').updateValueAndValidity());
+    this.ctrl('hireDate')
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.ctrl('probationEndDate').updateValueAndValidity());
+    this.ctrl('probationEndDate')
+      .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.ctrl('confirmationDate').updateValueAndValidity());
   }
+
+  // ── Cross-field date validators ────────────────────────────
+  private hireDateValidator = (control: AbstractControl): ValidationErrors | null => {
+    const dob = control.parent?.get('dateOfBirth')?.value;
+    if (!control.value || !dob) return null;
+    return new Date(control.value) < new Date(dob) ? { hireBeforeBirth: true } : null;
+  };
+
+  private probationEndValidator = (control: AbstractControl): ValidationErrors | null => {
+    const hireDate = control.parent?.get('hireDate')?.value;
+    if (!control.value || !hireDate) return null;
+    return new Date(control.value) < new Date(hireDate) ? { probationBeforeHire: true } : null;
+  };
+
+  private confirmationDateValidator = (control: AbstractControl): ValidationErrors | null => {
+    const probationEnd = control.parent?.get('probationEndDate')?.value;
+    if (!control.value || !probationEnd) return null;
+    return new Date(control.value) < new Date(probationEnd)
+      ? { confirmationBeforeProbation: true }
+      : null;
+  };
 
   // ── Load employee data for edit mode ──────────────────────
   private loadEmployeeForEdit(id: number): void {
@@ -188,13 +248,29 @@ export class EmployeeForm implements OnInit {
   getError(name: string): string {
     const c = this.ctrl(name);
     if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return 'This field is required';
-    if (c.errors['email']) return 'Invalid email format';
-    if (c.errors['minlength']) return `Minimum ${c.errors['minlength'].requiredLength} characters`;
-    if (c.errors['maxlength']) return `Maximum ${c.errors['maxlength'].requiredLength} characters`;
-    if (c.errors['pattern'])
-      return 'Invalid format — letters, numbers, dots, hyphens, underscores only';
-    return 'Invalid value';
+    if (c.errors['required']) return this.translate.instant('common.validation.required');
+    if (c.errors['email']) return this.translate.instant('common.validation.email');
+    if (c.errors['minlength']) {
+      return this.translate.instant('common.validation.minLength', {
+        count: c.errors['minlength'].requiredLength,
+      });
+    }
+    if (c.errors['maxlength']) {
+      return this.translate.instant('common.validation.maxLength', {
+        count: c.errors['maxlength'].requiredLength,
+      });
+    }
+    if (c.errors['pattern']) return this.translate.instant('common.validation.pattern');
+    if (c.errors['hireBeforeBirth']) {
+      return this.translate.instant('employee.form.errors.hireBeforeBirth');
+    }
+    if (c.errors['probationBeforeHire']) {
+      return this.translate.instant('employee.form.errors.probationBeforeHire');
+    }
+    if (c.errors['confirmationBeforeProbation']) {
+      return this.translate.instant('employee.form.errors.confirmationBeforeProbation');
+    }
+    return this.translate.instant('common.validation.invalid');
   }
 
   togglePassword(): void {
@@ -221,8 +297,9 @@ export class EmployeeForm implements OnInit {
     }
   }
 
-  private submitCreate(v: any): void {
-    const payload = {
+  /** Fields shared by both create and update payloads. */
+  private buildCommonPayload(v: any) {
+    return {
       firstName: v.firstName,
       firstNameAr: v.firstNameAr,
       middleName: v.middleName || undefined,
@@ -242,6 +319,12 @@ export class EmployeeForm implements OnInit {
       probationEndDate: v.probationEndDate || undefined,
       confirmationDate: v.confirmationDate || undefined,
       employmentType: v.employmentType,
+    };
+  }
+
+  private submitCreate(v: any): void {
+    const payload = {
+      ...this.buildCommonPayload(v),
       employmentStatus: v.employmentStatus || 'PROBATION',
       username: v.username,
       password: v.password,
@@ -266,26 +349,8 @@ export class EmployeeForm implements OnInit {
 
   private submitUpdate(v: any): void {
     const payload = {
-      firstName: v.firstName,
-      firstNameAr: v.firstNameAr,
-      middleName: v.middleName || undefined,
-      middleNameAr: v.middleNameAr || undefined,
-      lastName: v.lastName,
-      lastNameAr: v.lastNameAr,
-      dateOfBirth: v.dateOfBirth,
-      gender: v.gender,
-      bloodGroup: v.bloodGroup || undefined,
-      maritalStatus: v.maritalStatus || undefined,
-      nationality: v.nationality || undefined,
-      religion: v.religion || undefined,
+      ...this.buildCommonPayload(v),
       profilePhotoUrl: v.profilePhotoUrl || undefined,
-      personalEmail: v.personalEmail,
-      personalPhone: v.personalPhone || undefined,
-      workPhone: v.workPhone || undefined,
-      hireDate: v.hireDate,
-      probationEndDate: v.probationEndDate || undefined,
-      confirmationDate: v.confirmationDate || undefined,
-      employmentType: v.employmentType,
       employmentStatus: v.employmentStatus,
       role: v.role,
     };
@@ -307,19 +372,12 @@ export class EmployeeForm implements OnInit {
   }
 
   private handleError(err: any): void {
-    const msg =
-      err.status === 409
-        ? err?.error?.message || 'Duplicate email or username.'
-        : err.status === 400
-          ? err?.error?.message || 'Validation error. Check your inputs.'
-          : err.status === 404
-            ? 'Employee not found.'
-            : err.status === 403
-              ? 'Access denied.'
-              : err.status === 0
-                ? 'Cannot reach server.'
-                : err?.error?.message || 'Unexpected error.';
-    this.error.set(msg);
+    this.error.set(
+      getHttpErrorMessage(this.translate, err, {
+        409: err?.error?.message || this.translate.instant('employee.form.errors.duplicateEmailOrUsername'),
+        404: this.translate.instant('employee.form.errors.notFound'),
+      }),
+    );
   }
 
   cancel(): void {

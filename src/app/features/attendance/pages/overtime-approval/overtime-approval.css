@@ -169,15 +169,15 @@
 }
 
 .pending-row td {
-  border-left: 3px solid #f59e0b;
+  border-inline-start: 3px solid #f59e0b;
 }
 .approved-row td {
   background: #f0fdf4 !important;
-  border-left: 3px solid #059669;
+  border-inline-start: 3px solid #059669;
 }
 .rejected-row td {
   background: #fff5f5 !important;
-  border-left: 3px solid #ef4444;
+  border-inline-start: 3px solid #ef4444;
 }
 
 /* ── Employee cell ───────────────────────────────────────── */
