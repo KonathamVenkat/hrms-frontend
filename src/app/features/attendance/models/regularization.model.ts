@@ -33,7 +33,6 @@ export interface RegularizationRequest {
 }
 
 export interface RegularizationActionRequest {
-  reviewedBy:        number;
   action:            RegularizationStatus;
   rejectionReason?:  string;
 }

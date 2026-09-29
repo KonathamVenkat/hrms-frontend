@@ -41,7 +41,6 @@ export interface OvertimeSubmitRequest {
 }
 
 export interface OvertimeActionRequest {
-  reviewedBy:       number;
   action:           RegularizationStatus;
   rejectionReason?: string;
 }

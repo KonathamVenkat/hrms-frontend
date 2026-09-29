@@ -258,6 +258,7 @@
                 *ngIf="row.status === 'PENDING'"
                 (click)="onCancel(row.otId)"
                 [matTooltip]="'attendance.overtimeRequest.cancelRequest' | translate"
+                [attr.aria-label]="'attendance.overtimeRequest.cancelRequest' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

@@ -66,7 +66,6 @@ export interface AttendanceSummaryResponse {
 
 export interface CheckInRequest {
   employeeId:   number;
-  checkInTime?: string;
   punchSource?: PunchSource;
   locationId?:  number;
   notes?:       string;
@@ -74,7 +73,6 @@ export interface CheckInRequest {
 
 export interface CheckOutRequest {
   employeeId:    number;
-  checkOutTime?: string;
   punchSource?:  PunchSource;
   notes?:        string;
 }

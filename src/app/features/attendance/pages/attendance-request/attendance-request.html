@@ -208,6 +208,7 @@
                 *ngIf="row.status === 'PENDING'"
                 (click)="onCancel(row.regId)"
                 [matTooltip]="'attendance.request.cancelRequest' | translate"
+                [attr.aria-label]="'attendance.request.cancelRequest' | translate"
               >
                 <mat-icon>close</mat-icon>
               </button>

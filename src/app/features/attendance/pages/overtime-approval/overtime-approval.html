@@ -284,11 +284,22 @@
 
 <!-- ── Reject Dialog ────────────────────────────────────── -->
 <div class="dialog-overlay" *ngIf="showRejectDialog()" (click)="closeRejectDialog()">
-  <div class="dialog-box" (click)="$event.stopPropagation()">
+  <div
+    class="dialog-box"
+    (click)="$event.stopPropagation()"
+    [appAccessibleDialog]="'reject-dialog-title'"
+    (dialogClosed)="closeRejectDialog()"
+    cdkTrapFocus
+    cdkTrapFocusAutoCapture
+  >
     <div class="dialog-header">
       <mat-icon class="warn-icon">warning_amber</mat-icon>
-      <h3>{{ 'attendance.overtimeApproval.rejectDialogTitle' | translate }}</h3>
-      <button mat-icon-button (click)="closeRejectDialog()">
+      <h3 id="reject-dialog-title">{{ 'attendance.overtimeApproval.rejectDialogTitle' | translate }}</h3>
+      <button
+        mat-icon-button
+        [attr.aria-label]="'common.close' | translate"
+        (click)="closeRejectDialog()"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>

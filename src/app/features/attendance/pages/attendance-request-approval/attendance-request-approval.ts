@@ -1,6 +1,8 @@
 // src/app/features/attendance/pages/attendance-request-approval/
 //   attendance-request-approval.component.ts
 
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
@@ -29,7 +31,6 @@ import {
   RegularizationStatus,
   REG_STATUS_CONFIG,
 } from '../../models/regularization.model';
-import { Auth } from '../../../../core/auth/auth';
 
 @Component({
   selector: 'app-attendance-request-approval',
@@ -47,6 +48,8 @@ import { Auth } from '../../../../core/auth/auth';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
+    CdkTrapFocus,
+    AccessibleDialogDirective,
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
@@ -62,7 +65,6 @@ import { Auth } from '../../../../core/auth/auth';
 })
 export class AttendanceRequestApproval implements OnInit {
   private readonly svc = inject(RegularizationService);
-  private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
 
@@ -207,7 +209,6 @@ export class AttendanceRequestApproval implements OnInit {
 
     this.svc
       .approve(request.regId, {
-        reviewedBy: this.auth.getEmployeeId(),
         action: 'APPROVED',
         rejectionReason: undefined,
       })
@@ -276,7 +277,6 @@ export class AttendanceRequestApproval implements OnInit {
 
     this.svc
       .reject(request.regId, {
-        reviewedBy: this.auth.getEmployeeId(),
         action: 'REJECTED',
         rejectionReason: reason,
       })

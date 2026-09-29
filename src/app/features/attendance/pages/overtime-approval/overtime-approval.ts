@@ -1,3 +1,5 @@
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
@@ -20,7 +22,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { OvertimeService } from '../../services/overtime.service';
 import { OvertimeResponse, OT_TYPE_CONFIG, OT_STATUS_CONFIG } from '../../models/overtime.model';
 import { RegularizationStatus } from '../../models/regularization.model';
-import { Auth } from '../../../../core/auth/auth';
 
 @Component({
   selector: 'app-overtime-approval',
@@ -38,6 +39,8 @@ import { Auth } from '../../../../core/auth/auth';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
+    CdkTrapFocus,
+    AccessibleDialogDirective,
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
@@ -50,7 +53,6 @@ import { Auth } from '../../../../core/auth/auth';
 })
 export class OvertimeApproval implements OnInit {
   private readonly svc = inject(OvertimeService);
-  private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
 
@@ -194,7 +196,6 @@ export class OvertimeApproval implements OnInit {
     this.processingId.set(req.otId);
     this.svc
       .approve(req.otId, {
-        reviewedBy: this.auth.getEmployeeId(),
         action: 'APPROVED',
       })
       .subscribe({
@@ -258,7 +259,6 @@ export class OvertimeApproval implements OnInit {
     this.processingId.set(req.otId);
     this.svc
       .reject(req.otId, {
-        reviewedBy: this.auth.getEmployeeId(),
         action: 'REJECTED',
         rejectionReason: reason,
       })
