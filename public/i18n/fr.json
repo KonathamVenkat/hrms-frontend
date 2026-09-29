@@ -496,6 +496,38 @@
       }
     }
   },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue, {{name}}",
+    "loading": "Chargement du tableau de bord...",
+    "loadFailed": "Certaines informations du tableau de bord n'ont pas pu être chargées.",
+    "hr": {
+      "workforceTitle": "Effectifs aujourd'hui",
+      "totalStrength": "Effectif total",
+      "newJoinersToday": "Nouveaux arrivants aujourd'hui",
+      "joiningThisWeek": "Arrivées cette semaine",
+      "onLeaveToday": "En congé aujourd'hui",
+      "approvalsTitle": "Approbations en attente",
+      "leaveRequests": "Demandes de congé",
+      "regularizations": "Régularisations de présence",
+      "overtimeRequests": "Demandes d'heures supplémentaires",
+      "review": "Examiner",
+      "nonePending": "Rien en attente"
+    },
+    "employee": {
+      "attendanceTitle": "Présence du jour",
+      "notCheckedIn": "Vous n'avez pas encore pointé aujourd'hui.",
+      "checkedInAt": "Arrivée à {{time}}",
+      "checkedOutAt": "Départ à {{time}}",
+      "openAttendance": "Ouvrir la présence",
+      "balancesTitle": "Mes soldes de congé",
+      "availableOfTotal": "{{available}} jours disponibles sur {{total}}",
+      "noBalances": "Aucun solde de congé trouvé pour cette année.",
+      "applyLeave": "Demander un congé",
+      "holidaysTitle": "Jours fériés à venir",
+      "noHolidays": "Aucun jour férié à venir cette année."
+    }
+  },
   "leave": {
     "list": {
       "title": "Mes demandes de congé",

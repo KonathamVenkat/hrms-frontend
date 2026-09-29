@@ -1,0 +1,133 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.dashboard-title {
+  margin: 0;
+  font: var(--mat-sys-headline-small, 500 24px/32px sans-serif);
+}
+
+.dashboard-welcome {
+  margin: 4px 0 0;
+  color: var(--mat-sys-on-surface-variant, #444);
+}
+
+.dashboard-status {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, #444);
+}
+
+.dashboard-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container, #fdecea);
+  color: var(--mat-sys-on-error-container, #410002);
+}
+
+.section-title {
+  margin: 0 0 16px;
+  font: var(--mat-sys-title-medium, 500 16px/24px sans-serif);
+}
+
+/* Lists rendered as grids: reset default list styling */
+.card-grid,
+.plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  height: 100%;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.stat-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: var(--mat-sys-primary, #1a5fb4);
+}
+
+.stat-value {
+  margin: 0;
+  font: var(--mat-sys-headline-medium, 500 28px/36px sans-serif);
+}
+
+.stat-label {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, #444);
+}
+
+.stat-muted {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant, #444);
+}
+
+/* Pending = amber, always paired with an icon and the count (never colour alone) */
+.pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px 0 8px;
+  border-radius: 16px;
+  background: #fff3e0;
+  color: #7a4a00;
+}
+
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.attendance-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.plain-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #ddd);
+}
+
+.plain-list li:last-child {
+  border-bottom: none;
+}
+
+.list-secondary {
+  color: var(--mat-sys-on-surface-variant, #444);
+  text-align: end;
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    padding: 16px;
+  }
+}

@@ -496,6 +496,38 @@
       }
     }
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {{name}}",
+    "loading": "Loading dashboard...",
+    "loadFailed": "Some dashboard information could not be loaded.",
+    "hr": {
+      "workforceTitle": "Workforce today",
+      "totalStrength": "Total Strength",
+      "newJoinersToday": "Today's New Joiners",
+      "joiningThisWeek": "Joining This Week",
+      "onLeaveToday": "Leave on Today",
+      "approvalsTitle": "Pending approvals",
+      "leaveRequests": "Leave requests",
+      "regularizations": "Attendance regularizations",
+      "overtimeRequests": "Overtime requests",
+      "review": "Review",
+      "nonePending": "Nothing waiting"
+    },
+    "employee": {
+      "attendanceTitle": "Today's attendance",
+      "notCheckedIn": "You have not checked in today.",
+      "checkedInAt": "Checked in at {{time}}",
+      "checkedOutAt": "Checked out at {{time}}",
+      "openAttendance": "Open attendance",
+      "balancesTitle": "My leave balances",
+      "availableOfTotal": "{{available}} of {{total}} days available",
+      "noBalances": "No leave balances found for this year.",
+      "applyLeave": "Apply for leave",
+      "holidaysTitle": "Upcoming holidays",
+      "noHolidays": "No upcoming holidays this year."
+    }
+  },
   "leave": {
     "list": {
       "title": "My Leave Requests",

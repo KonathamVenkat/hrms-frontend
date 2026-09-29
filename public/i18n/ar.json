@@ -496,6 +496,38 @@
       }
     }
   },
+  "dashboard": {
+    "title": "لوحة المعلومات",
+    "welcome": "مرحبًا، {{name}}",
+    "loading": "جارٍ تحميل لوحة المعلومات...",
+    "loadFailed": "تعذر تحميل بعض معلومات لوحة المعلومات.",
+    "hr": {
+      "workforceTitle": "القوى العاملة اليوم",
+      "totalStrength": "إجمالي القوى العاملة",
+      "newJoinersToday": "الموظفون الجدد اليوم",
+      "joiningThisWeek": "المنضمون هذا الأسبوع",
+      "onLeaveToday": "في إجازة اليوم",
+      "approvalsTitle": "الموافقات المعلقة",
+      "leaveRequests": "طلبات الإجازة",
+      "regularizations": "طلبات تصحيح الحضور",
+      "overtimeRequests": "طلبات العمل الإضافي",
+      "review": "مراجعة",
+      "nonePending": "لا شيء بانتظار المراجعة"
+    },
+    "employee": {
+      "attendanceTitle": "حضور اليوم",
+      "notCheckedIn": "لم تسجّل حضورك اليوم.",
+      "checkedInAt": "تسجيل الحضور في {{time}}",
+      "checkedOutAt": "تسجيل الانصراف في {{time}}",
+      "openAttendance": "فتح الحضور",
+      "balancesTitle": "أرصدة إجازاتي",
+      "availableOfTotal": "المتاح {{available}} من {{total}} يومًا",
+      "noBalances": "لا توجد أرصدة إجازات لهذه السنة.",
+      "applyLeave": "تقديم طلب إجازة",
+      "holidaysTitle": "العطلات القادمة",
+      "noHolidays": "لا توجد عطلات قادمة هذه السنة."
+    }
+  },
   "leave": {
     "list": {
       "title": "طلبات إجازتي",

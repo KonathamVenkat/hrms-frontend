@@ -85,6 +85,31 @@ export class Auth {
     return this.getCurrentUser()?.role ?? '';
   }
 
+  /**
+   * Roles from the JWT `roles` claim (a list such as ["HR_ADMIN"]; a single string or a
+   * Spring-style "ROLE_" prefix are tolerated). UI-only convenience — the backend enforces
+   * access on every endpoint regardless of what this returns.
+   */
+  getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+    try {
+      const payload = this.decodePayload(token);
+      const raw = payload.roles ?? payload.role ?? payload.authorities ?? [];
+      const list: unknown[] = Array.isArray(raw) ? raw : [raw];
+      return list
+        .filter((r): r is string => typeof r === 'string' && r.length > 0)
+        .map((r) => r.replace(/^ROLE_/, ''));
+    } catch {
+      return [];
+    }
+  }
+
+  hasAnyRole(...roles: string[]): boolean {
+    const mine = this.getRoles();
+    return roles.some((r) => mine.includes(r));
+  }
+
   getUsername(): string {
     return this.getCurrentUser()?.username ?? '';
   }
