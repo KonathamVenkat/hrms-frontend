@@ -39,8 +39,8 @@
 
       <!-- Error Banner -->
       @if (errorMsg()) {
-        <div class="error-banner">
-          <span class="err-icon">&#9888;</span>
+        <div class="error-banner" role="alert">
+          <span class="err-icon" aria-hidden="true">&#9888;</span>
           <span>{{ errorMsg() }}</span>
         </div>
       }
@@ -54,7 +54,6 @@
             formControlName="username"
             [placeholder]="'auth.login.usernamePlaceholder' | translate"
             autocomplete="username"
-            value="admin"
           />
           @if (usernameCtrl.invalid && usernameCtrl.touched) {
             <mat-error>{{ getUsernameError() }}</mat-error>
@@ -70,9 +69,17 @@
             [type]="hidePassword() ? 'password' : 'text'"
             [placeholder]="'auth.login.passwordPlaceholder' | translate"
             autocomplete="current-password"
-            value="admin123"
           />
-          <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            [attr.aria-label]="
+              (hidePassword() ? 'auth.login.showPassword' : 'auth.login.hidePassword') | translate
+            "
+            [attr.aria-pressed]="!hidePassword()"
+            (click)="togglePassword()"
+          >
             <mat-icon>
               {{ hidePassword() ? 'visibility_off' : 'visibility' }}
             </mat-icon>
@@ -82,13 +89,8 @@
           }
         </mat-form-field>
 
-        <!-- Remember + Forgot -->
-        <div class="form-row">
-          <mat-checkbox formControlName="rememberMe" color="primary">
-            {{ 'auth.login.rememberMe' | translate }}
-          </mat-checkbox>
-          <a href="#" class="forgot-link">{{ 'auth.login.forgotPassword' | translate }}</a>
-        </div>
+        <!-- Self-service password reset needs an email service; until then users ask HR. -->
+        <p class="forgot-note">{{ 'auth.login.forgotPasswordNote' | translate }}</p>
 
         <!-- Submit -->
         <button

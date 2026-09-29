@@ -1,14 +1,16 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
+  imports: [TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <select
       class="lang-select"
-      aria-label="Select language"
+      [attr.aria-label]="'layout.toolbar.language' | translate"
       [value]="languageService.getCurrentLanguage()"
       (change)="languageService.setLanguage($any($event.target).value)"
     >

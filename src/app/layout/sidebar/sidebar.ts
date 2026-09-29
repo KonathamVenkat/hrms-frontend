@@ -1,11 +1,9 @@
-import {
-  Component, OnInit, signal, inject,
-  HostListener, ElementRef
-} from '@angular/core';
+import { Component, OnInit, signal, inject, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MenuService, MenuDto } from '../../core/services/menu.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { SIDEBAR_MENU_CACHE_KEY } from '../../core/auth/auth';
 
 // ── Icon color map — keyed by Material icon name ──────────
 export const ICON_COLOR_MAP: Record<string, { color: string; bg: string; activeBg: string }> = {
@@ -43,57 +41,79 @@ export const ICON_COLOR_MAP: Record<string, { color: string; bg: string; activeB
 
 const DEFAULT_ICON_STYLE = { color: '#64748b', bg: '#f8fafc', activeBg: '#64748b' };
 
-// Cache key for sessionStorage
-const MENU_CACHE_KEY = 'ehrms_sidebar_menu';
-
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+    '(document:keydown.escape)': 'onEscape()',
+  },
 })
 export class Sidebar implements OnInit {
 
   router      = inject(Router);
-  private elRef    = inject(ElementRef);
-  private menuSvc  = inject(MenuService);
+  private elRef       = inject(ElementRef);
+  private menuSvc     = inject(MenuService);
+  private authService = inject(AuthService);
 
   // ── State ─────────────────────────────────────────────
   navItems    = signal<MenuDto[]>([]);
   loading     = signal(true);
-  activeMenu  = signal<string | null>(null);  // currently hovered menu id
+  loadFailed  = signal(false);
+  activeMenu  = signal<string | null>(null);  // id of the menu whose submenu is open
   flyoutTop   = signal<number>(0);
 
-  // Delay timer — prevents flicker when mouse moves between
+  // Delay timer — prevents flicker when the mouse moves between
   // the icon button and the flyout panel
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
+  // The button that opened the current flyout, so Escape can return focus to it
+  private lastTrigger: HTMLElement | null = null;
 
   ngOnInit(): void {
-    // ── Try cache first — eliminates the slow API load ────
-    const cached = sessionStorage.getItem(MENU_CACHE_KEY);
+    this.loadMenu();
+  }
+
+  /** Loads the menu from the session cache, else from the API (and caches it). */
+  private loadMenu(): void {
+    this.loading.set(true);
+    this.loadFailed.set(false);
+
+    // The cache is per browser tab and is cleared on sign-out / sign-in (Auth.clearSession),
+    // so one user's menu never leaks to the next.
+    const cached = sessionStorage.getItem(SIDEBAR_MENU_CACHE_KEY);
     if (cached) {
       try {
         this.navItems.set(JSON.parse(cached));
         this.loading.set(false);
-        return; // skip API call
+        return;
       } catch {
-        sessionStorage.removeItem(MENU_CACHE_KEY);
+        sessionStorage.removeItem(SIDEBAR_MENU_CACHE_KEY);
       }
     }
 
-    // ── Fetch from API and cache result ───────────────────
     this.menuSvc.getSidebarMenu().subscribe({
       next: (res) => {
         if (res.success) {
           this.navItems.set(res.data);
-          // Cache for this browser session
-          sessionStorage.setItem(MENU_CACHE_KEY, JSON.stringify(res.data));
+          sessionStorage.setItem(SIDEBAR_MENU_CACHE_KEY, JSON.stringify(res.data));
+        } else {
+          this.loadFailed.set(true);
         }
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loadFailed.set(true);
+        this.loading.set(false);
+      },
     });
+  }
+
+  reload(): void {
+    sessionStorage.removeItem(SIDEBAR_MENU_CACHE_KEY);
+    this.loadMenu();
   }
 
   // ── Icon color helpers ─────────────────────────────────
@@ -122,16 +142,44 @@ export class Sidebar implements OnInit {
     return this.router.url.startsWith(route);
   }
 
+  hasChildren(item: MenuDto): boolean {
+    return !!item.children?.length;
+  }
+
+  // ── Click / keyboard (Enter, Space) — the primary way to use the menu ─────
+  // Hover still opens submenus for mouse users, but a click/keypress works for keyboard,
+  // touch and screen-reader users, who never trigger hover.
+  onItemClick(item: MenuDto, event: MouseEvent): void {
+    const trigger = event.currentTarget as HTMLElement;
+    if (this.hasChildren(item)) {
+      const id = item.mainMenuId.toString();
+      if (this.activeMenu() === id) {
+        this.activeMenu.set(null);
+      } else {
+        this.openMenu(id, trigger);
+      }
+    } else if (item.route) {
+      this.navigate(item.route);
+    }
+  }
+
+  private openMenu(id: string, trigger: HTMLElement): void {
+    this.flyoutTop.set(trigger.getBoundingClientRect().top);
+    this.lastTrigger = trigger;
+    this.activeMenu.set(id);
+  }
+
   // ── Hover flyout — mouseenter on rail-item ─────────────
-  onMenuEnter(id: string, event: MouseEvent): void {
+  onMenuEnter(item: MenuDto, event: MouseEvent): void {
+    if (!this.hasChildren(item)) return;
     // Cancel any pending hide
     if (this.hideTimer) {
       clearTimeout(this.hideTimer);
       this.hideTimer = null;
     }
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    this.flyoutTop.set(rect.top);
-    this.activeMenu.set(id);
+    const li = event.currentTarget as HTMLElement;
+    const trigger = li.querySelector<HTMLElement>('.rail-btn') ?? li;
+    this.openMenu(item.mainMenuId.toString(), trigger);
   }
 
   // ── Hover flyout — mouseleave on rail-item OR flyout ───
@@ -157,17 +205,31 @@ export class Sidebar implements OnInit {
     }, 120);
   }
 
+  /** Keyboard focus moved out of a menu group (item + its flyout) → close its flyout. */
+  onGroupFocusOut(event: FocusEvent): void {
+    const group = event.currentTarget as HTMLElement;
+    const next = event.relatedTarget as Node | null;
+    if (!next || !group.contains(next)) {
+      this.activeMenu.set(null);
+    }
+  }
+
+  /** Escape closes an open flyout and puts focus back on the button that opened it. */
+  onEscape(): void {
+    if (this.activeMenu() === null) return;
+    this.activeMenu.set(null);
+    this.lastTrigger?.focus();
+  }
+
   navigate(route: string): void {
     this.router.navigateByUrl(route);
     this.activeMenu.set(null);
   }
 
-  // ── Invalidate cache when needed (call from outside) ───
-  clearMenuCache(): void {
-    sessionStorage.removeItem(MENU_CACHE_KEY);
+  signOut(): void {
+    this.authService.signOut();
   }
 
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (!this.elRef.nativeElement.contains(event.target as HTMLElement)) {
       this.activeMenu.set(null);

@@ -1,7 +1,7 @@
-<nav class="sidebar-rail">
+<nav class="sidebar-rail" [attr.aria-label]="'layout.sidebar.navLabel' | translate">
 
   <!-- ── Logo ──────────────────────────────────────────── -->
-  <div class="rail-logo">
+  <div class="rail-logo" aria-hidden="true">
     <div class="logo-avatar">
       <span class="material-icons" style="font-size:20px">hexagon</span>
     </div>
@@ -9,116 +9,147 @@
 
   <!-- ── Loading skeleton ──────────────────────────────── -->
   @if (loading()) {
-    <div class="rail-loading">
+    <div class="rail-loading" role="status" [attr.aria-label]="'layout.sidebar.loading' | translate">
       @for (i of [1,2,3,4,5,6,7,8]; track i) {
         <div class="skeleton-icon"></div>
       }
     </div>
   }
 
+  <!-- ── Load failure: say so and offer a retry ────────── -->
+  @if (!loading() && loadFailed()) {
+    <div class="rail-error" role="alert">
+      <button
+        class="rail-btn"
+        type="button"
+        [attr.aria-label]="'layout.sidebar.loadFailedRetry' | translate"
+        (click)="reload()">
+        <span class="material-icons rail-icon" aria-hidden="true">refresh</span>
+        <span class="rail-tooltip" aria-hidden="true">{{ 'layout.sidebar.loadFailedRetry' | translate }}</span>
+      </button>
+    </div>
+  }
+
   <!-- ── Nav list ──────────────────────────────────────── -->
-  <ul class="rail-list" *ngIf="!loading()">
+  @if (!loading() && !loadFailed()) {
+    <ul class="rail-list">
 
-    @for (item of navItems(); track item.mainMenuId) {
-      <li
-        class="rail-item"
-        [class.active]="isActive(item)"
-        (mouseenter)="item.children?.length
-          ? onMenuEnter(item.mainMenuId.toString(), $event)
-          : null"
-        (mouseleave)="onMenuLeave()"
-      >
-        <!-- Icon button -->
-        <button
-          class="rail-btn"
+      @for (item of navItems(); track item.mainMenuId) {
+        <li
+          class="rail-item"
           [class.active]="isActive(item)"
-          [style.background]="getIconBg(item.icon, isActive(item))"
-          [attr.title]="item.mainMenuName"
-          (click)="!item.children?.length
-            ? navigate(item.route!)
-            : null"
+          (mouseenter)="onMenuEnter(item, $event)"
+          (mouseleave)="onMenuLeave()"
+          (focusout)="onGroupFocusOut($event)"
         >
-          <!-- Colored icon -->
-          <span
-            class="material-icons rail-icon"
-            [style.color]="getIconColor(item.icon, isActive(item))">
-            {{ item.icon }}
-          </span>
+          <!-- Icon button: click / Enter / Space opens the submenu (or navigates) -->
+          <button
+            class="rail-btn"
+            type="button"
+            [class.active]="isActive(item)"
+            [style.background]="getIconBg(item.icon, isActive(item))"
+            [attr.aria-label]="item.mainMenuName"
+            [attr.aria-haspopup]="hasChildren(item) ? 'true' : null"
+            [attr.aria-expanded]="hasChildren(item) ? activeMenu() === item.mainMenuId.toString() : null"
+            [attr.aria-current]="isActive(item) && !hasChildren(item) ? 'page' : null"
+            (click)="onItemClick(item, $event)">
 
-          <!-- Active left bar color -->
-          <span class="active-bar"
-                *ngIf="isActive(item)"
-                [style.background]="getIconStyle(item.icon).activeBg">
-          </span>
+            <!-- Colored icon (decorative: the button's aria-label names it) -->
+            <span
+              class="material-icons rail-icon"
+              aria-hidden="true"
+              [style.color]="getIconColor(item.icon, isActive(item))">
+              {{ item.icon }}
+            </span>
 
-          <!-- Tooltip — only shows when no flyout open -->
-          <span class="rail-tooltip" *ngIf="!item.children?.length">
-            {{ item.mainMenuName }}
-          </span>
-        </button>
-
-        <!-- ── Flyout submenu ─────────────────────────── -->
-        @if (item.children?.length && activeMenu() === item.mainMenuId.toString()) {
-          <div
-            class="flyout"
-            [style.top.px]="flyoutTop()"
-            (mouseenter)="onFlyoutEnter()"
-            (mouseleave)="onFlyoutLeave()">
-
-            <!-- Flyout header with module color -->
-            <div
-              class="flyout-header"
-              [style.color]="getIconStyle(item.icon).color"
-              [style.border-bottom-color]="getIconStyle(item.icon).bg">
-              <span class="material-icons flyout-header-icon"
-                    [style.color]="getIconStyle(item.icon).color">
-                {{ item.icon }}
+            <!-- Active left bar color -->
+            @if (isActive(item)) {
+              <span class="active-bar"
+                    aria-hidden="true"
+                    [style.background]="getIconStyle(item.icon).activeBg">
               </span>
-              {{ item.mainMenuName }}
+            }
+
+            <!-- Tooltip — only shows when no flyout open -->
+            @if (!hasChildren(item)) {
+              <span class="rail-tooltip" aria-hidden="true">
+                {{ item.mainMenuName }}
+              </span>
+            }
+          </button>
+
+          <!-- ── Flyout submenu ─────────────────────────── -->
+          @if (hasChildren(item) && activeMenu() === item.mainMenuId.toString()) {
+            <div
+              class="flyout"
+              role="group"
+              [attr.aria-label]="item.mainMenuName"
+              [style.top.px]="flyoutTop()"
+              (mouseenter)="onFlyoutEnter()"
+              (mouseleave)="onFlyoutLeave()">
+
+              <!-- Flyout header with module color -->
+              <div
+                class="flyout-header"
+                [style.color]="getIconStyle(item.icon).color"
+                [style.border-bottom-color]="getIconStyle(item.icon).bg">
+                <span class="material-icons flyout-header-icon"
+                      aria-hidden="true"
+                      [style.color]="getIconStyle(item.icon).color">
+                  {{ item.icon }}
+                </span>
+                {{ item.mainMenuName }}
+              </div>
+
+              <!-- Flyout links -->
+              <ul class="flyout-list">
+                @for (child of item.children; track child.subMenuId) {
+                  <li>
+                    <button
+                      class="flyout-link"
+                      type="button"
+                      [class.active]="isChildActive(child.subMenuAction)"
+                      [attr.aria-current]="isChildActive(child.subMenuAction) ? 'page' : null"
+                      [style.--active-color]="getIconStyle(item.icon).color"
+                      [style.--active-bg]="getIconStyle(item.icon).bg"
+                      (click)="navigate(child.subMenuAction)">
+
+                      <!-- Active dot indicator -->
+                      @if (isChildActive(child.subMenuAction)) {
+                        <span class="flyout-dot"
+                              aria-hidden="true"
+                              [style.background]="getIconStyle(item.icon).color">
+                        </span>
+                      } @else {
+                        <span class="flyout-dot-placeholder" aria-hidden="true"></span>
+                      }
+
+                      {{ child.subMenuName }}
+                    </button>
+                  </li>
+                }
+              </ul>
             </div>
+          }
 
-            <!-- Flyout links -->
-            <ul class="flyout-list">
-              @for (child of item.children; track child.subMenuId) {
-                <li>
-                  <button
-                    class="flyout-link"
-                    [class.active]="isChildActive(child.subMenuAction)"
-                    [style.--active-color]="getIconStyle(item.icon).color"
-                    [style.--active-bg]="getIconStyle(item.icon).bg"
-                    (click)="navigate(child.subMenuAction)">
+        </li>
+      }
 
-                    <!-- Active dot indicator -->
-                    <span class="flyout-dot"
-                          *ngIf="isChildActive(child.subMenuAction)"
-                          [style.background]="getIconStyle(item.icon).color">
-                    </span>
-                    <span class="flyout-dot-placeholder"
-                          *ngIf="!isChildActive(child.subMenuAction)">
-                    </span>
-
-                    {{ child.subMenuName }}
-                  </button>
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-      </li>
-    }
-
-  </ul>
+    </ul>
+  }
 
   <!-- ── Logout at bottom ──────────────────────────────── -->
-  <div class="rail-bottom" *ngIf="!loading()">
-    <button
-      class="rail-btn logout-btn"
-      [attr.title]="'layout.sidebar.logout' | translate"
-      (click)="navigate('/auth/login')">
-      <span class="material-icons rail-icon">power_settings_new</span>
-      <span class="rail-tooltip">{{ 'layout.sidebar.logout' | translate }}</span>
-    </button>
-  </div>
+  @if (!loading()) {
+    <div class="rail-bottom">
+      <button
+        class="rail-btn logout-btn"
+        type="button"
+        [attr.aria-label]="'layout.sidebar.logout' | translate"
+        (click)="signOut()">
+        <span class="material-icons rail-icon" aria-hidden="true">power_settings_new</span>
+        <span class="rail-tooltip" aria-hidden="true">{{ 'layout.sidebar.logout' | translate }}</span>
+      </button>
+    </div>
+  }
 
 </nav>

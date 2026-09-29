@@ -242,3 +242,9 @@
     display: none;
   }
 }
+
+.forgot-note {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #5b6b7c;
+}

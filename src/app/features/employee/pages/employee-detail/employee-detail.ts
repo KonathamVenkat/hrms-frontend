@@ -10,7 +10,17 @@ import { JobDetailsComponent } from '../job-details/job-details';
 import { EmployeeAddressesComponent } from '../employee-addresses/employee-addresses';
 import { EmployeeIdentityComponent } from '../employee-identity/employee-identity';
 import { EmployeeDocumentsComponent } from '../employee-documents/employee-documents';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Auth } from '../../../../core/auth/auth';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
+import {
+  NEW_PASSWORD_VALIDATORS,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from '../../../../core/validators/password.validators';
 import { getHttpErrorMessage } from '../../../../core/utils/http-error-message';
 
 export interface EmployeeDetail {
@@ -66,6 +76,10 @@ export interface EmployeeDetail {
     EmployeeIdentityComponent,
     EmployeeDocumentsComponent,
     TranslatePipe,
+    ReactiveFormsModule,
+    MatSnackBarModule,
+    CdkTrapFocus,
+    AccessibleDialogDirective,
   ],
   templateUrl: './employee-detail.html',
   styleUrl: './employee-detail.css',
@@ -77,6 +91,8 @@ export class EmployeeDetail implements OnInit {
   private destroyRef = inject(DestroyRef);
   private auth = inject(Auth);
   private translate = inject(TranslateService);
+  private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
 
   // ── State ─────────────────────────────────────────────────
   employee = signal<EmployeeDetail | null>(null);
@@ -90,6 +106,19 @@ export class EmployeeDetail implements OnInit {
   showConfirm = signal(false);
   confirmBusy = signal(false);
   confirmError = signal<string | null>(null);
+
+  // ── Reset password (HR_ADMIN only) ─────────────────────────
+  showReset = signal(false);
+  resetBusy = signal(false);
+  resetError = signal<string | null>(null);
+  resetShowPassword = signal(false);
+  readonly passwordMinLength = PASSWORD_MIN_LENGTH;
+  readonly resetForm = new FormGroup({
+    temporaryPassword: new FormControl('', {
+      nonNullable: true,
+      validators: NEW_PASSWORD_VALIDATORS,
+    }),
+  });
 
   ngOnInit(): void {
     this.isHrAdmin.set(this.auth.getRole() === 'HR_ADMIN');
@@ -175,6 +204,59 @@ export class EmployeeDetail implements OnInit {
           }
         },
         error: (err) => this.confirmError.set(getHttpErrorMessage(this.translate, err)),
+      });
+  }
+
+  // ── Reset password ──────────────────────────────────────────
+  openReset(): void {
+    this.resetForm.reset();
+    this.resetError.set(null);
+    this.resetShowPassword.set(false);
+    this.showReset.set(true);
+  }
+
+  cancelReset(): void {
+    this.showReset.set(false);
+  }
+
+  resetPasswordError(): string {
+    const c = this.resetForm.controls.temporaryPassword;
+    if (!c.touched || !c.errors) return '';
+    if (c.hasError('required')) return this.translate.instant('common.validation.required');
+    if (c.hasError('minlength'))
+      return this.translate.instant('common.validation.minLength', { count: PASSWORD_MIN_LENGTH });
+    if (c.hasError('maxlength'))
+      return this.translate.instant('common.validation.maxLength', { count: PASSWORD_MAX_LENGTH });
+    return this.translate.instant('auth.changePassword.errors.policy');
+  }
+
+  confirmReset(): void {
+    const emp = this.employee();
+    if (!emp) return;
+    if (this.resetForm.invalid) {
+      this.resetForm.markAllAsTouched();
+      return;
+    }
+
+    this.resetBusy.set(true);
+    this.resetError.set(null);
+
+    this.authService
+      .resetPassword(emp.employeeId, this.resetForm.getRawValue().temporaryPassword)
+      .pipe(
+        finalize(() => this.resetBusy.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: () => {
+          this.showReset.set(false);
+          this.snackBar.open(
+            this.translate.instant('employee.detail.resetPassword.success'),
+            this.translate.instant('common.close'),
+            { duration: 8000 },
+          );
+        },
+        error: (err) => this.resetError.set(getHttpErrorMessage(this.translate, err)),
       });
   }
 

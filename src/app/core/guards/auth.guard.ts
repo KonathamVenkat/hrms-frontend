@@ -1,15 +1,14 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
-import { Router } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
+import { Auth } from '../auth/auth';
 
+/** Lets a route through only while there is an unexpired session; otherwise goes to sign-in. */
 export const authGuard: CanActivateFn = () => {
+  const auth = inject(Auth);
   const router = inject(Router);
-  const token = localStorage.getItem('hrms_access_token');
-  const expiry = localStorage.getItem('hrms_token_expiry');
-  const valid = token && expiry && Date.now() < parseInt(expiry, 10);
 
-  if (valid) return true;
+  if (auth.hasValidSession()) return true;
 
-  router.navigateByUrl('/auth/login');
-  return false;
+  auth.clearSession();
+  return router.createUrlTree(['/auth/login']);
 };

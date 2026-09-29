@@ -74,6 +74,10 @@
           </button>
           @if (isHrAdmin()) {
             @if (employee()!.isActive) {
+              <button class="btn-edit" (click)="openReset()">
+                <span class="material-icons" aria-hidden="true">lock_reset</span>
+                {{ 'employee.detail.resetPassword.action' | translate }}
+              </button>
               <button class="btn-deactivate" (click)="openConfirm()">
                 <span class="material-icons">block</span>
                 {{ 'employee.detail.deactivateAction' | translate }}
@@ -351,6 +355,89 @@
               (click)="confirmToggle()"
             >
               {{ confirmBusy() ? ('employee.detail.confirm.pleaseWait' | translate) : ((employee()!.isActive ? 'employee.detail.deactivateAction' : 'employee.detail.reactivateAction') | translate) }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- RESET PASSWORD DIALOG (HR_ADMIN)                        -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    @if (showReset()) {
+      <div class="modal-backdrop">
+        <div
+          class="confirm-dialog"
+          [appAccessibleDialog]="'reset-password-title'"
+          (dialogClosed)="cancelReset()"
+          cdkTrapFocus
+          cdkTrapFocusAutoCapture
+        >
+          <div class="confirm-icon icon-info">
+            <span class="material-icons" aria-hidden="true">lock_reset</span>
+          </div>
+          <h3 id="reset-password-title" class="confirm-title">
+            {{ 'employee.detail.resetPassword.title' | translate }}
+          </h3>
+          <p class="confirm-msg">
+            <strong>{{ employee()!.fullNameEn }}</strong>
+            {{ 'employee.detail.resetPassword.message' | translate }}
+          </p>
+
+          <form [formGroup]="resetForm" (ngSubmit)="confirmReset()" novalidate class="reset-form">
+            <label for="reset-password-input" class="reset-label">
+              {{ 'employee.detail.resetPassword.label' | translate }}
+            </label>
+            <div class="reset-input-row">
+              <input
+                id="reset-password-input"
+                class="reset-input"
+                formControlName="temporaryPassword"
+                autocomplete="new-password"
+                [type]="resetShowPassword() ? 'text' : 'password'"
+                [attr.aria-describedby]="'reset-password-hint'"
+              />
+              <button
+                type="button"
+                class="btn-cancel reset-toggle"
+                [attr.aria-label]="
+                  (resetShowPassword() ? 'auth.login.hidePassword' : 'auth.login.showPassword')
+                    | translate
+                "
+                [attr.aria-pressed]="resetShowPassword()"
+                (click)="resetShowPassword.set(!resetShowPassword())"
+              >
+                <span class="material-icons" aria-hidden="true">
+                  {{ resetShowPassword() ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+            <p id="reset-password-hint" class="reset-hint">
+              {{ 'auth.changePassword.policyHint' | translate: { count: passwordMinLength } }}
+            </p>
+            @if (resetForm.controls.temporaryPassword.touched && resetForm.controls.temporaryPassword.invalid) {
+              <p class="confirm-error" role="alert">{{ resetPasswordError() }}</p>
+            }
+          </form>
+
+          @if (resetError()) {
+            <p class="confirm-error" role="alert">{{ resetError() }}</p>
+          }
+          <div class="confirm-actions">
+            <button class="btn-cancel" type="button" [disabled]="resetBusy()" (click)="cancelReset()">
+              {{ 'common.cancel' | translate }}
+            </button>
+            <button
+              class="btn-confirm btn-success"
+              type="button"
+              [disabled]="resetBusy()"
+              (click)="confirmReset()"
+            >
+              {{
+                (resetBusy()
+                  ? 'employee.detail.resetPassword.submitting'
+                  : 'employee.detail.resetPassword.submit') | translate
+              }}
             </button>
           </div>
         </div>

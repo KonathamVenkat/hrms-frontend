@@ -7,9 +7,9 @@
 
   <!-- Actions -->
   <div class="topbar-actions">
-    <!-- Clock -->
-    <div class="clock-badge" [title]="'layout.toolbar.loginTime' | translate">
-      <span class="material-icons clock-icon">login</span>
+    <!-- Clock (current time) -->
+    <div class="clock-badge" [title]="'layout.toolbar.currentTime' | translate">
+      <span class="material-icons clock-icon" aria-hidden="true">schedule</span>
       <span class="clock-time">{{ currentTime() }}</span>
     </div>
 
@@ -17,80 +17,60 @@
     <button
       class="icon-btn"
       type="button"
+      [attr.aria-label]="'layout.toolbar.toggleDarkMode' | translate"
+      [attr.aria-pressed]="isDarkMode()"
       [title]="'layout.toolbar.toggleDarkMode' | translate"
       (click)="toggleDarkMode()"
     >
-      <span class="material-icons">{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</span>
-    </button>
-
-    <!-- Settings -->
-    <button class="icon-btn" type="button" [title]="'layout.toolbar.settings' | translate">
-      <span class="material-icons">settings</span>
-    </button>
-
-    <!-- Notifications -->
-    <button
-      class="icon-btn notif-btn"
-      type="button"
-      [title]="'layout.toolbar.notifications' | translate"
-    >
-      <span class="material-icons">notifications</span>
-      <span class="notif-badge">{{ notifCount() }}</span>
+      <span class="material-icons" aria-hidden="true">{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</span>
     </button>
 
     <!-- Language -->
     <app-language-switcher />
-
-    <!-- Calendar -->
-    <button class="icon-btn" type="button" [title]="'layout.toolbar.calendar' | translate">
-      <span class="material-icons">calendar_month</span>
-    </button>
 
     <!-- Profile -->
     <div class="profile-wrap">
       <button
         class="profile-trigger"
         type="button"
+        aria-haspopup="menu"
+        aria-controls="profile-menu"
         (click)="toggleProfile($event)"
         [attr.aria-expanded]="profileOpen()"
       >
-        <div class="avatar">{{ initials }}</div>
+        <div class="avatar" aria-hidden="true">{{ initials }}</div>
         <div class="profile-info">
           <span class="profile-name">{{
             user()?.fullName || ('layout.toolbar.userFallback' | translate)
           }}</span>
           <span class="profile-status" [class.online]="isOnline()" [class.offline]="!isOnline()">
-            <span class="status-dot"></span
+            <span class="status-dot" aria-hidden="true"></span
             >{{
               (isOnline() ? 'layout.toolbar.onlineStatus' : 'layout.toolbar.offlineStatus')
                 | translate
             }}
           </span>
         </div>
-        <span class="material-icons chevron" [class.rotated]="profileOpen()">expand_more</span>
+        <span class="material-icons chevron" aria-hidden="true" [class.rotated]="profileOpen()">expand_more</span>
       </button>
 
       @if (profileOpen()) {
         <div
+          id="profile-menu"
           class="profile-dropdown"
+          role="menu"
+          [attr.aria-label]="'layout.toolbar.userMenu' | translate"
           [style.top.px]="dropdownTop()"
           [style.right.px]="direction() === 'rtl' ? null : dropdownRight()"
           [style.left.px]="direction() === 'rtl' ? dropdownLeft() : null"
         >
-          <button class="dropdown-item" type="button" (click)="goToProfile()">
-            <span class="material-icons">person</span>{{ 'layout.toolbar.myProfile' | translate }}
-          </button>
-          <button class="dropdown-item" type="button" (click)="changeUsername()">
-            <span class="material-icons">badge</span
-            >{{ 'layout.toolbar.changeUsername' | translate }}
-          </button>
-          <button class="dropdown-item" type="button" (click)="changePassword()">
-            <span class="material-icons">lock</span
+          <button class="dropdown-item" type="button" role="menuitem" (click)="changePassword()">
+            <span class="material-icons" aria-hidden="true">lock</span
             >{{ 'layout.toolbar.changePassword' | translate }}
           </button>
-          <div class="dropdown-divider"></div>
-          <button class="dropdown-item logout" type="button" (click)="logout()">
-            <span class="material-icons">power_settings_new</span
+          <div class="dropdown-divider" role="separator"></div>
+          <button class="dropdown-item logout" type="button" role="menuitem" (click)="logout()">
+            <span class="material-icons" aria-hidden="true">power_settings_new</span
             >{{ 'layout.toolbar.logout' | translate }}
           </button>
         </div>

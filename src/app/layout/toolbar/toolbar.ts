@@ -13,20 +13,8 @@ import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcher } from '../../core/components/language-switcher/language-switcher';
 import { LanguageService } from '../../core/services/language.service';
-
-const isBrowser = typeof window !== 'undefined';
-
-function storageGet(key: string): string | null {
-  return isBrowser ? localStorage.getItem(key) : null;
-}
-
-export interface AuthUser {
-  id: number;
-  username: string;
-  email: string;
-  fullName: string;
-  role: string;
-}
+import { Auth, StoredUser } from '../../core/auth/auth';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -36,6 +24,9 @@ export interface AuthUser {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:click)': 'onDocumentClick($event)',
+    '(document:keydown.escape)': 'onEscape()',
+    '(window:online)': 'isOnline.set(true)',
+    '(window:offline)': 'isOnline.set(false)',
   },
 })
 export class Toolbar implements OnInit, OnDestroy {
@@ -43,6 +34,8 @@ export class Toolbar implements OnInit, OnDestroy {
   private elRef = inject(ElementRef);
   private platformId = inject(PLATFORM_ID);
   private languageService = inject(LanguageService);
+  private auth = inject(Auth);
+  private authService = inject(AuthService);
 
   protected readonly direction = this.languageService.direction;
 
@@ -50,24 +43,19 @@ export class Toolbar implements OnInit, OnDestroy {
   isDarkMode = signal(false);
   isOnline = signal(true);
   profileOpen = signal(false);
-  notifCount = signal(0);
   dropdownTop = signal<number>(64);
   dropdownRight = signal<number>(20);
   dropdownLeft = signal<number>(20);
 
-  user = signal<AuthUser | null>(null);
+  user = signal<StoredUser | null>(null);
 
   private clockInterval: ReturnType<typeof setInterval> | null = null;
 
   ngOnInit(): void {
-    const raw = storageGet('hrms_user');
-    if (raw) {
-      try {
-        this.user.set(JSON.parse(raw));
-      } catch {}
-    }
+    this.user.set(this.auth.getStoredUser());
 
     if (isPlatformBrowser(this.platformId)) {
+      this.isOnline.set(navigator.onLine);
       this.tick();
       this.clockInterval = setInterval(() => this.tick(), 1000);
     }
@@ -121,16 +109,12 @@ export class Toolbar implements OnInit, OnDestroy {
       this.dropdownLeft.set(rect.left);
     }
     this.profileOpen.update((v) => !v);
-  }
-
-  goToProfile(): void {
-    this.profileOpen.set(false);
-    this.router.navigate(['/app/employee/profile']);
-  }
-
-  changeUsername(): void {
-    this.profileOpen.set(false);
-    this.router.navigate(['/app/settings/username']);
+    if (this.profileOpen() && isPlatformBrowser(this.platformId)) {
+      // Move focus into the menu so keyboard / screen-reader users land on its first item
+      setTimeout(() => {
+        this.elRef.nativeElement.querySelector('[role="menuitem"]')?.focus();
+      });
+    }
   }
 
   changePassword(): void {
@@ -140,8 +124,14 @@ export class Toolbar implements OnInit, OnDestroy {
 
   logout(): void {
     this.profileOpen.set(false);
-    if (isBrowser) localStorage.clear();
-    this.router.navigate(['/auth/login']);
+    this.authService.signOut();
+  }
+
+  /** Escape closes the profile menu and returns focus to its trigger. */
+  onEscape(): void {
+    if (!this.profileOpen()) return;
+    this.profileOpen.set(false);
+    this.elRef.nativeElement.querySelector('.profile-trigger')?.focus();
   }
 
   onDocumentClick(event: MouseEvent): void {

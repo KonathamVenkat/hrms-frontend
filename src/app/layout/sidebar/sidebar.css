@@ -346,3 +346,20 @@
   from { background-position:  200% 0; }
   to   { background-position: -200% 0; }
 }
+
+/* ── Keyboard focus (the base .rail-btn rule removes the default outline) ── */
+.rail-btn:focus-visible,
+.flyout-link:focus-visible {
+  outline: 2px solid #1a56db;
+  outline-offset: 2px;
+}
+
+.rail-btn:focus-visible .rail-tooltip {
+  opacity: 1;
+}
+
+.rail-error {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}

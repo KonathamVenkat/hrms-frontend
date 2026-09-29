@@ -1,5 +1,6 @@
 // features/auth/auth-routing.ts
 import { Routes } from '@angular/router';
+import { authGuard } from '../guards/auth.guard';
 
 export const AUTH_ROUTES: Routes = [
   {
@@ -7,17 +8,15 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () => import('../../features/auth/login/login').then((m) => m.LoginComponent),
     title: 'Sign In · EHRMS',
   },
-  /* {
+  {
+    // Needs a session: it's used both from the user menu and, right after sign-in, to
+    // replace a temporary password.
     path: 'change-password',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./change-password/change-password').then((m) => m.ChangePasswordComponent),
-    
-  /* {
-    path: 'change-password',
-    loadComponent: () =>
-      import('./change-password/change-password.ts').then((m) => m.ChangePasswordComponent),
-    title: 'Change Password · HRMS',
-  },*/
+      import('../../features/auth/change-password/change-password').then((m) => m.ChangePassword),
+    title: 'Change Password · EHRMS',
+  },
   {
     path: '',
     redirectTo: 'login',

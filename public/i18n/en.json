@@ -180,6 +180,15 @@
       },
       "errors": {
         "notFound": "Employee not found."
+      },
+      "resetPassword": {
+        "action": "Reset password",
+        "title": "Reset password",
+        "message": "A temporary password will be set for this employee. They must change it at their next sign-in, and all their current sessions will end.",
+        "label": "Temporary password",
+        "submit": "Set temporary password",
+        "submitting": "Saving...",
+        "success": "Temporary password set. Give it to the employee securely."
       }
     },
     "addresses": {
@@ -446,7 +455,10 @@
   },
   "layout": {
     "sidebar": {
-      "logout": "Logout"
+      "logout": "Logout",
+      "navLabel": "Main navigation",
+      "loading": "Loading menu",
+      "loadFailedRetry": "The menu could not be loaded. Retry"
     },
     "toolbar": {
       "loginTime": "Login time",
@@ -460,7 +472,10 @@
       "myProfile": "My Profile",
       "changeUsername": "Change Username",
       "changePassword": "Change Password",
-      "logout": "Logout"
+      "logout": "Logout",
+      "currentTime": "Current time",
+      "userMenu": "User menu",
+      "language": "Language"
     }
   },
   "auth": {
@@ -493,6 +508,31 @@
         "invalidCredentials": "Invalid username or password.",
         "cannotReachServer": "Cannot reach server. Check connection.",
         "unexpectedError": "Unexpected error."
+      },
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "forgotPasswordNote": "Forgot your password? Contact HR to have it reset."
+    },
+    "changePassword": {
+      "title": "Change password",
+      "subtitle": "Choose a new password. All your sessions will end and you will need to sign in again.",
+      "forcedNotice": "You must replace your temporary password before you can continue.",
+      "currentLabel": "Current password",
+      "newLabel": "New password",
+      "confirmLabel": "Confirm new password",
+      "policyHint": "At least {{count}} characters, with an uppercase letter, a lowercase letter and a digit",
+      "submit": "Change password",
+      "submitting": "Saving...",
+      "signOut": "Sign out",
+      "success": "Password changed. Please sign in again.",
+      "errors": {
+        "currentRequired": "Current password is required",
+        "newRequired": "New password is required",
+        "policy": "It must contain an uppercase letter, a lowercase letter and a digit",
+        "confirmRequired": "Please confirm the new password",
+        "mismatch": "The passwords do not match",
+        "sameAsCurrent": "The new password must be different from the current one",
+        "failed": "The password could not be changed."
       }
     }
   },

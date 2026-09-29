@@ -180,6 +180,15 @@
       },
       "errors": {
         "notFound": "Employé introuvable."
+      },
+      "resetPassword": {
+        "action": "Réinitialiser le mot de passe",
+        "title": "Réinitialiser le mot de passe",
+        "message": "Un mot de passe temporaire sera défini pour cet employé, qui devra le changer à sa prochaine connexion. Toutes ses sessions en cours seront fermées.",
+        "label": "Mot de passe temporaire",
+        "submit": "Définir le mot de passe temporaire",
+        "submitting": "Enregistrement...",
+        "success": "Mot de passe temporaire défini. Communiquez-le à l'employé de façon sécurisée."
       }
     },
     "addresses": {
@@ -446,7 +455,10 @@
   },
   "layout": {
     "sidebar": {
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "navLabel": "Navigation principale",
+      "loading": "Chargement du menu",
+      "loadFailedRetry": "Le menu n'a pas pu être chargé. Réessayer"
     },
     "toolbar": {
       "loginTime": "Heure de connexion",
@@ -460,7 +472,10 @@
       "myProfile": "Mon profil",
       "changeUsername": "Changer le nom d'utilisateur",
       "changePassword": "Changer le mot de passe",
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "currentTime": "Heure actuelle",
+      "userMenu": "Menu utilisateur",
+      "language": "Langue"
     }
   },
   "auth": {
@@ -493,6 +508,31 @@
         "invalidCredentials": "Nom d'utilisateur ou mot de passe invalide.",
         "cannotReachServer": "Impossible de joindre le serveur. Vérifiez la connexion.",
         "unexpectedError": "Erreur inattendue."
+      },
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe",
+      "forgotPasswordNote": "Mot de passe oublié ? Contactez les RH pour le réinitialiser."
+    },
+    "changePassword": {
+      "title": "Changer le mot de passe",
+      "subtitle": "Choisissez un nouveau mot de passe. Toutes vos sessions seront fermées et vous devrez vous reconnecter.",
+      "forcedNotice": "Vous devez remplacer votre mot de passe temporaire avant de continuer.",
+      "currentLabel": "Mot de passe actuel",
+      "newLabel": "Nouveau mot de passe",
+      "confirmLabel": "Confirmer le nouveau mot de passe",
+      "policyHint": "Au moins {{count}} caractères, avec une majuscule, une minuscule et un chiffre",
+      "submit": "Changer le mot de passe",
+      "submitting": "Enregistrement...",
+      "signOut": "Déconnexion",
+      "success": "Mot de passe modifié. Veuillez vous reconnecter.",
+      "errors": {
+        "currentRequired": "Le mot de passe actuel est obligatoire",
+        "newRequired": "Le nouveau mot de passe est obligatoire",
+        "policy": "Il doit contenir une majuscule, une minuscule et un chiffre",
+        "confirmRequired": "Veuillez confirmer le nouveau mot de passe",
+        "mismatch": "Les mots de passe ne correspondent pas",
+        "sameAsCurrent": "Le nouveau mot de passe doit être différent de l'actuel",
+        "failed": "Impossible de changer le mot de passe."
       }
     }
   },
