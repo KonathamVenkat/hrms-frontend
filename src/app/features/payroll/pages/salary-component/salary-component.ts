@@ -113,6 +113,11 @@ export class SalaryComponentComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    this.form.get('componentCode')!.valueChanges.subscribe((v) => {
+      if (v && v !== v.toUpperCase()) {
+        this.form.get('componentCode')!.setValue(v.toUpperCase(), { emitEvent: false });
+      }
+    });
   }
 
   load(): void {

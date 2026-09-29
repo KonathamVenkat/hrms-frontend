@@ -107,6 +107,11 @@ export class SalaryStructureComponent implements OnInit {
   ngOnInit(): void {
     this.loadStructures();
     this.loadComponents();
+    this.form.get('structureCode')!.valueChanges.subscribe((v) => {
+      if (v && v !== v.toUpperCase()) {
+        this.form.get('structureCode')!.setValue(v.toUpperCase(), { emitEvent: false });
+      }
+    });
   }
 
   loadStructures(): void {
