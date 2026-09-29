@@ -517,6 +517,8 @@
       "daySingular": "يوم",
       "daysPlural": "أيام",
       "byConnector": "بواسطة",
+      "attachment": "المرفق",
+      "attachmentDownloadFailed": "تعذر تنزيل المرفق.",
       "onConnector": "في",
       "submittedLabel": "تم الإرسال:",
       "balanceLabel": "الرصيد وقت الطلب:",
@@ -662,12 +664,19 @@
       "usedLabel": "مستخدم",
       "pendingLabel": "قيد الانتظار",
       "totalLabel": "الإجمالي",
+      "attachmentLabel": "المستند الداعم",
+      "attachmentHint": "المسموح: {{types}}. الحد الأقصى {{size}} ميغابايت.",
+      "attachmentChoose": "اختيار ملف",
+      "attachmentRemove": "إزالة الملف",
       "errors": {
         "dateRangeInvalid": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
         "loadBalancesFailed": "فشل تحميل أرصدة الإجازات.",
         "noWorkingDays": "التواريخ المحددة لا تحتوي على أيام عمل.",
         "insufficientBalance": "رصيد الإجازة غير كافٍ للتواريخ المحددة.",
-        "submitFailed": "فشل تقديم طلب الإجازة."
+        "submitFailed": "فشل تقديم طلب الإجازة.",
+        "documentRequired": "المستند الداعم مطلوب لهذا النوع من الإجازات.",
+        "fileTooLarge": "يجب ألا يتجاوز حجم المرفق {{size}} ميغابايت.",
+        "fileTypeInvalid": "أنواع الملفات المسموح بها فقط: {{types}}."
       },
       "success": {
         "submitted": "تم تقديم طلب الإجازة بنجاح!"
@@ -1333,6 +1342,10 @@
       "carryForwardHint": "الأيام غير المستخدمة تُرحّل إلى العام التالي",
       "requiresDocument": "يتطلب مستندًا",
       "requiresDocumentHint": "يتطلب شهادة طبية أو إثباتًا",
+      "docAllowedExtensions": "أنواع المستندات المسموح بها",
+      "docAllowedExtensionsHint": "مفصولة بفواصل: PDF, JPG, JPEG, PNG",
+      "docMaxFileSize": "الحد الأقصى لحجم الملف (ميغابايت)",
+      "docExtensionsInvalid": "استخدم قائمة مفصولة بفواصل من PDF أو JPG أو JPEG أو PNG",
       "activeHint": "لا يمكن تطبيق الأنواع غير النشطة",
       "maxCarryDays": "الحد الأقصى لأيام الترحيل",
       "maxCarryDaysHint": "ينطبق فقط إذا كان الترحيل مفعّلاً",

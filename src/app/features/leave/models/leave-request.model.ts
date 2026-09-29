@@ -23,6 +23,11 @@ export interface LeaveRequest {
   approvedAt?: string;
   remarks?: string; // maps to backend rejectionReason
 
+  // Supporting document
+  hasAttachment?: boolean;
+  attachmentName?: string;
+  attachmentSize?: number;
+
   // Balance snapshot
   balanceAvailable?: number;
   balanceTotal?: number;

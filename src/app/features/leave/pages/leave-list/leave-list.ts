@@ -180,6 +180,16 @@ export class LeaveListPage implements OnInit {
       });
   }
 
+  downloadAttachment(leave: LeaveRequest): void {
+    this.leaveSvc
+      .downloadAttachment(leave)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe({
+        error: (err: any) =>
+          this.error.set(err?.error?.message || this.translate.instant('leave.list.attachmentDownloadFailed')),
+      });
+  }
+
   applyNewLeave(): void {
     this.router.navigate(['/app/leave/apply']);
   }

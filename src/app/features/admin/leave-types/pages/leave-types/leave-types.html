@@ -359,6 +359,27 @@
             }
           </div>
 
+          <!-- Row 4b: Upload limits (only relevant when a document is required) -->
+          @if (ctrl('requiresDocument').value) {
+            <div class="field-row">
+              <div class="field">
+                <label for="lt-doc-extensions">{{ 'admin.leaveTypes.docAllowedExtensions' | translate }}</label>
+                <input id="lt-doc-extensions" formControlName="docAllowedExtensions" placeholder="PDF,JPG,PNG" />
+                <span class="field-hint">{{ 'admin.leaveTypes.docAllowedExtensionsHint' | translate }}</span>
+                @if (isInvalid('docAllowedExtensions')) {
+                  <span class="field-error">{{ getError('docAllowedExtensions') }}</span>
+                }
+              </div>
+              <div class="field">
+                <label for="lt-doc-max-size">{{ 'admin.leaveTypes.docMaxFileSize' | translate }}</label>
+                <input id="lt-doc-max-size" type="number" formControlName="docMaxFileSizeMb" min="1" max="20" />
+                @if (isInvalid('docMaxFileSizeMb')) {
+                  <span class="field-error">{{ getError('docMaxFileSizeMb') }}</span>
+                }
+              </div>
+            </div>
+          }
+
           <!-- Row 5: Max carry days + gender -->
           <div class="field-row">
             <div class="field">

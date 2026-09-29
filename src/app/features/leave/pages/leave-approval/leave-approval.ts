@@ -71,6 +71,16 @@ export class LeaveApprovalPage implements OnInit {
     this.loadLeaves();
   }
 
+  downloadAttachment(leave: LeaveRequest): void {
+    this.leaveSvc
+      .downloadAttachment(leave)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe({
+        error: (err: any) =>
+          this.error.set(err?.error?.message || this.translate.instant('leave.list.attachmentDownloadFailed')),
+      });
+  }
+
   // ── Load ──────────────────────────────────────────────────
   loadLeaves(): void {
     this.loading.set(true);

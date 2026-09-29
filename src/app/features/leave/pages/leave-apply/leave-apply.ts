@@ -63,6 +63,32 @@ export class LeaveApplyPage implements OnInit {
     return this.balances().find((b) => b.leaveType === code) ?? null;
   });
 
+  // ── Supporting document ───────────────────────────────────
+  // File inputs can't bind to a form control, so the chosen file lives in a signal.
+  // Mirrors the backend's LeaveAttachmentStorage limits (which stay authoritative).
+  attachment = signal<File | null>(null);
+  attachmentError = signal<string | null>(null);
+
+  readonly requiresDocument = computed(() => this.selectedBalance()?.requiresDocument === true);
+
+  // Per-leave-type limits configured in admin > leave types (defaults match the backend's).
+  readonly attachmentMaxMb = computed(() => this.selectedBalance()?.docMaxFileSizeMb ?? 5);
+  readonly attachmentExts = computed(() => {
+    const exts = (this.selectedBalance()?.docAllowedExtensions ?? 'pdf,jpg,jpeg,png')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => e.length > 0);
+    // jpg and jpeg are the same format (the backend treats them as one)
+    if (exts.includes('jpg') || exts.includes('jpeg')) exts.push('jpg', 'jpeg');
+    return [...new Set(exts)];
+  });
+  readonly attachmentTypesLabel = computed(() => this.attachmentExts().join(', ').toUpperCase());
+  readonly attachmentAccept = computed(() =>
+    this.attachmentExts()
+      .map((e) => `.${e}`)
+      .join(','),
+  );
+
   readonly calculatedDays = computed(() => {
     const start = this.startDateVal();
     const end = this.endDateVal();
@@ -195,17 +221,26 @@ export class LeaveApplyPage implements OnInit {
       return;
     }
 
+    if (this.requiresDocument() && !this.attachment()) {
+      this.attachmentError.set(this.translate.instant('leave.apply.errors.documentRequired'));
+      return;
+    }
+
     this.submitting.set(true);
     this.error.set(null);
 
     const v = this.form.value;
     this.leaveSvc
-      .applyLeave(this.employeeId(), {
-        leaveTypeCode: v.leaveTypeCode,
-        startDate: v.startDate,
-        endDate: v.endDate,
-        reason: v.reason.trim(),
-      })
+      .applyLeave(
+        this.employeeId(),
+        {
+          leaveTypeCode: v.leaveTypeCode,
+          startDate: v.startDate,
+          endDate: v.endDate,
+          reason: v.reason.trim(),
+        },
+        this.attachment(),
+      )
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
         next: (res) => {
@@ -221,6 +256,36 @@ export class LeaveApplyPage implements OnInit {
             err?.error?.message || this.translate.instant('leave.apply.errors.submitFailed'),
           ),
       });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = ''; // allow re-selecting the same file after removing it
+    this.attachmentError.set(null);
+    if (!file) return;
+
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!this.attachmentExts().includes(ext)) {
+      this.attachmentError.set(
+        this.translate.instant('leave.apply.errors.fileTypeInvalid', {
+          types: this.attachmentTypesLabel(),
+        }),
+      );
+      return;
+    }
+    if (file.size > this.attachmentMaxMb() * 1024 * 1024) {
+      this.attachmentError.set(
+        this.translate.instant('leave.apply.errors.fileTooLarge', { size: this.attachmentMaxMb() }),
+      );
+      return;
+    }
+    this.attachment.set(file);
+  }
+
+  removeAttachment(): void {
+    this.attachment.set(null);
+    this.attachmentError.set(null);
   }
 
   onCancel(): void {

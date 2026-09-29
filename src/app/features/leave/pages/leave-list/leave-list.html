@@ -171,6 +171,13 @@
             <!-- ── Reason ──────────────────────────────── -->
             <p class="card-reason">{{ leave.reason }}</p>
 
+            @if (leave.hasAttachment) {
+              <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
+                <span class="material-icons" aria-hidden="true">attach_file</span>
+                {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
+              </button>
+            }
+
             <!-- ── Approval / Rejection info ──────────── -->
             @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
               <div class="card-approval">

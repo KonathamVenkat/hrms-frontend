@@ -669,3 +669,22 @@
     margin-inline-start: 0;
   }
 }
+
+/* Attachment link */
+.attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--teal);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.attachment-link .material-icons {
+  font-size: 14px;
+}

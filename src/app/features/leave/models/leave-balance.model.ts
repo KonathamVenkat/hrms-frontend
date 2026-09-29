@@ -6,6 +6,9 @@ export interface LeaveBalance {
   leaveTypeNameAr?: string;
   isPaid?: boolean;
   isCarryForward?: boolean;
+  requiresDocument?: boolean;
+  docMaxFileSizeMb?: number;
+  docAllowedExtensions?: string;
   year: number;
   totalDays: number;
   usedDays: number;

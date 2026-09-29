@@ -93,6 +93,8 @@ export class LeaveTypes implements OnInit {
       isCarryForward: [false],
       maxCarryDays: [0, [Validators.min(0)]],
       requiresDocument: [false],
+      docAllowedExtensions: ['PDF,JPG,PNG', [Validators.maxLength(100), Validators.pattern(/^\s*(pdf|jpe?g|png)(\s*,\s*(pdf|jpe?g|png))*\s*$/i)]],
+      docMaxFileSizeMb: [5, [Validators.min(1), Validators.max(20)]],
       minNoticeDays: [0, [Validators.min(0)]],
       maxConsecutiveDays: [0, [Validators.min(0)]],
       applicableGender: ['ALL', Validators.required],
@@ -148,6 +150,8 @@ export class LeaveTypes implements OnInit {
       isCarryForward: false,
       maxCarryDays: 0,
       requiresDocument: false,
+      docAllowedExtensions: 'PDF,JPG,PNG',
+      docMaxFileSizeMb: 5,
       minNoticeDays: 0,
       maxConsecutiveDays: 0,
       applicableGender: 'ALL',
@@ -170,6 +174,8 @@ export class LeaveTypes implements OnInit {
       isCarryForward: lt.isCarryForward,
       maxCarryDays: lt.maxCarryDays,
       requiresDocument: lt.requiresDocument,
+      docAllowedExtensions: (lt.docAllowedExtensions ?? 'pdf,jpg,jpeg,png').toUpperCase(),
+      docMaxFileSizeMb: lt.docMaxFileSizeMb ?? 5,
       minNoticeDays: lt.minNoticeDays,
       maxConsecutiveDays: lt.maxConsecutiveDays,
       applicableGender: lt.applicableGender,
@@ -208,6 +214,8 @@ export class LeaveTypes implements OnInit {
       isCarryForward: v.isCarryForward,
       maxCarryDays: +v.maxCarryDays,
       requiresDocument: v.requiresDocument,
+      docAllowedExtensions: v.requiresDocument ? v.docAllowedExtensions?.trim() || undefined : undefined,
+      docMaxFileSizeMb: v.requiresDocument ? +v.docMaxFileSizeMb : undefined,
       minNoticeDays: +v.minNoticeDays,
       maxConsecutiveDays: +v.maxConsecutiveDays,
       applicableGender: v.applicableGender,
@@ -301,6 +309,8 @@ export class LeaveTypes implements OnInit {
         count: c.errors['maxlength'].requiredLength,
       });
     }
+    if (c.errors['pattern'] && name === 'docAllowedExtensions')
+      return this.translate.instant('admin.leaveTypes.docExtensionsInvalid');
     if (c.errors['pattern']) return this.translate.instant('admin.workShifts.errors.patternCode');
     return this.translate.instant('common.validation.invalid');
   }

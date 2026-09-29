@@ -517,6 +517,8 @@
       "daySingular": "day",
       "daysPlural": "days",
       "byConnector": "by",
+      "attachment": "Attachment",
+      "attachmentDownloadFailed": "Could not download the attachment.",
       "onConnector": "on",
       "submittedLabel": "Submitted:",
       "balanceLabel": "Balance at request:",
@@ -662,12 +664,19 @@
       "usedLabel": "Used",
       "pendingLabel": "Pending",
       "totalLabel": "Total",
+      "attachmentLabel": "Supporting document",
+      "attachmentHint": "Allowed: {{types}}. Max {{size}} MB.",
+      "attachmentChoose": "Choose file",
+      "attachmentRemove": "Remove file",
       "errors": {
         "dateRangeInvalid": "End date must be after start date",
         "loadBalancesFailed": "Failed to load leave balances.",
         "noWorkingDays": "Selected dates contain no working days.",
         "insufficientBalance": "Insufficient leave balance for selected dates.",
-        "submitFailed": "Failed to submit leave request."
+        "submitFailed": "Failed to submit leave request.",
+        "documentRequired": "A supporting document is required for this leave type.",
+        "fileTooLarge": "Attachment must be {{size}} MB or smaller.",
+        "fileTypeInvalid": "Only these file types are allowed: {{types}}."
       },
       "success": {
         "submitted": "Leave request submitted successfully!"
@@ -1333,6 +1342,10 @@
       "carryForwardHint": "Unused days carry to next year",
       "requiresDocument": "Requires Document",
       "requiresDocumentHint": "Medical cert. or proof required",
+      "docAllowedExtensions": "Allowed Document Types",
+      "docAllowedExtensionsHint": "Comma-separated: PDF, JPG, JPEG, PNG",
+      "docMaxFileSize": "Max File Size (MB)",
+      "docExtensionsInvalid": "Use a comma-separated list of PDF, JPG, JPEG or PNG",
       "activeHint": "Inactive types cannot be applied",
       "maxCarryDays": "Max Carry Forward Days",
       "maxCarryDaysHint": "Only applies if carry forward is enabled",

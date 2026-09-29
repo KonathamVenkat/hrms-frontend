@@ -179,6 +179,50 @@
             }
           </div>
 
+          <!-- ── Supporting document ───────────────────── -->
+          @if (requiresDocument() || attachment()) {
+            <div class="field">
+              <label for="la-attachment">
+                {{ 'leave.apply.attachmentLabel' | translate }}
+                @if (requiresDocument()) {
+                  <span class="req">*</span>
+                }
+              </label>
+              <input
+                id="la-attachment"
+                type="file"
+                class="file-input"
+                [accept]="attachmentAccept()"
+                aria-describedby="la-attachment-hint"
+                [attr.aria-invalid]="attachmentError() ? 'true' : null"
+                (change)="onFileSelected($event)"
+              />
+              <span id="la-attachment-hint" class="char-count">
+                {{
+                  'leave.apply.attachmentHint'
+                    | translate: { types: attachmentTypesLabel(), size: attachmentMaxMb() }
+                }}
+              </span>
+              @if (attachment(); as file) {
+                <div class="file-chip">
+                  <span class="material-icons" aria-hidden="true">attach_file</span>
+                  <span class="file-chip-name">{{ file.name }}</span>
+                  <button
+                    type="button"
+                    class="file-chip-remove"
+                    [attr.aria-label]="'leave.apply.attachmentRemove' | translate"
+                    (click)="removeAttachment()"
+                  >
+                    <span class="material-icons" aria-hidden="true">close</span>
+                  </button>
+                </div>
+              }
+              @if (attachmentError()) {
+                <span class="field-error" role="alert">{{ attachmentError() }}</span>
+              }
+            </div>
+          }
+
           <!-- ── Actions ───────────────────────────────── -->
           <div class="form-actions">
             <button type="button" class="btn-cancel" (click)="onCancel()">

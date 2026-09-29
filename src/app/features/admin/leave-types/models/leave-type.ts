@@ -9,6 +9,8 @@ export interface LeaveType {
   isCarryForward: boolean;
   maxCarryDays: number;
   requiresDocument: boolean;
+  docMaxFileSizeMb?: number;
+  docAllowedExtensions?: string;
   minNoticeDays: number;
   maxConsecutiveDays: number;
   applicableGender: string;
@@ -30,6 +32,8 @@ export interface LeaveTypeRequest {
   isCarryForward: boolean;
   maxCarryDays: number;
   requiresDocument: boolean;
+  docMaxFileSizeMb?: number;
+  docAllowedExtensions?: string;
   minNoticeDays: number;
   maxConsecutiveDays: number;
   applicableGender: string;

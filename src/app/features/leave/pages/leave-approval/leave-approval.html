@@ -141,6 +141,13 @@
               <p class="reason-text">{{ leave.reason }}</p>
             </div>
 
+            @if (leave.hasAttachment) {
+              <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
+                <span class="material-icons" aria-hidden="true">attach_file</span>
+                {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
+              </button>
+            }
+
             <!-- Submitted date -->
             <p class="submitted-date">
               {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
