@@ -17,6 +17,7 @@
         </button>
         <select
           class="year-select"
+          [attr.aria-label]="'leave.balance.selectYear' | translate"
           [value]="selectedYear()"
           (change)="onYearChange(+$any($event.target).value)"
         >

@@ -3,6 +3,7 @@
     "search": "Search",
     "clear": "Clear",
     "cancel": "Cancel",
+    "close": "Close",
     "save": "Save",
     "edit": "Edit",
     "view": "View",
@@ -575,6 +576,7 @@
     },
     "balance": {
       "title": "Leave Balances",
+      "selectYear": "Select year",
       "recordsCount": "{{count}} records",
       "tabOverview": "Overview",
       "tabInitialize": "Initialize",
@@ -1183,6 +1185,7 @@
       "addHoliday": "Add Holiday",
       "searchPlaceholder": "Search holidays...",
       "allTypes": "All Types",
+      "selectYear": "Select year",
       "loadingFor": "Loading holidays for {{year}}...",
       "emptyTitle": "No holidays found for {{year}}",
       "emptyHint": "Add holidays using the button above",

@@ -18,6 +18,7 @@ import { LeaveRequestService } from '../../services/leave-request.service';
 import { LeaveBalanceService } from '../../services/leave-balance.service';
 import { LeaveBalance } from '../../models/leave-balance.model';
 import { Auth } from '../../../../core/auth/auth';
+import { HolidayService } from '../../../admin/holiday-calendar/services/holiday-calendar';
 
 @Component({
   selector: 'app-leave-apply',
@@ -30,6 +31,7 @@ export class LeaveApplyPage implements OnInit {
   private fb = inject(FormBuilder);
   private leaveSvc = inject(LeaveRequestService);
   private balanceSvc = inject(LeaveBalanceService);
+  private holidaySvc = inject(HolidayService);
   private auth = inject(Auth);
   private router = inject(Router);
   private destroy = inject(DestroyRef);
@@ -51,6 +53,9 @@ export class LeaveApplyPage implements OnInit {
   startDateVal = signal<string>('');
   endDateVal = signal<string>('');
   selectedTypeCode = signal<string>('');
+  // Active public holidays (YYYY-MM-DD) for currentYear — excluded from the day count,
+  // same as the backend's calculateWorkingDays().
+  holidayDates = signal<Set<string>>(new Set());
 
   // ── Computed — all depend on signals, so they react correctly
   readonly selectedBalance = computed(() => {
@@ -61,6 +66,7 @@ export class LeaveApplyPage implements OnInit {
   readonly calculatedDays = computed(() => {
     const start = this.startDateVal();
     const end = this.endDateVal();
+    this.holidayDates(); // depend on holidays so this recomputes once they load
     if (!start || !end) return 0;
     return this.countWorkingDays(start, end);
   });
@@ -86,6 +92,23 @@ export class LeaveApplyPage implements OnInit {
     if (user?.employeeId) this.employeeId.set(user.employeeId);
     this.buildForm();
     this.loadBalances();
+    this.loadHolidays();
+  }
+
+  private loadHolidays(): void {
+    this.holidaySvc
+      .getActiveByYear(this.currentYear)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.holidayDates.set(new Set(res.data.map((h) => h.holidayDate)));
+          }
+        },
+        // Non-fatal: worst case the preview briefly overcounts a holiday; the
+        // backend is authoritative and will exclude it regardless.
+        error: () => {},
+      });
   }
 
   private buildForm(): void {
@@ -205,6 +228,8 @@ export class LeaveApplyPage implements OnInit {
   }
 
   // ── countWorkingDays — parses as LOCAL date to avoid UTC shift ────
+  // Weekend is Friday/Saturday (Oman) and active public holidays are excluded,
+  // matching the backend's authoritative calculateWorkingDays().
   countWorkingDays(startStr: string, endStr: string): number {
     if (!startStr || !endStr) return 0;
 
@@ -217,11 +242,14 @@ export class LeaveApplyPage implements OnInit {
 
     if (end < start) return 0;
 
+    const holidays = this.holidayDates();
     let count = 0;
     const cur = new Date(start);
     while (cur <= end) {
-      const dow = cur.getDay(); // 0=Sun, 6=Sat
-      if (dow !== 0 && dow !== 6) count++;
+      const dow = cur.getDay(); // 0=Sun ... 5=Fri, 6=Sat
+      const isWeekend = dow === 5 || dow === 6;
+      const isoDate = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`;
+      if (!isWeekend && !holidays.has(isoDate)) count++;
       cur.setDate(cur.getDate() + 1);
     }
     return count;

@@ -33,6 +33,7 @@
       <input
         type="text"
         [placeholder]="'admin.workShifts.searchPlaceholder' | translate"
+        [attr.aria-label]="'admin.workShifts.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -45,6 +46,7 @@
 
     <select
       class="filter-select"
+      [attr.aria-label]="'admin.workShifts.shiftType' | translate"
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
@@ -108,7 +110,7 @@
                 </span>
               </div>
               <div class="card-actions">
-                <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(s)">
+                <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(s)">
                   <span class="material-icons">edit</span>
                 </button>
                 <button
@@ -116,6 +118,7 @@
                   [class.btn-deactivate]="s.isActive"
                   [class.btn-activate]="!s.isActive"
                   [title]="(s.isActive ? 'admin.workShifts.deactivate' : 'admin.workShifts.activate') | translate"
+                  [attr.aria-label]="(s.isActive ? 'admin.workShifts.deactivate' : 'admin.workShifts.activate') | translate"
                   (click)="openConfirm(s)"
                 >
                   <span class="material-icons">
@@ -215,13 +218,20 @@
 <!-- MODAL — Add / Edit Shift                                  -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'ws-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">
+        <h2 id="ws-modal-title" class="modal-title">
           {{ (isEditMode() ? 'admin.workShifts.editTitle' : 'admin.workShifts.addTitle') | translate }}
         </h2>
-        <button class="modal-close" (click)="closeModal()">
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -237,8 +247,9 @@
           <!-- Row 1: Code + Type + Sort -->
           <div class="field-row-3">
             <div class="field">
-              <label>{{ 'admin.workShifts.shiftCode' | translate }} <span class="req">*</span></label>
+              <label for="ws-code">{{ 'admin.workShifts.shiftCode' | translate }} <span class="req">*</span></label>
               <input
+                id="ws-code"
                 formControlName="shiftCode"
                 [placeholder]="'admin.workShifts.shiftCodePlaceholder' | translate"
                 [class.readonly-inp]="isEditMode()"
@@ -248,31 +259,31 @@
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.workShifts.shiftType' | translate }} <span class="req">*</span></label>
-              <select formControlName="shiftType">
+              <label for="ws-type">{{ 'admin.workShifts.shiftType' | translate }} <span class="req">*</span></label>
+              <select id="ws-type" formControlName="shiftType">
                 @for (t of shiftTypes; track t) {
                   <option [value]="t">{{ t }}</option>
                 }
               </select>
             </div>
             <div class="field field-sm">
-              <label>{{ 'admin.workShifts.sortOrder' | translate }}</label>
-              <input type="number" formControlName="sortOrder" min="0" />
+              <label for="ws-sort-order">{{ 'admin.workShifts.sortOrder' | translate }}</label>
+              <input id="ws-sort-order" type="number" formControlName="sortOrder" min="0" />
             </div>
           </div>
 
           <!-- Row 2: Names -->
           <div class="field-row">
             <div class="field">
-              <label>{{ 'admin.workShifts.shiftNameEn' | translate }} <span class="req">*</span></label>
-              <input formControlName="shiftName" [placeholder]="'admin.workShifts.shiftNameEnPlaceholder' | translate" />
+              <label for="ws-name-en">{{ 'admin.workShifts.shiftNameEn' | translate }} <span class="req">*</span></label>
+              <input id="ws-name-en" formControlName="shiftName" [placeholder]="'admin.workShifts.shiftNameEnPlaceholder' | translate" />
               @if (isInvalid('shiftName')) {
                 <span class="field-error">{{ getError('shiftName') }}</span>
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.workShifts.shiftNameAr' | translate }} <span class="req">*</span></label>
-              <input formControlName="shiftNameAr" placeholder="e.g. الدوام الصباحي" dir="rtl" />
+              <label for="ws-name-ar">{{ 'admin.workShifts.shiftNameAr' | translate }} <span class="req">*</span></label>
+              <input id="ws-name-ar" formControlName="shiftNameAr" placeholder="e.g. الدوام الصباحي" dir="rtl" />
               @if (isInvalid('shiftNameAr')) {
                 <span class="field-error">{{ getError('shiftNameAr') }}</span>
               }
@@ -282,22 +293,22 @@
           <!-- Row 3: Times + Hours -->
           <div class="field-row-3">
             <div class="field">
-              <label>{{ 'admin.workShifts.startTime' | translate }} <span class="req">*</span></label>
-              <input type="time" formControlName="startTime" />
+              <label for="ws-start-time">{{ 'admin.workShifts.startTime' | translate }} <span class="req">*</span></label>
+              <input id="ws-start-time" type="time" formControlName="startTime" />
               @if (isInvalid('startTime')) {
                 <span class="field-error">{{ getError('startTime') }}</span>
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.workShifts.endTime' | translate }} <span class="req">*</span></label>
-              <input type="time" formControlName="endTime" />
+              <label for="ws-end-time">{{ 'admin.workShifts.endTime' | translate }} <span class="req">*</span></label>
+              <input id="ws-end-time" type="time" formControlName="endTime" />
               @if (isInvalid('endTime')) {
                 <span class="field-error">{{ getError('endTime') }}</span>
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.workShifts.workingHours' | translate }} <span class="req">*</span></label>
-              <input type="number" formControlName="workingHours" min="0.5" max="24" step="0.5" />
+              <label for="ws-working-hours">{{ 'admin.workShifts.workingHours' | translate }} <span class="req">*</span></label>
+              <input id="ws-working-hours" type="number" formControlName="workingHours" min="0.5" max="24" step="0.5" />
               @if (isInvalid('workingHours')) {
                 <span class="field-error">{{ getError('workingHours') }}</span>
               }
@@ -307,20 +318,20 @@
           <!-- Row 4: Break + Grace -->
           <div class="field-row">
             <div class="field">
-              <label>{{ 'admin.workShifts.breakDuration' | translate }}</label>
-              <input type="number" formControlName="breakDuration" min="0" max="120" />
+              <label for="ws-break-duration">{{ 'admin.workShifts.breakDuration' | translate }}</label>
+              <input id="ws-break-duration" type="number" formControlName="breakDuration" min="0" max="120" />
               <span class="field-hint">{{ 'admin.workShifts.breakDurationHint' | translate }}</span>
             </div>
             <div class="field">
-              <label>{{ 'admin.workShifts.gracePeriod' | translate }}</label>
-              <input type="number" formControlName="gracePeriod" min="0" max="60" />
+              <label for="ws-grace-period">{{ 'admin.workShifts.gracePeriod' | translate }}</label>
+              <input id="ws-grace-period" type="number" formControlName="gracePeriod" min="0" max="60" />
               <span class="field-hint">{{ 'admin.workShifts.gracePeriodHint' | translate }}</span>
             </div>
           </div>
 
           <!-- Working days selector -->
           <div class="field">
-            <label>{{ 'admin.workShifts.workingDays' | translate }} <span class="req">*</span></label>
+            <label id="ws-working-days-label">{{ 'admin.workShifts.workingDays' | translate }} <span class="req">*</span></label>
             <div class="days-presets">
               <button type="button" class="preset-btn" (click)="setPreset('sun-thu')">
                 {{ 'admin.workShifts.presetSunThu' | translate }}
@@ -332,12 +343,13 @@
                 {{ 'admin.workShifts.presetAll' | translate }}
               </button>
             </div>
-            <div class="days-picker">
+            <div class="days-picker" role="group" aria-labelledby="ws-working-days-label">
               @for (day of allDays; track day) {
                 <button
                   type="button"
                   class="day-pick-btn"
                   [class.day-selected]="isDaySelected(day)"
+                  [attr.aria-pressed]="isDaySelected(day)"
                   (click)="toggleDay(day)"
                 >
                   {{ day }}
@@ -389,8 +401,9 @@
 
           <!-- Description -->
           <div class="field">
-            <label>{{ 'admin.workShifts.description' | translate }}</label>
+            <label for="ws-description">{{ 'admin.workShifts.description' | translate }}</label>
             <textarea
+              id="ws-description"
               formControlName="description"
               [placeholder]="'admin.workShifts.descriptionPlaceholder' | translate"
               rows="2"
@@ -419,8 +432,15 @@
 <!-- CONFIRM DIALOG                                            -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="cancelConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'ws-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-warn]="confirmTarget()?.isActive"
@@ -428,7 +448,7 @@
       >
         <span class="material-icons">schedule</span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="ws-confirm-title" class="confirm-title">
         {{ (confirmTarget()?.isActive ? 'admin.workShifts.deactivateTitle' : 'admin.workShifts.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">

@@ -29,12 +29,14 @@
       <input
         type="text"
         [placeholder]="'admin.officeLocations.searchPlaceholder' | translate"
+        [attr.aria-label]="'admin.officeLocations.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
     </div>
     <select
       class="filter-select"
+      [attr.aria-label]="'admin.officeLocations.type' | translate"
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
@@ -101,6 +103,7 @@
                 class="act-btn"
                 [class.btn-deactivate]="loc.isActive"
                 [class.btn-activate]="!loc.isActive"
+                [attr.aria-label]="(loc.isActive ? 'admin.officeLocations.deactivate' : 'admin.officeLocations.activate') | translate"
                 (click)="openConfirm(loc)"
               >
                 <span class="material-icons">{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</span>
@@ -153,11 +156,18 @@
 
 <!-- MODAL -->
 @if (showModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'ol-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">{{ (isEditMode() ? 'admin.officeLocations.editTitle' : 'admin.officeLocations.addLocation') | translate }}</h2>
-        <button class="modal-close" (click)="closeModal()">
+        <h2 id="ol-modal-title" class="modal-title">{{ (isEditMode() ? 'admin.officeLocations.editTitle' : 'admin.officeLocations.addLocation') | translate }}</h2>
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -281,8 +291,15 @@
 }
 
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="cancelConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'ol-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-warn]="confirmItem()?.isActive"
@@ -290,7 +307,7 @@
       >
         <span class="material-icons">location_on</span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="ol-confirm-title" class="confirm-title">
         {{ (confirmItem()?.isActive ? 'admin.officeLocations.deactivateTitle' : 'admin.officeLocations.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">

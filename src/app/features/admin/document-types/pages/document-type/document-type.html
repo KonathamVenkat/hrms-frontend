@@ -30,12 +30,14 @@
       <input
         type="text"
         [placeholder]="'admin.documentTypes.searchPlaceholder' | translate"
+        [attr.aria-label]="'admin.documentTypes.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
     </div>
     <select
       class="filter-select"
+      [attr.aria-label]="'admin.documentTypes.category' | translate"
       [value]="filterCat()"
       (change)="filterCat.set($any($event.target).value)"
     >
@@ -166,6 +168,7 @@
                     class="act-btn"
                     [class.btn-deactivate]="dt.isActive"
                     [class.btn-activate]="!dt.isActive"
+                    [attr.aria-label]="(dt.isActive ? 'admin.documentTypes.deactivate' : 'admin.documentTypes.activate') | translate"
                     (click)="openConfirm(dt)"
                   >
                     <span class="material-icons">{{
@@ -184,11 +187,18 @@
 
 <!-- MODAL -->
 @if (showModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'dt-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">{{ (isEditMode() ? 'admin.documentTypes.editTitle' : 'admin.documentTypes.addDocumentType') | translate }}</h2>
-        <button class="modal-close" (click)="closeModal()">
+        <h2 id="dt-modal-title" class="modal-title">{{ (isEditMode() ? 'admin.documentTypes.editTitle' : 'admin.documentTypes.addDocumentType') | translate }}</h2>
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -319,8 +329,15 @@
 }
 
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="cancelConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'dt-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-warn]="confirmItem()?.isActive"
@@ -328,7 +345,7 @@
       >
         <span class="material-icons">folder</span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="dt-confirm-title" class="confirm-title">
         {{ (confirmItem()?.isActive ? 'admin.documentTypes.deactivateTitle' : 'admin.documentTypes.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">

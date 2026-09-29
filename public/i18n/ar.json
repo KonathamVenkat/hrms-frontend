@@ -3,6 +3,7 @@
     "search": "بحث",
     "clear": "مسح",
     "cancel": "إلغاء",
+    "close": "إغلاق",
     "save": "حفظ",
     "edit": "تعديل",
     "view": "عرض",
@@ -575,6 +576,7 @@
     },
     "balance": {
       "title": "أرصدة الإجازات",
+      "selectYear": "اختر السنة",
       "recordsCount": "{{count}} سجل",
       "tabOverview": "نظرة عامة",
       "tabInitialize": "التهيئة",
@@ -1183,6 +1185,7 @@
       "addHoliday": "إضافة عطلة",
       "searchPlaceholder": "البحث عن العطلات...",
       "allTypes": "جميع الأنواع",
+      "selectYear": "اختر السنة",
       "loadingFor": "جارٍ تحميل عطلات {{year}}...",
       "emptyTitle": "لم يتم العثور على عطلات لعام {{year}}",
       "emptyHint": "أضف عطلات باستخدام الزر أعلاه",

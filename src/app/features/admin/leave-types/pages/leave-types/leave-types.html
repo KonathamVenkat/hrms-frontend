@@ -38,6 +38,7 @@
       <input
         type="text"
         [placeholder]="'admin.leaveTypes.searchPlaceholder' | translate"
+        [attr.aria-label]="'admin.leaveTypes.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -176,7 +177,7 @@
 
               <td>
                 <div class="action-wrap">
-                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(lt)">
+                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(lt)">
                     <span class="material-icons">edit</span>
                   </button>
                   <button
@@ -184,6 +185,7 @@
                     [class.btn-deactivate]="lt.isActive"
                     [class.btn-activate]="!lt.isActive"
                     [title]="(lt.isActive ? 'admin.leaveTypes.deactivate' : 'admin.leaveTypes.activate') | translate"
+                    [attr.aria-label]="(lt.isActive ? 'admin.leaveTypes.deactivate' : 'admin.leaveTypes.activate') | translate"
                     (click)="openConfirm(lt)"
                   >
                     <span class="material-icons">
@@ -205,14 +207,21 @@
 <!-- MODAL — Create / Edit Leave Type                          -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'lt-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <!-- Modal header -->
       <div class="modal-header">
-        <h2 class="modal-title">
+        <h2 id="lt-modal-title" class="modal-title">
           {{ (isEditMode() ? 'admin.leaveTypes.editTitle' : 'admin.leaveTypes.addLeaveType') | translate }}
         </h2>
-        <button class="modal-close" (click)="closeModal()">
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -393,8 +402,15 @@
 <!-- CONFIRM DIALOG — Activate / Deactivate                    -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="cancelConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'lt-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-warn]="confirmTarget()?.isActive"
@@ -404,7 +420,7 @@
           {{ confirmTarget()?.isActive ? 'toggle_off' : 'toggle_on' }}
         </span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="lt-confirm-title" class="confirm-title">
         {{ (confirmTarget()?.isActive ? 'admin.leaveTypes.deactivateTitle' : 'admin.leaveTypes.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">

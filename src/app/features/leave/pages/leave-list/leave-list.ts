@@ -2,6 +2,7 @@
 
 import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
@@ -10,11 +11,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { LeaveRequest } from '../../models/leave-request.model';
 import { Auth } from '../../../../core/auth/auth'; // ✅ correct
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 
 @Component({
   selector: 'app-leave-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './leave-list.html',
   styleUrl: './leave-list.css',
 })

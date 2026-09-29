@@ -7,16 +7,18 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DocumentTypeService } from '../../services/document-type';
 import { DocumentType } from '../../models/document-type';
+import { AccessibleDialogDirective } from '../../../../../core/directives/accessible-dialog.directive';
 
 @Component({
   selector: 'app-document-types',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './document-type.html',
   styleUrl: './document-type.css',
 })

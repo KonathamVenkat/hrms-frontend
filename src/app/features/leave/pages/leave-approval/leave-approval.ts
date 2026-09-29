@@ -1,17 +1,19 @@
 import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { LeaveRequest } from '../../models/leave-request.model';
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 
 @Component({
   selector: 'app-leave-approval',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './leave-approval.html',
   styleUrl: './leave-approval.css',
 })

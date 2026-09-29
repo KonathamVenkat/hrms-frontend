@@ -17,6 +17,7 @@
         </button>
         <select
           class="year-select"
+          [attr.aria-label]="'admin.holidayCalendar.selectYear' | translate"
           [value]="selectedYear()"
           (change)="onYearChange(+$any($event.target).value)"
         >
@@ -56,6 +57,7 @@
       <input
         type="text"
         [placeholder]="'admin.holidayCalendar.searchPlaceholder' | translate"
+        [attr.aria-label]="'admin.holidayCalendar.searchPlaceholder' | translate"
         [value]="filterText()"
         (input)="filterText.set($any($event.target).value)"
       />
@@ -68,6 +70,7 @@
 
     <select
       class="filter-select"
+      [attr.aria-label]="'admin.holidayCalendar.holidayType' | translate"
       [value]="filterType()"
       (change)="filterType.set($any($event.target).value)"
     >
@@ -181,7 +184,7 @@
 
                 <!-- Actions -->
                 <div class="holiday-actions">
-                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(h)">
+                  <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(h)">
                     <span class="material-icons">edit</span>
                   </button>
                   <button
@@ -209,13 +212,20 @@
 <!-- MODAL — Add / Edit Holiday                                -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'hc-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">
+        <h2 id="hc-modal-title" class="modal-title">
           {{ (isEditMode() ? 'admin.holidayCalendar.editTitle' : 'admin.holidayCalendar.addHoliday') | translate }}
         </h2>
-        <button class="modal-close" (click)="closeModal()">
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -232,15 +242,15 @@
           <!-- Names -->
           <div class="field-row">
             <div class="field">
-              <label>{{ 'admin.holidayCalendar.holidayNameEn' | translate }} <span class="req">*</span></label>
-              <input formControlName="holidayName" [placeholder]="'admin.holidayCalendar.holidayNameEnPlaceholder' | translate" />
+              <label for="hc-name-en">{{ 'admin.holidayCalendar.holidayNameEn' | translate }} <span class="req">*</span></label>
+              <input id="hc-name-en" formControlName="holidayName" [placeholder]="'admin.holidayCalendar.holidayNameEnPlaceholder' | translate" />
               @if (isInvalid('holidayName')) {
                 <span class="field-error">{{ getError('holidayName') }}</span>
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.holidayCalendar.holidayNameAr' | translate }} <span class="req">*</span></label>
-              <input formControlName="holidayNameAr" placeholder="e.g. العيد الوطني" dir="rtl" />
+              <label for="hc-name-ar">{{ 'admin.holidayCalendar.holidayNameAr' | translate }} <span class="req">*</span></label>
+              <input id="hc-name-ar" formControlName="holidayNameAr" placeholder="e.g. العيد الوطني" dir="rtl" />
               @if (isInvalid('holidayNameAr')) {
                 <span class="field-error">{{ getError('holidayNameAr') }}</span>
               }
@@ -250,15 +260,15 @@
           <!-- Date + Type -->
           <div class="field-row">
             <div class="field">
-              <label>{{ 'admin.holidayCalendar.holidayDate' | translate }} <span class="req">*</span></label>
-              <input type="date" formControlName="holidayDate" />
+              <label for="hc-date">{{ 'admin.holidayCalendar.holidayDate' | translate }} <span class="req">*</span></label>
+              <input id="hc-date" type="date" formControlName="holidayDate" />
               @if (isInvalid('holidayDate')) {
                 <span class="field-error">{{ getError('holidayDate') }}</span>
               }
             </div>
             <div class="field">
-              <label>{{ 'admin.holidayCalendar.holidayType' | translate }} <span class="req">*</span></label>
-              <select formControlName="holidayType">
+              <label for="hc-type">{{ 'admin.holidayCalendar.holidayType' | translate }} <span class="req">*</span></label>
+              <select id="hc-type" formControlName="holidayType">
                 @for (t of holidayTypes; track t) {
                   <option [value]="t">{{ t }}</option>
                 }
@@ -268,8 +278,9 @@
 
           <!-- Description -->
           <div class="field">
-            <label>{{ 'admin.holidayCalendar.description' | translate }}</label>
+            <label for="hc-description">{{ 'admin.holidayCalendar.description' | translate }}</label>
             <textarea
+              id="hc-description"
               formControlName="description"
               [placeholder]="'admin.holidayCalendar.descriptionPlaceholder' | translate"
               rows="2"
@@ -325,8 +336,15 @@
 <!-- CONFIRM DIALOG                                            -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="cancelConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'hc-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-warn]="confirmTarget()?.isActive"
@@ -334,7 +352,7 @@
       >
         <span class="material-icons">event_busy</span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="hc-confirm-title" class="confirm-title">
         {{ (confirmTarget()?.isActive ? 'admin.holidayCalendar.deactivateTitle' : 'admin.holidayCalendar.activateTitle') | translate }}
       </h3>
       <p class="confirm-msg">

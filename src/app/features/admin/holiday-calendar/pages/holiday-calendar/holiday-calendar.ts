@@ -7,17 +7,19 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { HolidayService } from '../../services/holiday-calendar';
 import { Holiday } from '../../models/holiday-calendar';
+import { AccessibleDialogDirective } from '../../../../../core/directives/accessible-dialog.directive';
 
 @Component({
   selector: 'app-holiday-calendar',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './holiday-calendar.html',
   styleUrl: './holiday-calendar.css',
 })

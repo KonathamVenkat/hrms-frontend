@@ -246,8 +246,15 @@
 <!-- APPROVE / REJECT MODAL                                    -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal() && selectedLeave() && remarksForm) {
-  <div class="modal-backdrop">
-    <div class="modal">
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'la-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <!-- Header -->
       <div
         class="modal-header"
@@ -260,7 +267,7 @@
           </span>
         </div>
         <div>
-          <h2 class="modal-title">
+          <h2 id="la-modal-title" class="modal-title">
             {{
               (actionType() === 'APPROVED'
                 ? 'leave.approval.modalTitleApprove'
@@ -272,7 +279,7 @@
             {{ selectedLeave()!.employeeName ?? selectedLeave()!.employeeCode }}
           </p>
         </div>
-        <button class="modal-close" (click)="closeModal()">
+        <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>

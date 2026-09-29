@@ -257,12 +257,19 @@
 <!-- CONFIRM CANCEL DIALOG                                     -->
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
-  <div class="modal-backdrop">
-    <div class="confirm-dialog">
+  <div class="modal-backdrop" (click)="closeConfirm()">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      [appAccessibleDialog]="'ll-confirm-title'"
+      (dialogClosed)="closeConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="confirm-icon">
         <span class="material-icons">event_busy</span>
       </div>
-      <h3 class="confirm-title">{{ 'leave.list.confirmCancelTitle' | translate }}</h3>
+      <h3 id="ll-confirm-title" class="confirm-title">{{ 'leave.list.confirmCancelTitle' | translate }}</h3>
       <div class="confirm-details">
         <span class="confirm-type">{{ confirmItem()?.leaveTypeName }}</span>
         <span class="confirm-dates">

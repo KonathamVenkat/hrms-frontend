@@ -3,6 +3,7 @@
     "search": "Rechercher",
     "clear": "Effacer",
     "cancel": "Annuler",
+    "close": "Fermer",
     "save": "Enregistrer",
     "edit": "Modifier",
     "view": "Voir",
@@ -575,6 +576,7 @@
     },
     "balance": {
       "title": "Soldes de congés",
+      "selectYear": "Sélectionner l'année",
       "recordsCount": "{{count}} enregistrements",
       "tabOverview": "Aperçu",
       "tabInitialize": "Initialiser",
@@ -1183,6 +1185,7 @@
       "addHoliday": "Ajouter un jour férié",
       "searchPlaceholder": "Rechercher des jours fériés...",
       "allTypes": "Tous les types",
+      "selectYear": "Sélectionner l'année",
       "loadingFor": "Chargement des jours fériés pour {{year}}...",
       "emptyTitle": "Aucun jour férié trouvé pour {{year}}",
       "emptyHint": "Ajoutez des jours fériés à l'aide du bouton ci-dessus",
