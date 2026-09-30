@@ -94,7 +94,7 @@ export class LeaveTypes implements OnInit {
       maxCarryDays: [0, [Validators.min(0)]],
       requiresDocument: [false],
       docAllowedExtensions: ['PDF,JPG,PNG', [Validators.maxLength(100), Validators.pattern(/^\s*(pdf|jpe?g|png)(\s*,\s*(pdf|jpe?g|png))*\s*$/i)]],
-      docMaxFileSizeMb: [5, [Validators.min(1), Validators.max(20)]],
+      docMaxFileSizeMb: [5, [Validators.min(1)]],
       minNoticeDays: [0, [Validators.min(0)]],
       maxConsecutiveDays: [0, [Validators.min(0)]],
       applicableGender: ['ALL', Validators.required],

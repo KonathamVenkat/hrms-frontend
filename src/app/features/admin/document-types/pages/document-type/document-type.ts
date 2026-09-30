@@ -92,7 +92,7 @@ export class DocumentTypes implements OnInit {
       hasExpiry: [false],
       expiryNoticeDays: [30, [Validators.min(0), Validators.max(365)]],
       allowedExtensions: ['PDF,JPG,PNG', Validators.maxLength(200)],
-      maxFileSizeMb: [5, [Validators.min(1), Validators.max(50)]],
+      maxFileSizeMb: [5, [Validators.min(1)]],
       sortOrder: [0, Validators.min(0)],
       isActive: [true],
     });

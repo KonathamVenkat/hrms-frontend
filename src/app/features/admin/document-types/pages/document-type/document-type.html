@@ -259,7 +259,7 @@
             </div>
             <div class="field">
               <label for="dt-max-file-size">{{ 'admin.documentTypes.maxFileSize' | translate }}</label>
-              <input id="dt-max-file-size" type="number" formControlName="maxFileSizeMb" min="1" max="50" />
+              <input id="dt-max-file-size" type="number" formControlName="maxFileSizeMb" min="1" />
               @if (isInvalid('maxFileSizeMb')) {
                 <span class="field-error">{{ getError('maxFileSizeMb') }}</span>
               }

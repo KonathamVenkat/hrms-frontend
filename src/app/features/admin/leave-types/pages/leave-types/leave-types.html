@@ -372,7 +372,7 @@
               </div>
               <div class="field">
                 <label for="lt-doc-max-size">{{ 'admin.leaveTypes.docMaxFileSize' | translate }}</label>
-                <input id="lt-doc-max-size" type="number" formControlName="docMaxFileSizeMb" min="1" max="20" />
+                <input id="lt-doc-max-size" type="number" formControlName="docMaxFileSizeMb" min="1" />
                 @if (isInvalid('docMaxFileSizeMb')) {
                   <span class="field-error">{{ getError('docMaxFileSizeMb') }}</span>
                 }
