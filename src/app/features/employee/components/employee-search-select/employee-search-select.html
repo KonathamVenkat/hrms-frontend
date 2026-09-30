@@ -6,19 +6,19 @@
       [attr.id]="inputId || null"
       [placeholder]="placeholder"
       [value]="query()"
-      [disabled]="disabled"
+      [disabled]="disabled()"
       autocomplete="off"
       (input)="onInput($any($event.target).value)"
       (focus)="isOpen.set(true)"
     />
-    @if (query()) {
+    @if (query() && !disabled()) {
       <button
         type="button"
         class="ess-clear"
         [attr.aria-label]="'employee.searchSelect.clearSelection' | translate"
         (click)="clear()"
       >
-        <span class="material-icons">close</span>
+        <span class="material-icons" aria-hidden="true">close</span>
       </button>
     }
   </div>

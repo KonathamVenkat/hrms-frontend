@@ -1,6 +1,7 @@
 // src/app/features/attendance/attendance-routing.ts
 
 import { Routes } from '@angular/router';
+import { HR_ROLES, roleGuard } from '../../core/guards/role.guard';
 
 export const ATTENDANCE_ROUTES: Routes = [
   {
@@ -23,6 +24,7 @@ export const ATTENDANCE_ROUTES: Routes = [
   },
   {
     path: 'request-approval',
+    canActivate: [roleGuard(...HR_ROLES)],
     loadComponent: () =>
       import('./pages/attendance-request-approval/attendance-request-approval').then(
         (m) => m.AttendanceRequestApproval,
@@ -37,6 +39,7 @@ export const ATTENDANCE_ROUTES: Routes = [
   },
   {
     path: 'overtime-approval',
+    canActivate: [roleGuard(...HR_ROLES)],
     loadComponent: () =>
       import('./pages/overtime-approval/overtime-approval').then((m) => m.OvertimeApproval),
     title: 'Overtime Approval · EHRMS',

@@ -8,16 +8,18 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { AddressService } from '../../services/address.service';
 import { EmployeeAddress } from '../../models/address.model';
 
 @Component({
   selector: 'app-employee-addresses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-addresses.html',
   styleUrl: './employee-addresses.css',
 })

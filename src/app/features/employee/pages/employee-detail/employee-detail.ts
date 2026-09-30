@@ -60,6 +60,8 @@ export interface EmployeeDetail {
   designationTitleAr?: string;
   designationCode?: string;
   gradeLevel?: string;
+  /** The linked login's role; absent when the employee has no login. */
+  role?: string;
   createdBy?: string;
   createdAt?: string;
   updatedBy?: string;
@@ -106,6 +108,9 @@ export class EmployeeDetail implements OnInit {
   showConfirm = signal(false);
   confirmBusy = signal(false);
   confirmError = signal<string | null>(null);
+  /** Optional exit status recorded with a deactivation ('' = leave the status as is). */
+  exitStatus = signal('');
+  readonly exitStatuses = ['TERMINATED', 'RESIGNED', 'RETIRED'];
 
   // ── Reset password (HR_ADMIN only) ─────────────────────────
   showReset = signal(false);
@@ -171,6 +176,7 @@ export class EmployeeDetail implements OnInit {
   // ── Deactivate / Reactivate ─────────────────────────────────
   openConfirm(): void {
     this.confirmError.set(null);
+    this.exitStatus.set('');
     this.showConfirm.set(true);
   }
 
@@ -186,7 +192,7 @@ export class EmployeeDetail implements OnInit {
     this.confirmError.set(null);
 
     const request$: Observable<{ success: boolean; message: string }> = emp.isActive
-      ? this.empService.deactivateEmployee(emp.employeeId)
+      ? this.empService.deactivateEmployee(emp.employeeId, this.exitStatus() || undefined)
       : this.empService.reactivateEmployee(emp.employeeId);
 
     request$

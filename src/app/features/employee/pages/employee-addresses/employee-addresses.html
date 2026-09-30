@@ -65,18 +65,20 @@
             <div class="card-actions">
               @if (!addr.isPrimary) {
                 <button
+                  type="button"
                   class="act-btn btn-star"
                   [title]="'employee.addresses.setPrimary' | translate"
+                  [attr.aria-label]="('employee.addresses.setPrimary' | translate) + ': ' + addr.addressType"
                   (click)="openSetPrimary(addr)"
                 >
-                  <span class="material-icons">star_outline</span>
+                  <span class="material-icons" aria-hidden="true">star_outline</span>
                 </button>
               }
-              <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(addr)">
-                <span class="material-icons">edit</span>
+              <button type="button" class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="('common.edit' | translate) + ': ' + addr.addressType" (click)="openEdit(addr)">
+                <span class="material-icons" aria-hidden="true">edit</span>
               </button>
-              <button class="act-btn btn-delete" [title]="'employee.addresses.remove' | translate" (click)="openDelete(addr)">
-                <span class="material-icons">delete_outline</span>
+              <button type="button" class="act-btn btn-delete" [title]="'employee.addresses.remove' | translate" [attr.aria-label]="('employee.addresses.remove' | translate) + ': ' + addr.addressType" (click)="openDelete(addr)">
+                <span class="material-icons" aria-hidden="true">delete_outline</span>
               </button>
             </div>
           </div>
@@ -122,19 +124,25 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
   <div class="modal-backdrop">
-    <div class="modal">
+    <div
+      class="modal"
+      [appAccessibleDialog]="'addr-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">
+        <h2 id="addr-modal-title" class="modal-title">
           {{ (isEditMode() ? 'employee.addresses.modal.editTitle' : 'employee.addresses.modal.addTitle') | translate }}
         </h2>
-        <button class="modal-close" (click)="closeModal()">
-          <span class="material-icons">close</span>
+        <button type="button" class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
+          <span class="material-icons" aria-hidden="true">close</span>
         </button>
       </div>
 
       @if (error()) {
-        <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+        <div class="modal-alert" role="alert">
+          <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
         </div>
       }
 
@@ -249,17 +257,23 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
   <div class="modal-backdrop">
-    <div class="confirm-dialog">
+    <div
+      class="confirm-dialog"
+      [appAccessibleDialog]="'addr-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-star]="confirmType() === 'primary'"
         [class.icon-warn]="confirmType() === 'delete'"
       >
-        <span class="material-icons">
+        <span class="material-icons" aria-hidden="true">
           {{ confirmType() === 'primary' ? 'star' : 'delete_outline' }}
         </span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="addr-confirm-title" class="confirm-title">
         {{ (confirmType() === 'primary' ? 'employee.addresses.confirm.setPrimaryTitle' : 'employee.addresses.confirm.removeTitle') | translate }}
       </h3>
       <p class="confirm-msg">
@@ -272,8 +286,9 @@
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
+        <button type="button" class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
+          type="button"
           class="btn-confirm"
           [class.btn-star-confirm]="confirmType() === 'primary'"
           [class.btn-danger]="confirmType() === 'delete'"

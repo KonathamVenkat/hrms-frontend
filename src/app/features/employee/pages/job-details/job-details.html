@@ -294,10 +294,16 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
   <div class="modal-backdrop">
-    <div class="modal">
+    <div
+      class="modal"
+      [appAccessibleDialog]="'jd-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
         <div>
-          <h2 class="modal-title">
+          <h2 id="jd-modal-title" class="modal-title">
             {{ (isNewAssignment() ? 'employee.jobDetails.modal.newTitle' : 'employee.jobDetails.modal.updateTitle') | translate }}
           </h2>
           <p class="modal-sub">
@@ -308,14 +314,14 @@
             }
           </p>
         </div>
-        <button class="modal-close" (click)="closeModal()">
-          <span class="material-icons">close</span>
+        <button type="button" class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
+          <span class="material-icons" aria-hidden="true">close</span>
         </button>
       </div>
 
       @if (error()) {
-        <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+        <div class="modal-alert" role="alert">
+          <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
         </div>
       }
 
@@ -414,7 +420,7 @@
                 <option value="">{{ 'employee.jobDetails.formFields.selectLocation' | translate }}</option>
                 @for (l of locations(); track l.locationId) {
                   <option [value]="l.locationId">
-                    {{ l.locationName }} ({{ l.locationName }})
+                    {{ l.locationName }} ({{ l.locationCode }})
                   </option>
                 }
               </select>

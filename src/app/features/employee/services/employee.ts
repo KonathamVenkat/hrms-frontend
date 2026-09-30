@@ -10,6 +10,8 @@ import {
   DepartmentLookup,
   DesignationLookup,
   CreateEmployeePayload,
+  UpdateEmployeePayload,
+  EmployeeDetailData,
 } from '../models/employee';
 
 @Injectable({ providedIn: 'root' })
@@ -73,14 +75,19 @@ export class EmployeeService {
   // ── Update employee ───────────────────────────────────────
   updateEmployee(
     id: number,
-    payload: Partial<CreateEmployeePayload>,
-  ): Observable<ApiResponse<any>> {
-    return this.http.put<ApiResponse<any>>(`${this.baseUrl}/${id}`, payload);
+    payload: UpdateEmployeePayload,
+  ): Observable<ApiResponse<EmployeeDetailData>> {
+    return this.http.put<ApiResponse<EmployeeDetailData>>(`${this.baseUrl}/${id}`, payload);
   }
 
   // ── Deactivate / Reactivate (HR_ADMIN only) ───────────────
-  deactivateEmployee(id: number): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
+  /** `exitStatus` (TERMINATED, RESIGNED, RETIRED) is recorded together with the deactivation. */
+  deactivateEmployee(id: number, exitStatus?: string): Observable<ApiResponse<void>> {
+    let params = new HttpParams();
+    if (exitStatus) {
+      params = params.set('exitStatus', exitStatus);
+    }
+    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`, { params });
   }
 
   reactivateEmployee(id: number): Observable<ApiResponse<Employee>> {

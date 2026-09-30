@@ -68,10 +68,12 @@
             <span class="status-dot"></span>
             {{ getStatusLabel(employee()!.employmentStatus) }}
           </span>
-          <button class="btn-edit" (click)="editEmployee()">
-            <span class="material-icons">edit</span>
-            {{ 'common.edit' | translate }}
-          </button>
+          @if (employee()!.isActive) {
+            <button class="btn-edit" (click)="editEmployee()">
+              <span class="material-icons" aria-hidden="true">edit</span>
+              {{ 'common.edit' | translate }}
+            </button>
+          }
           @if (isHrAdmin()) {
             @if (employee()!.isActive) {
               <button class="btn-edit" (click)="openReset()">
@@ -325,11 +327,17 @@
     <!-- ══════════════════════════════════════════════════════ -->
     @if (showConfirm()) {
       <div class="modal-backdrop">
-        <div class="confirm-dialog">
+        <div
+          class="confirm-dialog"
+          [appAccessibleDialog]="'confirm-toggle-title'"
+          (dialogClosed)="cancelConfirm()"
+          cdkTrapFocus
+          cdkTrapFocusAutoCapture
+        >
           <div class="confirm-icon" [class.icon-warn]="employee()!.isActive" [class.icon-info]="!employee()!.isActive">
-            <span class="material-icons">{{ employee()!.isActive ? 'block' : 'check_circle' }}</span>
+            <span class="material-icons" aria-hidden="true">{{ employee()!.isActive ? 'block' : 'check_circle' }}</span>
           </div>
-          <h3 class="confirm-title">
+          <h3 id="confirm-toggle-title" class="confirm-title">
             {{ (employee()!.isActive ? 'employee.detail.confirm.deactivateTitle' : 'employee.detail.confirm.reactivateTitle') | translate }}
           </h3>
           <p class="confirm-msg">
@@ -340,8 +348,26 @@
               {{ 'employee.detail.confirm.reactivateMsg' | translate }}
             }
           </p>
+          @if (employee()!.isActive) {
+            <div class="reset-form">
+              <label for="exit-status-select" class="reset-label">
+                {{ 'employee.detail.confirm.exitStatusLabel' | translate }}
+              </label>
+              <select
+                id="exit-status-select"
+                class="reset-input"
+                [value]="exitStatus()"
+                (change)="exitStatus.set($any($event.target).value)"
+              >
+                <option value="">{{ 'employee.detail.confirm.exitStatusNone' | translate }}</option>
+                @for (s of exitStatuses; track s) {
+                  <option [value]="s">{{ s.replace('_', ' ') }}</option>
+                }
+              </select>
+            </div>
+          }
           @if (confirmError()) {
-            <p class="confirm-error">{{ confirmError() }}</p>
+            <p class="confirm-error" role="alert">{{ confirmError() }}</p>
           }
           <div class="confirm-actions">
             <button class="btn-cancel" [disabled]="confirmBusy()" (click)="cancelConfirm()">

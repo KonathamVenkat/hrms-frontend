@@ -117,19 +117,19 @@
               }
             </div>
             <div class="doc-actions">
-              <button class="act-btn btn-download" [title]="'employee.documents.download' | translate" (click)="downloadDocument(doc)">
-                <span class="material-icons">download</span>
+              <button type="button" class="act-btn btn-download" [title]="'employee.documents.download' | translate" [attr.aria-label]="('employee.documents.download' | translate) + ': ' + doc.documentName" (click)="downloadDocument(doc)">
+                <span class="material-icons" aria-hidden="true">download</span>
               </button>
-              <button class="act-btn btn-edit" [title]="'common.edit' | translate" (click)="openEdit(doc)">
-                <span class="material-icons">edit</span>
+              <button type="button" class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="('common.edit' | translate) + ': ' + doc.documentName" (click)="openEdit(doc)">
+                <span class="material-icons" aria-hidden="true">edit</span>
               </button>
               @if (!doc.isVerified) {
-                <button class="act-btn btn-verify" [title]="'employee.documents.verify' | translate" (click)="openVerify(doc)">
-                  <span class="material-icons">verified_user</span>
+                <button type="button" class="act-btn btn-verify" [title]="'employee.documents.verify' | translate" [attr.aria-label]="('employee.documents.verify' | translate) + ': ' + doc.documentName" (click)="openVerify(doc)">
+                  <span class="material-icons" aria-hidden="true">verified_user</span>
                 </button>
               }
-              <button class="act-btn btn-delete" [title]="'employee.documents.delete' | translate" (click)="openDelete(doc)">
-                <span class="material-icons">delete_outline</span>
+              <button type="button" class="act-btn btn-delete" [title]="'employee.documents.delete' | translate" [attr.aria-label]="('employee.documents.delete' | translate) + ': ' + doc.documentName" (click)="openDelete(doc)">
+                <span class="material-icons" aria-hidden="true">delete_outline</span>
               </button>
             </div>
           </div>
@@ -188,19 +188,25 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showModal()) {
   <div class="modal-backdrop">
-    <div class="modal">
+    <div
+      class="modal"
+      [appAccessibleDialog]="'doc-modal-title'"
+      (dialogClosed)="closeModal()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div class="modal-header">
-        <h2 class="modal-title">
+        <h2 id="doc-modal-title" class="modal-title">
           {{ (isEditMode() ? 'employee.documents.modal.editTitle' : 'employee.documents.modal.uploadTitle') | translate }}
         </h2>
-        <button class="modal-close" (click)="closeModal()">
-          <span class="material-icons">close</span>
+        <button type="button" class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
+          <span class="material-icons" aria-hidden="true">close</span>
         </button>
       </div>
 
       @if (error()) {
-        <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+        <div class="modal-alert" role="alert">
+          <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
         </div>
       }
 
@@ -216,6 +222,11 @@
               (dragleave)="onDragLeave()"
               (drop)="onDrop($event)"
               (click)="fileInput.click()"
+              [attr.role]="selectedFile() ? null : 'button'"
+              [attr.tabindex]="selectedFile() ? null : 0"
+              [attr.aria-label]="selectedFile() ? null : ('employee.documents.dropzone.text' | translate)"
+              (keydown.enter)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
+              (keydown.space)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
             >
               @if (!selectedFile()) {
                 <span class="material-icons drop-icon">upload_file</span>
@@ -236,9 +247,10 @@
                   <button
                     type="button"
                     class="remove-file"
+                    [attr.aria-label]="'employee.documents.dropzone.removeFile' | translate"
                     (click)="$event.stopPropagation(); removeFile()"
                   >
-                    <span class="material-icons">close</span>
+                    <span class="material-icons" aria-hidden="true">close</span>
                   </button>
                 </div>
               }
@@ -331,17 +343,23 @@
 <!-- ══════════════════════════════════════════════════════════ -->
 @if (showConfirm()) {
   <div class="modal-backdrop">
-    <div class="confirm-dialog">
+    <div
+      class="confirm-dialog"
+      [appAccessibleDialog]="'doc-confirm-title'"
+      (dialogClosed)="cancelConfirm()"
+      cdkTrapFocus
+      cdkTrapFocusAutoCapture
+    >
       <div
         class="confirm-icon"
         [class.icon-verify]="confirmType() === 'verify'"
         [class.icon-warn]="confirmType() === 'delete'"
       >
-        <span class="material-icons">
+        <span class="material-icons" aria-hidden="true">
           {{ confirmType() === 'verify' ? 'verified_user' : 'delete_outline' }}
         </span>
       </div>
-      <h3 class="confirm-title">
+      <h3 id="doc-confirm-title" class="confirm-title">
         {{ (confirmType() === 'verify' ? 'employee.documents.confirm.verifyTitle' : 'employee.documents.confirm.deleteTitle') | translate }}
       </h3>
       <p class="confirm-msg">
@@ -353,8 +371,9 @@
         }
       </p>
       <div class="confirm-actions">
-        <button class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
+        <button type="button" class="btn-cancel" (click)="cancelConfirm()">{{ 'common.cancel' | translate }}</button>
         <button
+          type="button"
           class="btn-confirm"
           [class.btn-verify-confirm]="confirmType() === 'verify'"
           [class.btn-danger]="confirmType() === 'delete'"

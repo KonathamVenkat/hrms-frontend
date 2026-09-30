@@ -127,6 +127,8 @@
       "systemAccessHintCreate": "Creates login credentials for this employee",
       "role": "Role",
       "roleHrAdminOnlyHint": "Only an HR Admin can change an employee's role",
+      "roleCreateHrAdminOnlyHint": "Only an HR Admin can create an account with an elevated role. New accounts you create are Employees.",
+      "noLoginHint": "This employee has no login account, so there is no role to set.",
       "username": "Username",
       "usernameHint": "Letters, numbers, dots, hyphens, underscores only",
       "password": "Password",
@@ -140,6 +142,11 @@
         "probationBeforeHire": "Probation end date must be after hire date",
         "confirmationBeforeProbation": "Confirmation date must be after probation end date",
         "duplicateEmailOrUsername": "Duplicate email or username.",
+        "inactive": "This employee is deactivated. Reactivate the employee from the detail page before editing.",
+        "loadFailed": "Failed to load employee data.",
+        "fixValidation": "Please fix the validation errors before submitting.",
+        "createFailed": "Failed to create employee.",
+        "updateFailed": "Failed to update employee.",
         "notFound": "Employee not found."
       }
     },
@@ -176,6 +183,8 @@
         "reactivateTitle": "Reactivate Employee?",
         "deactivateMsg": "will lose system access and be excluded from active employee lists. This can be reversed later.",
         "reactivateMsg": "will regain system access and reappear in active employee lists.",
+        "exitStatusLabel": "Record exit as",
+        "exitStatusNone": "Leave employment status unchanged",
         "pleaseWait": "Please wait..."
       },
       "errors": {
@@ -271,7 +280,8 @@
       },
       "dropzone": {
         "text": "Drag & drop or click to browse",
-        "hint": "PDF, JPG, PNG, DOC — max 50MB"
+        "hint": "PDF, JPG, PNG, DOC — max 50MB",
+        "removeFile": "Remove selected file"
       },
       "fields": {
         "documentType": "Document Type",

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { HR_ROLES, roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   // ① Default → login
@@ -28,6 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'employee',
+        canActivate: [roleGuard(...HR_ROLES)],
         loadChildren: () =>
           import('./features/employee/employee-routing').then((m) => m.EMPLOYEE_ROUTES),
       },
@@ -110,6 +112,7 @@ export const routes: Routes = [
           },
           {
             path: 'approval',
+            canActivate: [roleGuard(...HR_ROLES)],
             loadComponent: () =>
               import('./features/leave/pages/leave-approval/leave-approval').then(
                 (m) => m.LeaveApprovalPage,

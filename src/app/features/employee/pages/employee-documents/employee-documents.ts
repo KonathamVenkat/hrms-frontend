@@ -10,9 +10,11 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { EmployeeDocumentService } from '../../services/document.service';
 import {
   EmployeeDocument,
@@ -22,7 +24,7 @@ import {
 @Component({
   selector: 'app-employee-documents',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-documents.html',
   styleUrl: './employee-documents.css',
 })
@@ -108,10 +110,8 @@ export class EmployeeDocumentsComponent implements OnInit {
         next: (res) => {
           if (res.success) this.documents.set(res.data);
         },
-        error: (err: any) =>
-          this.error.set(
-            err?.error?.message || this.translate.instant('employee.documents.errors.loadFailed'),
-          ),
+        error: (err: unknown) =>
+          this.error.set(this.errorMessage(err, 'employee.documents.errors.loadFailed')),
       });
   }
 
@@ -244,10 +244,8 @@ export class EmployeeDocumentsComponent implements OnInit {
               this.loadDocuments();
             } else this.error.set(res.message);
           },
-          error: (err: any) =>
-            this.error.set(
-              err?.error?.message || this.translate.instant('employee.documents.errors.updateFailed'),
-            ),
+          error: (err: unknown) =>
+            this.error.set(this.errorMessage(err, 'employee.documents.errors.updateFailed')),
         });
     } else {
       const formData = new FormData();
@@ -274,10 +272,8 @@ export class EmployeeDocumentsComponent implements OnInit {
               this.loadDocuments();
             } else this.error.set(res.message);
           },
-          error: (err: any) =>
-            this.error.set(
-              err?.error?.message || this.translate.instant('employee.documents.errors.uploadFailed'),
-            ),
+          error: (err: unknown) =>
+            this.error.set(this.errorMessage(err, 'employee.documents.errors.uploadFailed')),
         });
     }
   }
@@ -314,10 +310,8 @@ export class EmployeeDocumentsComponent implements OnInit {
           this.cancelConfirm();
           this.loadDocuments();
         },
-        error: (err: any) => {
-          this.error.set(
-            err?.error?.message || this.translate.instant('employee.documents.errors.verifyFailed'),
-          );
+        error: (err: unknown) => {
+          this.error.set(this.errorMessage(err, 'employee.documents.errors.verifyFailed'));
           this.cancelConfirm();
         },
       });
@@ -330,10 +324,8 @@ export class EmployeeDocumentsComponent implements OnInit {
           this.cancelConfirm();
           this.loadDocuments();
         },
-        error: (err: any) => {
-          this.error.set(
-            err?.error?.message || this.translate.instant('employee.documents.errors.deleteFailed'),
-          );
+        error: (err: unknown) => {
+          this.error.set(this.errorMessage(err, 'employee.documents.errors.deleteFailed'));
           this.cancelConfirm();
         },
       });
@@ -353,10 +345,8 @@ export class EmployeeDocumentsComponent implements OnInit {
         // Cleanup
         URL.revokeObjectURL(url);
       },
-      error: (err: any) =>
-        this.error.set(
-          err?.error?.message || this.translate.instant('employee.documents.errors.downloadFailed'),
-        ),
+      error: (err: unknown) =>
+        this.error.set(this.errorMessage(err, 'employee.documents.errors.downloadFailed')),
     });
   }
 
@@ -424,6 +414,12 @@ export class EmployeeDocumentsComponent implements OnInit {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  /** The server's own message when it sent one, otherwise the translated fallback. */
+  private errorMessage(err: unknown, fallbackKey: string): string {
+    const message = (err as { error?: { message?: string } } | null)?.error?.message;
+    return message || this.translate.instant(fallbackKey);
   }
 
   private showSuccess(msg: string): void {

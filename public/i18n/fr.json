@@ -127,6 +127,8 @@
       "systemAccessHintCreate": "Crée les identifiants de connexion pour cet employé",
       "role": "Rôle",
       "roleHrAdminOnlyHint": "Seul un administrateur RH peut modifier le rôle d'un employé",
+      "roleCreateHrAdminOnlyHint": "Seul un administrateur RH peut créer un compte avec un rôle élevé. Les comptes que vous créez sont des comptes Employé.",
+      "noLoginHint": "Cet employé n'a pas de compte de connexion, il n'y a donc pas de rôle à définir.",
       "username": "Nom d'utilisateur",
       "usernameHint": "Lettres, chiffres, points, tirets, underscores uniquement",
       "password": "Mot de passe",
@@ -140,6 +142,11 @@
         "probationBeforeHire": "La fin de la période d'essai doit être après la date d'embauche",
         "confirmationBeforeProbation": "La date de confirmation doit être après la fin de la période d'essai",
         "duplicateEmailOrUsername": "E-mail ou nom d'utilisateur déjà utilisé.",
+        "inactive": "Cet employé est désactivé. Réactivez-le depuis la page de détail avant de le modifier.",
+        "loadFailed": "Échec du chargement des données de l'employé.",
+        "fixValidation": "Veuillez corriger les erreurs de validation avant l'envoi.",
+        "createFailed": "Échec de la création de l'employé.",
+        "updateFailed": "Échec de la mise à jour de l'employé.",
         "notFound": "Employé introuvable."
       }
     },
@@ -176,6 +183,8 @@
         "reactivateTitle": "Réactiver l'employé ?",
         "deactivateMsg": "perdra l'accès au système et sera exclu des listes d'employés actifs. Cette action peut être annulée plus tard.",
         "reactivateMsg": "retrouvera l'accès au système et réapparaîtra dans les listes d'employés actifs.",
+        "exitStatusLabel": "Enregistrer le départ comme",
+        "exitStatusNone": "Ne pas modifier le statut d'emploi",
         "pleaseWait": "Veuillez patienter..."
       },
       "errors": {
@@ -271,7 +280,8 @@
       },
       "dropzone": {
         "text": "Glissez-déposez ou cliquez pour parcourir",
-        "hint": "PDF, JPG, PNG, DOC — max 50 Mo"
+        "hint": "PDF, JPG, PNG, DOC — max 50 Mo",
+        "removeFile": "Retirer le fichier sélectionné"
       },
       "fields": {
         "documentType": "Type de document",

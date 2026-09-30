@@ -2,8 +2,8 @@
 <div class="form-page">
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="page-header">
-    <button class="back-btn" (click)="cancel()">
-      <span class="material-icons">arrow_back</span>
+    <button type="button" class="back-btn" [attr.aria-label]="'common.cancel' | translate" (click)="cancel()">
+      <span class="material-icons" aria-hidden="true">arrow_back</span>
     </button>
     <div>
       <h1 class="page-title">
@@ -29,14 +29,14 @@
 
   <!-- ── Alerts ────────────────────────────────────────────── -->
   @if (error()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>
       <span>{{ error() }}</span>
     </div>
   }
   @if (success()) {
-    <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>
+    <div class="alert alert-success" role="status">
+      <span class="material-icons" aria-hidden="true">check_circle</span>
       <span>{{ (isEdit() ? 'employee.form.successUpdate' : 'employee.form.successCreate') | translate }}</span>
     </div>
   }
@@ -337,8 +337,12 @@
                   <option [value]="r">{{ r.replace('_', ' ') }}</option>
                 }
               </select>
-              @if (isEdit() && !isHrAdmin()) {
-                <span class="field-hint">{{ 'employee.form.roleHrAdminOnlyHint' | translate }}</span>
+              @if (isEdit() && !hasLogin()) {
+                <span class="field-hint">{{ 'employee.form.noLoginHint' | translate }}</span>
+              } @else if (!isHrAdmin()) {
+                <span class="field-hint">
+                  {{ (isEdit() ? 'employee.form.roleHrAdminOnlyHint' : 'employee.form.roleCreateHrAdminOnlyHint') | translate }}
+                </span>
               }
             </div>
 
@@ -369,23 +373,28 @@
                   id="ef-password"
                   [type]="hidePassword() ? 'password' : 'text'"
                   formControlName="password"
+                  aria-describedby="ef-password-hint"
                   [placeholder]="'employee.form.passwordPlaceholder' | translate"
                   autocomplete="new-password"
                 />
                 <button
                   type="button"
                   class="eye-btn"
-                  [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+                  [attr.aria-label]="(hidePassword() ? 'auth.login.showPassword' : 'auth.login.hidePassword') | translate"
+                  [attr.aria-pressed]="!hidePassword()"
                   (click)="togglePassword()"
                 >
-                  <span class="material-icons">
+                  <span class="material-icons" aria-hidden="true">
                     {{ hidePassword() ? 'visibility_off' : 'visibility' }}
                   </span>
                 </button>
               </div>
               @if (isInvalid('password')) {
-                <span class="field-error">{{ getError('password') }}</span>
+                <span class="field-error" role="alert">{{ getError('password') }}</span>
               }
+              <span id="ef-password-hint" class="field-hint">
+                {{ 'auth.changePassword.policyHint' | translate: { count: passwordMinLength } }}
+              </span>
             </div>
           }
         </div>

@@ -17,9 +17,11 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { JobDetailsService } from '../../services/job-details.service';
 import { EmployeeService } from '../../services/employee';
 import { JobDetails } from '../../models/job-details.model';
@@ -35,7 +37,14 @@ import { EmployeeSearchSelect } from '../../components/employee-search-select/em
 @Component({
   selector: 'app-job-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmployeeSearchSelect, TranslatePipe],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    EmployeeSearchSelect,
+    TranslatePipe,
+    CdkTrapFocus,
+    AccessibleDialogDirective,
+  ],
   templateUrl: './job-details.html',
   styleUrl: './job-details.css',
 })
@@ -133,7 +142,7 @@ export class JobDetailsComponent implements OnInit {
         next: (res) => {
           if (res.success) this.currentJob.set(res.data);
         },
-        error: (err) => {
+        error: (err: { status?: number; error?: { message?: string } }) => {
           // 404 = no job assigned yet — not an error to show
           if (err.status !== 404) {
             this.error.set(
@@ -214,6 +223,7 @@ export class JobDetailsComponent implements OnInit {
     this.isNewAssignment.set(true);
     this.form.get('effectiveFrom')?.setValidators([Validators.required]);
     this.form.get('effectiveFrom')?.updateValueAndValidity();
+    this.setManagersEditable(true);
     this.form.reset({
       departmentId: null,
       designationId: null,
@@ -236,6 +246,9 @@ export class JobDetailsComponent implements OnInit {
     this.isNewAssignment.set(false);
     this.form.get('effectiveFrom')?.clearValidators();
     this.form.get('effectiveFrom')?.updateValueAndValidity();
+    // Managers are history-bearing like department/designation/location: the backend only
+    // lets this update change shift, work mode and remarks, so don't offer them here.
+    this.setManagersEditable(false);
 
     this.form.patchValue({
       departmentId: job.departmentId,
@@ -271,6 +284,17 @@ export class JobDetailsComponent implements OnInit {
     this.error.set(null);
   }
 
+  private setManagersEditable(editable: boolean): void {
+    for (const name of ['reportingManagerId', 'functionalManagerId']) {
+      const control = this.form.get(name);
+      if (editable) {
+        control?.enable();
+      } else {
+        control?.disable();
+      }
+    }
+  }
+
   // ── Submit ────────────────────────────────────────────────
   onSubmit(): void {
     if (this.form.invalid) {
@@ -281,7 +305,9 @@ export class JobDetailsComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
-    const v = this.form.value;
+    // getRawValue: the manager pickers are disabled while editing the current record, and the
+    // backend compares them against the stored values, so they must still be sent as they are.
+    const v = this.form.getRawValue();
     const payload = {
       departmentId: +v.departmentId,
       designationId: +v.designationId,
@@ -316,7 +342,7 @@ export class JobDetailsComponent implements OnInit {
           this.error.set(res.message);
         }
       },
-      error: (err) =>
+      error: (err: { error?: { message?: string } }) =>
         this.error.set(
           err?.error?.message || this.translate.instant('employee.jobDetails.errors.saveFailed'),
         ),

@@ -56,7 +56,7 @@ export class EmployeeSearchSelect implements ControlValueAccessor {
   protected results = signal<EmployeeSearchOption[]>([]);
   protected loading = signal(false);
   protected isOpen = signal(false);
-  protected disabled = false;
+  protected disabled = signal(false);
 
   private value: number | null = null;
   private onChange: (val: number | null) => void = () => {};
@@ -120,7 +120,10 @@ export class EmployeeSearchSelect implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
+    if (isDisabled) {
+      this.isOpen.set(false);
+    }
   }
 
   /** Called by the parent right after patchValue(), to show a name instead of a bare id. */

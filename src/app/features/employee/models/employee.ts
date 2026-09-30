@@ -46,6 +46,44 @@ export interface CreateEmployeePayload {
   role: string;
 }
 
+/** Update payload: no username/password (not changeable here) or workEmail (immutable). */
+export interface UpdateEmployeePayload
+  extends Omit<CreateEmployeePayload, 'username' | 'password' | 'workEmail' | 'role'> {
+  profilePhotoUrl?: string;
+  /** Sent only by an HR_ADMIN; the backend rejects a role change from anyone else. */
+  role?: string;
+}
+
+/** What GET /employees/{id} returns — the fields the edit form reads. */
+export interface EmployeeDetailData {
+  employeeCode?: string;
+  workEmail?: string;
+  firstName?: string;
+  firstNameAr?: string;
+  middleName?: string;
+  middleNameAr?: string;
+  lastName?: string;
+  lastNameAr?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  bloodGroup?: string;
+  maritalStatus?: string;
+  nationality?: string;
+  religion?: string;
+  profilePhotoUrl?: string;
+  personalEmail?: string;
+  personalPhone?: string;
+  workPhone?: string;
+  hireDate?: string;
+  probationEndDate?: string;
+  confirmationDate?: string;
+  employmentType?: string;
+  employmentStatus?: string;
+  isActive: boolean;
+  /** The linked login's role; absent when the employee has no login. */
+  role?: string;
+}
+
 export interface EmployeeQueryParams {
   search?: string;
   departmentId?: number;
