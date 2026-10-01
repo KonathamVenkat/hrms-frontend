@@ -2,13 +2,24 @@
 
 import { Injectable } from '@angular/core';
 
-/** localStorage keys that make up a signed-in session. */
-export const SESSION_KEYS = {
-  accessToken: 'hrms_access_token',
-  refreshToken: 'hrms_refresh_token',
-  user: 'hrms_user',
-  expiry: 'hrms_token_expiry',
-} as const;
+/**
+ * localStorage keys that older versions used to hold the whole session, tokens included. They are
+ * only ever removed now: tokens stay in memory (access) or in an HttpOnly cookie (refresh), so
+ * script running in the page cannot read them.
+ */
+const LEGACY_SESSION_KEYS = [
+  'hrms_access_token',
+  'hrms_refresh_token',
+  'hrms_user',
+  'hrms_token_expiry',
+] as const;
+
+/**
+ * Non-secret marker that a sign-in happened in this browser. It only tells the app that asking the
+ * server to restore the session (using the refresh cookie) is worthwhile, which avoids a pointless
+ * failing request on every first visit.
+ */
+export const SESSION_HINT_KEY = 'hrms_session_hint';
 
 /** sessionStorage key for the sidebar menu cache (per role/user, so cleared with the session). */
 export const SIDEBAR_MENU_CACHE_KEY = 'ehrms_sidebar_menu';
@@ -27,10 +38,12 @@ export interface StoredUser {
   mustChangePassword?: boolean;
 }
 
-/** Matches com.hrms.auth.dto.response.LoginResponse. */
+/**
+ * Matches com.hrms.auth.dto.response.LoginResponse. The refresh token is not part of the body: the
+ * server sets it as an HttpOnly cookie.
+ */
 export interface LoginResponse {
   accessToken: string;
-  refreshToken: string;
   tokenType: string;
   expiresIn: number; // seconds
   user: StoredUser;
@@ -49,20 +62,16 @@ export interface CurrentUser {
   providedIn: 'root',
 })
 export class Auth {
-  private readonly TOKEN_KEY = SESSION_KEYS.accessToken;
+  // The session lives in memory only. A page reload restores it from the refresh cookie
+  // (AuthService.restoreSession).
+  private accessToken: string | null = null;
+  private user: StoredUser | null = null;
+  private expiresAt = 0;
 
   // ── Token ─────────────────────────────────────────────────
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  setToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-  }
-
-  removeToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    return this.accessToken;
   }
 
   isLoggedIn(): boolean {
@@ -72,7 +81,7 @@ export class Auth {
       const payload = this.decodePayload(token);
       // Check expiry
       if (payload.exp && Date.now() / 1000 > payload.exp) {
-        this.removeToken();
+        this.accessToken = null;
         return false;
       }
       return true;
@@ -154,47 +163,44 @@ export class Auth {
 
   // ── Session storage ───────────────────────────────────────
 
-  getRefreshToken(): string | null {
-    return this.storageGet(SESSION_KEYS.refreshToken);
-  }
-
   /** The user object the backend returned at sign-in (name, role, mustChangePassword, ...). */
   getStoredUser(): StoredUser | null {
-    const raw = this.storageGet(SESSION_KEYS.user);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as StoredUser;
-    } catch {
-      return null;
-    }
+    return this.user;
   }
 
   saveSession(login: LoginResponse): void {
     // A fresh sign-in must never inherit the previous user's cached sidebar menu.
     this.clearSession();
-    this.storageSet(SESSION_KEYS.accessToken, login.accessToken);
-    this.storageSet(SESSION_KEYS.refreshToken, login.refreshToken);
-    this.storageSet(SESSION_KEYS.user, JSON.stringify(login.user));
-    this.storageSet(SESSION_KEYS.expiry, String(Date.now() + login.expiresIn * 1000));
+    this.accessToken = login.accessToken;
+    this.user = login.user;
+    this.expiresAt = Date.now() + login.expiresIn * 1000;
+    this.storageSet(SESSION_HINT_KEY, '1');
   }
 
-  /** True when the stored access token exists and hasn't passed its expiry time. */
+  /** True when there is an access token that hasn't passed its expiry time. */
   hasValidSession(): boolean {
-    const token = this.getToken();
-    const expiry = this.storageGet(SESSION_KEYS.expiry);
-    return !!token && !!expiry && Date.now() < parseInt(expiry, 10);
+    return !!this.accessToken && Date.now() < this.expiresAt;
+  }
+
+  /** True when this browser signed in before, so restoring the session from the cookie may work. */
+  hasSessionHint(): boolean {
+    return this.storageGet(SESSION_HINT_KEY) === '1';
   }
 
   // ── Logout ────────────────────────────────────────────────
 
   /**
-   * Forgets the signed-in user locally: tokens, user object and the cached sidebar menu.
-   * Deliberately leaves unrelated keys (e.g. the chosen language) alone — never
-   * `localStorage.clear()`. Use AuthService.logout() to also revoke the session server-side.
+   * Forgets the signed-in user locally: tokens, user object and the cached sidebar menu, plus any
+   * session keys left behind by older versions. Deliberately leaves unrelated keys (e.g. the chosen
+   * language) alone — never `localStorage.clear()`. Use AuthService.signOut() to also revoke the
+   * session server-side.
    */
   clearSession(): void {
+    this.accessToken = null;
+    this.user = null;
+    this.expiresAt = 0;
     try {
-      Object.values(SESSION_KEYS).forEach((key) => localStorage.removeItem(key));
+      [...LEGACY_SESSION_KEYS, SESSION_HINT_KEY].forEach((key) => localStorage.removeItem(key));
       sessionStorage.removeItem(SIDEBAR_MENU_CACHE_KEY);
     } catch {
       // storage unavailable (SSR / private mode) — nothing to clear
