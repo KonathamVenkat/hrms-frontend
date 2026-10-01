@@ -9,7 +9,7 @@
         <span class="chip chip-empty">{{ 'employee.identity.notFilledChip' | translate }}</span>
       }
     </div>
-    @if (!editMode()) {
+    @if (!editMode() && !isMasked()) {
       <button class="btn-edit-info" (click)="openEdit()">
         <span class="material-icons">edit</span>
         {{ (hasData() ? 'common.edit' : 'employee.identity.addInfoAction') | translate }}
@@ -21,6 +21,11 @@
   @if (successMsg()) {
     <div class="alert alert-success">
       <span class="material-icons">check_circle</span>{{ successMsg() }}
+    </div>
+  }
+  @if (isMasked() && !loading()) {
+    <div class="alert alert-info" role="status">
+      <span class="material-icons" aria-hidden="true">lock</span>{{ 'employee.identity.maskedNotice' | translate }}
     </div>
   }
   @if (error() && !editMode()) {
@@ -46,9 +51,11 @@
         <span class="material-icons">badge</span>
         <p>{{ 'employee.identity.emptyTitle' | translate }}</p>
         <small>{{ 'employee.identity.emptyHint' | translate }}</small>
-        <button class="btn-add-sm" (click)="openEdit()">
-          <span class="material-icons">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}
-        </button>
+        @if (!isMasked()) {
+          <button class="btn-add-sm" (click)="openEdit()">
+            <span class="material-icons">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}
+          </button>
+        }
       </div>
     }
 
@@ -65,7 +72,7 @@
               <span class="info-label">{{ 'employee.identity.fields.nationalId' | translate }}</span>
               <span class="info-value mono pii-value">
                 {{ displayValue(identity()!.nationalId, 'nationalId') }}
-                @if (identity()!.nationalId) {
+                @if (identity()!.nationalId && !isMasked()) {
                   <button
                     type="button"
                     class="pii-toggle"
@@ -87,7 +94,7 @@
               <span class="info-label">{{ 'employee.identity.fields.socialSecurity' | translate }}</span>
               <span class="info-value mono pii-value">
                 {{ displayValue(identity()!.socialSecurityNumber, 'socialSecurityNumber') }}
-                @if (identity()!.socialSecurityNumber) {
+                @if (identity()!.socialSecurityNumber && !isMasked()) {
                   <button
                     type="button"
                     class="pii-toggle"
@@ -103,7 +110,7 @@
               <span class="info-label">{{ 'employee.identity.fields.biometricId' | translate }}</span>
               <span class="info-value mono pii-value">
                 {{ displayValue(identity()!.biometricId, 'biometricId') }}
-                @if (identity()!.biometricId) {
+                @if (identity()!.biometricId && !isMasked()) {
                   <button
                     type="button"
                     class="pii-toggle"

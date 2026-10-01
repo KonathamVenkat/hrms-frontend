@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, signal, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, Input, signal, computed, inject, DestroyRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -31,6 +31,8 @@ export class EmployeeIdentityComponent implements OnInit {
   successMsg = signal<string | null>(null);
   editMode = signal(false);
   hasData = signal(false);
+  // The backend masks identity numbers for everyone except HR_ADMIN and the employee themself.
+  isMasked = computed(() => this.identity()?.masked === true);
 
   // ── PII masking ─────────────────────────────────────────────
   // National ID / SSN / Biometric ID are masked by default in both view and
@@ -97,6 +99,7 @@ export class EmployeeIdentityComponent implements OnInit {
 
   // ── Open edit ─────────────────────────────────────────────
   openEdit(): void {
+    if (this.isMasked()) return;
     const info = this.identity();
     this.form.patchValue({
       nationalId: info?.nationalId ?? '',
@@ -220,6 +223,7 @@ export class EmployeeIdentityComponent implements OnInit {
   /** View-mode display: masked unless the viewer has revealed this field. */
   displayValue(val: string | undefined | null, field: string): string {
     if (!val || !val.trim()) return '—';
+    if (this.isMasked()) return val.trim();
     return this.isRevealed(field) ? val.trim() : this.maskValue(val.trim());
   }
 

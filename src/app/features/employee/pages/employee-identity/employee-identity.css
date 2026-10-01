@@ -110,6 +110,11 @@
   border: 1px solid #86efac;
   color: var(--green);
 }
+.alert-info {
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1e3a8a;
+}
 .alert-error {
   background: #fef2f2;
   border: 1px solid #fca5a5;

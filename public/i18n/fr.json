@@ -334,6 +334,7 @@
       "emptyTitle": "Aucune information d'identité ajoutée pour le moment",
       "emptyHint": "Ajoutez la carte d'identité nationale, le passeport, le visa et le permis de travail",
       "addIdentityInfo": "Ajouter les infos d'identité",
+      "maskedNotice": "Les numéros d'identité sont masqués. Seuls les administrateurs RH et l'employé peuvent voir les valeurs complètes.",
       "sections": {
         "nationalIdentity": "Identité nationale",
         "passport": "Passeport",

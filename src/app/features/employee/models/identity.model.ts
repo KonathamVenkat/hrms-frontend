@@ -15,6 +15,7 @@ export interface IdentityInfo {
   workPermitExpiry?: string;
   workPermitExpiringSoon?: boolean; // computed by backend
   biometricId?: string;
+  masked?: boolean; // true: numbers are masked by the backend (last 4 only); read-only view
   createdAt?: string;
   updatedAt?: string;
 }

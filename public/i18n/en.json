@@ -334,6 +334,7 @@
       "emptyTitle": "No identity information added yet",
       "emptyHint": "Add national ID, passport, visa and work permit details",
       "addIdentityInfo": "Add Identity Info",
+      "maskedNotice": "Identity numbers are masked. Only HR administrators and the employee can see the full values.",
       "sections": {
         "nationalIdentity": "National Identity",
         "passport": "Passport",
