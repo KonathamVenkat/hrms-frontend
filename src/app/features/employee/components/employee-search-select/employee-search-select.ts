@@ -1,14 +1,12 @@
 import {
   Component,
   ElementRef,
-  HostListener,
-  Input,
   forwardRef,
   inject,
+  input,
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject, of } from 'rxjs';
@@ -29,11 +27,11 @@ export interface EmployeeSearchOption {
  */
 @Component({
   selector: 'app-employee-search-select',
-  standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './employee-search-select.html',
   styleUrl: './employee-search-select.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:click)': 'onDocumentClick($event)' },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -43,11 +41,12 @@ export interface EmployeeSearchOption {
   ],
 })
 export class EmployeeSearchSelect implements ControlValueAccessor {
-  @Input() placeholder = 'Search by name or code...';
+  /** Overrides the default "search by name or code" hint (translated in the template). */
+  readonly placeholder = input('');
   /** Excludes this employee id from results (e.g. someone can't be their own manager). */
-  @Input() excludeEmployeeId: number | null = null;
+  readonly excludeEmployeeId = input<number | null>(null);
   /** Set so an external <label for="..."> can associate with the inner input. */
-  @Input() inputId = '';
+  readonly inputId = input('');
 
   private empService = inject(EmployeeService);
   private elRef = inject(ElementRef);
@@ -88,8 +87,8 @@ export class EmployeeSearchSelect implements ControlValueAccessor {
       .subscribe((list) => {
         this.loading.set(false);
         const filtered =
-          this.excludeEmployeeId != null
-            ? list.filter((e) => e.employeeId !== this.excludeEmployeeId)
+          this.excludeEmployeeId() != null
+            ? list.filter((e) => e.employeeId !== this.excludeEmployeeId())
             : list;
         this.results.set(
           filtered.map((e) => ({
@@ -160,7 +159,6 @@ export class EmployeeSearchSelect implements ControlValueAccessor {
     this.onTouched();
   }
 
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.isOpen.set(false);

@@ -44,6 +44,43 @@
       "october": "أكتوبر",
       "november": "نوفمبر",
       "december": "ديسمبر"
+    },
+    "enums": {
+      "employmentStatus": {
+        "ACTIVE": "نشط",
+        "PROBATION": "فترة تجربة",
+        "NOTICE_PERIOD": "فترة الإشعار",
+        "TERMINATED": "منتهي الخدمة",
+        "RESIGNED": "مستقيل",
+        "RETIRED": "متقاعد",
+        "ON_HOLD": "معلّق",
+        "ABSCONDED": "منقطع عن العمل"
+      },
+      "employmentType": {
+        "FULL_TIME": "دوام كامل",
+        "PART_TIME": "دوام جزئي",
+        "CONTRACT": "عقد",
+        "INTERN": "متدرب",
+        "CONSULTANT": "مستشار"
+      },
+      "gender": {
+        "MALE": "ذكر",
+        "FEMALE": "أنثى",
+        "OTHER": "آخر",
+        "PREFER_NOT_TO_SAY": "أفضّل عدم الإفصاح"
+      },
+      "maritalStatus": {
+        "SINGLE": "أعزب",
+        "MARRIED": "متزوج",
+        "DIVORCED": "مطلّق",
+        "WIDOWED": "أرمل",
+        "SEPARATED": "منفصل"
+      },
+      "role": {
+        "HR_ADMIN": "مسؤول الموارد البشرية",
+        "HR_MANAGER": "مدير الموارد البشرية",
+        "EMPLOYEE": "موظف"
+      }
     }
   },
   "employee": {
@@ -461,7 +498,14 @@
       "clearSelection": "مسح التحديد",
       "searching": "جارٍ البحث...",
       "typeMoreChars": "اكتب حرفين على الأقل",
-      "noMatches": "لا توجد نتائج"
+      "noMatches": "لا توجد نتائج",
+      "placeholder": "ابحث بالاسم أو الرمز..."
+    },
+    "routes": {
+      "list": "الموظفون",
+      "create": "إنشاء موظف",
+      "edit": "تعديل موظف",
+      "detail": "تفاصيل الموظف"
     }
   },
   "layout": {

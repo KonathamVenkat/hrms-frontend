@@ -3,8 +3,8 @@
     <input
       type="text"
       class="ess-input"
-      [attr.id]="inputId || null"
-      [placeholder]="placeholder"
+      [attr.id]="inputId() || null"
+      [placeholder]="placeholder() || ('employee.searchSelect.placeholder' | translate)"
       [value]="query()"
       [disabled]="disabled()"
       autocomplete="off"

@@ -1,11 +1,11 @@
 // src/app/features/employee/pages/employee-detail/employee-detail.ts
-import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EmployeeService } from '../../services/employee';
+import { EmployeeDetailData } from '../../models/employee';
 import { JobDetailsComponent } from '../job-details/job-details';
 import { EmployeeAddressesComponent } from '../employee-addresses/employee-addresses';
 import { EmployeeIdentityComponent } from '../employee-identity/employee-identity';
@@ -22,57 +22,12 @@ import {
   PASSWORD_MIN_LENGTH,
 } from '../../../../core/validators/password.validators';
 import { getHttpErrorMessage } from '../../../../core/utils/http-error-message';
-
-export interface EmployeeDetail {
-  employeeId: number;
-  employeeCode: string;
-  firstName: string;
-  firstNameAr: string;
-  middleName?: string;
-  middleNameAr?: string;
-  lastName: string;
-  lastNameAr: string;
-  fullNameEn: string;
-  fullNameAr: string;
-  dateOfBirth: string;
-  gender: string;
-  bloodGroup?: string;
-  maritalStatus?: string;
-  nationality?: string;
-  religion?: string;
-  profilePhotoUrl?: string;
-  personalEmail: string;
-  workEmail: string;
-  personalPhone?: string;
-  workPhone?: string;
-  hireDate: string;
-  probationEndDate?: string;
-  confirmationDate?: string;
-  employmentStatus: string;
-  employmentType: string;
-  isActive: boolean;
-  departmentId?: number;
-  departmentName?: string;
-  departmentCode?: string;
-  departmentNameAr?: string;
-  designationId?: number;
-  designationTitle?: string;
-  designationTitleAr?: string;
-  designationCode?: string;
-  gradeLevel?: string;
-  /** The linked login's role; absent when the employee has no login. */
-  role?: string;
-  createdBy?: string;
-  createdAt?: string;
-  updatedBy?: string;
-  updatedAt?: string;
-}
+import { formatDisplayDate } from '../../../../core/utils/display-date';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-employee-detail',
-  standalone: true,
   imports: [
-    CommonModule,
     JobDetailsComponent,
     EmployeeAddressesComponent,
     EmployeeIdentityComponent,
@@ -85,6 +40,7 @@ export interface EmployeeDetail {
   ],
   templateUrl: './employee-detail.html',
   styleUrl: './employee-detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeDetail implements OnInit {
   private route = inject(ActivatedRoute);
@@ -95,9 +51,10 @@ export class EmployeeDetail implements OnInit {
   private translate = inject(TranslateService);
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
+  private language = inject(LanguageService);
 
   // ── State ─────────────────────────────────────────────────
-  employee = signal<EmployeeDetail | null>(null);
+  employee = signal<EmployeeDetailData | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
 
@@ -149,7 +106,7 @@ export class EmployeeDetail implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            this.employee.set(res.data as unknown as EmployeeDetail);
+            this.employee.set(res.data);
           } else {
             this.error.set(res.message || 'Failed to load employee.');
           }
@@ -289,22 +246,8 @@ export class EmployeeDetail implements OnInit {
     return map[status] ?? 'status-inactive';
   }
 
-  getStatusLabel(status: string): string {
-    return status?.replace(/_/g, ' ') ?? '—';
-  }
-
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
+    return formatDisplayDate(dateStr, this.language.currentLang());
   }
 
   getValue(val?: string | null): string {

@@ -52,7 +52,7 @@
           <div class="addr-card-header">
             <div class="addr-type-wrap">
               <span class="material-icons type-icon">{{ getTypeIcon(addr.addressType) }}</span>
-              <span class="addr-type-badge" [ngClass]="getTypeBadge(addr.addressType)">
+              <span class="addr-type-badge" [class]="getTypeBadge(addr.addressType)">
                 {{ addr.addressType }}
               </span>
               @if (addr.isPrimary) {

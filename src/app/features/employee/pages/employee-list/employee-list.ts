@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
@@ -16,10 +16,10 @@ export type PageEntry = number | 'ellipsis';
 
 @Component({
   selector: 'app-employee-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [DatePipe, FormsModule, TranslatePipe],
   templateUrl: './employee-list.html',
   styleUrl: './employee-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeList implements OnInit {
   private router = inject(Router);

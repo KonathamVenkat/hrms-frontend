@@ -159,7 +159,7 @@
             </div>
             <div class="info-row">
               <span class="info-label">{{ 'employee.jobDetails.fields.workMode' | translate }}</span>
-              <span class="work-mode-badge" [ngClass]="getWorkModeBadge(currentJob()!.workMode)">
+              <span class="work-mode-badge" [class]="getWorkModeBadge(currentJob()!.workMode)">
                 {{ currentJob()!.workMode.replace('_', ' ') }}
               </span>
             </div>
@@ -263,7 +263,7 @@
                 </div>
                 <div class="tl-row">
                   <span class="tl-label">{{ 'employee.jobDetails.fields.workMode' | translate }}</span>
-                  <span class="work-mode-badge sm" [ngClass]="getWorkModeBadge(job.workMode)">
+                  <span class="work-mode-badge sm" [class]="getWorkModeBadge(job.workMode)">
                     {{ job.workMode.replace('_', ' ') }}
                   </span>
                 </div>
@@ -390,7 +390,7 @@
                 #reportingManagerPicker
                 inputId="jd-reporting-manager-id"
                 formControlName="reportingManagerId"
-                [excludeEmployeeId]="employeeId"
+                [excludeEmployeeId]="employeeId()"
                 [placeholder]="'employee.jobDetails.formFields.searchPlaceholder' | translate"
               />
             </div>
@@ -400,7 +400,7 @@
                 #functionalManagerPicker
                 inputId="jd-functional-manager-id"
                 formControlName="functionalManagerId"
-                [excludeEmployeeId]="employeeId"
+                [excludeEmployeeId]="employeeId()"
                 [placeholder]="'employee.jobDetails.formFields.searchPlaceholder' | translate"
               />
             </div>

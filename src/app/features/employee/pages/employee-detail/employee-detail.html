@@ -64,9 +64,9 @@
 
         <!-- Status + actions -->
         <div class="profile-actions">
-          <span class="status-badge" [ngClass]="getStatusClass(employee()!.employmentStatus)">
+          <span class="status-badge" [class]="getStatusClass(employee()!.employmentStatus)">
             <span class="status-dot"></span>
-            {{ getStatusLabel(employee()!.employmentStatus) }}
+            {{ 'common.enums.employmentStatus.' + employee()!.employmentStatus | translate }}
           </span>
           @if (employee()!.isActive) {
             <button class="btn-edit" (click)="editEmployee()">
@@ -163,7 +163,7 @@
               </div>
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.gender' | translate }}</span>
-                <span class="info-value">{{ getValue(employee()!.gender) }}</span>
+                <span class="info-value">{{ 'common.enums.gender.' + employee()!.gender | translate }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.bloodGroup' | translate }}</span>
@@ -171,7 +171,7 @@
               </div>
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.maritalStatus' | translate }}</span>
-                <span class="info-value">{{ getValue(employee()!.maritalStatus) }}</span>
+                <span class="info-value">{{ employee()!.maritalStatus ? ('common.enums.maritalStatus.' + employee()!.maritalStatus | translate) : '—' }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.nationality' | translate }}</span>
@@ -242,17 +242,17 @@
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.employmentType' | translate }}</span>
                 <span class="info-value">
-                  {{ employee()!.employmentType.replace('_', ' ') }}
+                  {{ 'common.enums.employmentType.' + employee()!.employmentType | translate }}
                 </span>
               </div>
               <div class="info-row">
                 <span class="info-label">{{ 'employee.form.employmentStatus' | translate }}</span>
                 <span
                   class="status-badge small"
-                  [ngClass]="getStatusClass(employee()!.employmentStatus)"
+                  [class]="getStatusClass(employee()!.employmentStatus)"
                 >
                   <span class="status-dot"></span>
-                  {{ getStatusLabel(employee()!.employmentStatus) }}
+                  {{ 'common.enums.employmentStatus.' + employee()!.employmentStatus | translate }}
                 </span>
               </div>
               <div class="info-row">
@@ -361,7 +361,7 @@
               >
                 <option value="">{{ 'employee.detail.confirm.exitStatusNone' | translate }}</option>
                 @for (s of exitStatuses; track s) {
-                  <option [value]="s">{{ s.replace('_', ' ') }}</option>
+                  <option [value]="s">{{ 'common.enums.employmentStatus.' + s | translate }}</option>
                 }
               </select>
             </div>

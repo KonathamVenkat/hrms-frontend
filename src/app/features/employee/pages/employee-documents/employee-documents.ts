@@ -1,14 +1,22 @@
 // src/app/features/employee/pages/employee-documents/employee-documents.ts
 
-import { Component, OnInit, Input, signal, inject, computed, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  input,
+  signal,
+  inject,
+  computed,
+  DestroyRef,
+} from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
   Validators,
   ReactiveFormsModule,
   AbstractControl,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { SlicePipe } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
@@ -20,16 +28,18 @@ import {
   EmployeeDocument,
   EmpDocTypeOption, // ← renamed to avoid clash with browser DocumentType
 } from '../../models/document.model';
+import { serverMessage } from '../../../../core/utils/http-error-message';
+import { timedMessage } from '../../../../core/utils/timed-message';
 
 @Component({
   selector: 'app-employee-documents',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
+  imports: [SlicePipe, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-documents.html',
   styleUrl: './employee-documents.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeDocumentsComponent implements OnInit {
-  @Input() employeeId!: number;
+  readonly employeeId = input.required<number>();
 
   private fb = inject(FormBuilder);
   private docSvc = inject(EmployeeDocumentService);
@@ -43,6 +53,7 @@ export class EmployeeDocumentsComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   successMsg = signal<string | null>(null);
+  private readonly showSuccess = timedMessage(this.successMsg, this.destroy);
 
   // ── Modal state ───────────────────────────────────────────
   showModal = signal(false);
@@ -77,31 +88,26 @@ export class EmployeeDocumentsComponent implements OnInit {
   readonly verifiedCount = computed(() => this.documents().filter((d) => d.isVerified).length);
 
   // ── Form ──────────────────────────────────────────────────
-  form!: FormGroup;
+  readonly form = this.fb.group({
+    docTypeId: this.fb.control<number | null>(null, Validators.required),
+    documentName: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(300)]),
+    documentNumber: this.fb.nonNullable.control('', Validators.maxLength(100)),
+    issueDate: this.fb.nonNullable.control(''),
+    expiryDate: this.fb.nonNullable.control(''),
+    issuedBy: this.fb.nonNullable.control('', Validators.maxLength(200)),
+    notes: this.fb.nonNullable.control('', Validators.maxLength(500)),
+  });
 
   ngOnInit(): void {
-    this.buildForm();
     this.loadDocuments();
     this.loadDocTypes();
-  }
-
-  private buildForm(): void {
-    this.form = this.fb.group({
-      docTypeId: [null, Validators.required],
-      documentName: ['', [Validators.required, Validators.maxLength(300)]],
-      documentNumber: ['', Validators.maxLength(100)],
-      issueDate: [''],
-      expiryDate: [''],
-      issuedBy: ['', Validators.maxLength(200)],
-      notes: ['', Validators.maxLength(500)],
-    });
   }
 
   // ── Load ──────────────────────────────────────────────────
   loadDocuments(): void {
     this.loading.set(true);
     this.docSvc
-      .getAll(this.employeeId)
+      .getAll(this.employeeId())
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroy),
@@ -221,11 +227,11 @@ export class EmployeeDocumentsComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
-    const v = this.form.value;
+    const v = this.form.getRawValue();
 
     if (this.isEditMode()) {
       const payload = {
-        docTypeId: +v.docTypeId,
+        docTypeId: Number(v.docTypeId),
         documentName: v.documentName.trim(),
         documentNumber: v.documentNumber || undefined,
         issueDate: v.issueDate || undefined,
@@ -234,8 +240,11 @@ export class EmployeeDocumentsComponent implements OnInit {
         notes: v.notes || undefined,
       };
       this.docSvc
-        .updateInfo(this.employeeId, this.editingId()!, payload)
-        .pipe(finalize(() => this.saving.set(false)))
+        .updateInfo(this.employeeId(), this.editingId()!, payload)
+        .pipe(
+          finalize(() => this.saving.set(false)),
+          takeUntilDestroyed(this.destroy),
+        )
         .subscribe({
           next: (res) => {
             if (res.success) {
@@ -251,7 +260,7 @@ export class EmployeeDocumentsComponent implements OnInit {
       const formData = new FormData();
       formData.append('file', this.selectedFile()!);
       const metadata = JSON.stringify({
-        docTypeId: +v.docTypeId,
+        docTypeId: Number(v.docTypeId),
         documentName: v.documentName.trim(),
         documentNumber: v.documentNumber || undefined,
         issueDate: v.issueDate || undefined,
@@ -262,8 +271,11 @@ export class EmployeeDocumentsComponent implements OnInit {
       formData.append('metadata', new Blob([metadata], { type: 'application/json' }));
 
       this.docSvc
-        .upload(this.employeeId, formData)
-        .pipe(finalize(() => this.saving.set(false)))
+        .upload(this.employeeId(), formData)
+        .pipe(
+          finalize(() => this.saving.set(false)),
+          takeUntilDestroyed(this.destroy),
+        )
         .subscribe({
           next: (res) => {
             if (res.success) {
@@ -302,7 +314,10 @@ export class EmployeeDocumentsComponent implements OnInit {
 
     // ── Split into separate subscriptions to avoid union type error ──
     if (this.confirmType() === 'verify') {
-      this.docSvc.verify(this.employeeId, doc.documentId).subscribe({
+      this.docSvc
+        .verify(this.employeeId(), doc.documentId)
+        .pipe(takeUntilDestroyed(this.destroy))
+        .subscribe({
         next: () => {
           this.showSuccess(
             this.translate.instant('employee.documents.success.verified', { name: doc.documentName }),
@@ -316,7 +331,10 @@ export class EmployeeDocumentsComponent implements OnInit {
         },
       });
     } else {
-      this.docSvc.delete(this.employeeId, doc.documentId).subscribe({
+      this.docSvc
+        .delete(this.employeeId(), doc.documentId)
+        .pipe(takeUntilDestroyed(this.destroy))
+        .subscribe({
         next: () => {
           this.showSuccess(
             this.translate.instant('employee.documents.success.deleted', { name: doc.documentName }),
@@ -334,7 +352,10 @@ export class EmployeeDocumentsComponent implements OnInit {
 
   // ── Download ──────────────────────────────────────────────
   downloadDocument(doc: EmployeeDocument): void {
-    this.docSvc.downloadFile(this.employeeId, doc.documentId).subscribe({
+    this.docSvc
+      .downloadFile(this.employeeId(), doc.documentId)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe({
       next: (blob: Blob) => {
         // Create temporary object URL and trigger browser download
         const url = URL.createObjectURL(blob);
@@ -418,12 +439,6 @@ export class EmployeeDocumentsComponent implements OnInit {
 
   /** The server's own message when it sent one, otherwise the translated fallback. */
   private errorMessage(err: unknown, fallbackKey: string): string {
-    const message = (err as { error?: { message?: string } } | null)?.error?.message;
-    return message || this.translate.instant(fallbackKey);
-  }
-
-  private showSuccess(msg: string): void {
-    this.successMsg.set(msg);
-    setTimeout(() => this.successMsg.set(null), 3000);
+    return serverMessage(err) || this.translate.instant(fallbackKey);
   }
 }

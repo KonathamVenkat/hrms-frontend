@@ -44,6 +44,43 @@
       "october": "Octobre",
       "november": "Novembre",
       "december": "Décembre"
+    },
+    "enums": {
+      "employmentStatus": {
+        "ACTIVE": "Actif",
+        "PROBATION": "Période d'essai",
+        "NOTICE_PERIOD": "Préavis",
+        "TERMINATED": "Licencié",
+        "RESIGNED": "Démissionnaire",
+        "RETIRED": "Retraité",
+        "ON_HOLD": "En attente",
+        "ABSCONDED": "Abandon de poste"
+      },
+      "employmentType": {
+        "FULL_TIME": "Temps plein",
+        "PART_TIME": "Temps partiel",
+        "CONTRACT": "Contractuel",
+        "INTERN": "Stagiaire",
+        "CONSULTANT": "Consultant"
+      },
+      "gender": {
+        "MALE": "Homme",
+        "FEMALE": "Femme",
+        "OTHER": "Autre",
+        "PREFER_NOT_TO_SAY": "Préfère ne pas répondre"
+      },
+      "maritalStatus": {
+        "SINGLE": "Célibataire",
+        "MARRIED": "Marié(e)",
+        "DIVORCED": "Divorcé(e)",
+        "WIDOWED": "Veuf/Veuve",
+        "SEPARATED": "Séparé(e)"
+      },
+      "role": {
+        "HR_ADMIN": "Administrateur RH",
+        "HR_MANAGER": "Responsable RH",
+        "EMPLOYEE": "Employé"
+      }
     }
   },
   "employee": {
@@ -461,7 +498,14 @@
       "clearSelection": "Effacer la sélection",
       "searching": "Recherche...",
       "typeMoreChars": "Saisissez au moins 2 caractères",
-      "noMatches": "Aucun résultat"
+      "noMatches": "Aucun résultat",
+      "placeholder": "Rechercher par nom ou code..."
+    },
+    "routes": {
+      "list": "Employés",
+      "create": "Créer un employé",
+      "edit": "Modifier l'employé",
+      "detail": "Fiche de l'employé"
     }
   },
   "layout": {

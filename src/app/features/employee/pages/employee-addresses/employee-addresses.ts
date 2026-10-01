@@ -1,12 +1,19 @@
-import { Component, OnInit, Input, signal, inject, computed, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  input,
+  signal,
+  inject,
+  computed,
+  DestroyRef,
+} from '@angular/core';
 import {
   FormBuilder,
-  FormGroup,
   Validators,
   ReactiveFormsModule,
   AbstractControl,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
@@ -15,16 +22,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import { AddressService } from '../../services/address.service';
 import { EmployeeAddress } from '../../models/address.model';
+import { serverMessage } from '../../../../core/utils/http-error-message';
+import { timedMessage } from '../../../../core/utils/timed-message';
 
 @Component({
   selector: 'app-employee-addresses',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
+  imports: [ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-addresses.html',
   styleUrl: './employee-addresses.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeAddressesComponent implements OnInit {
-  @Input() employeeId!: number;
+  readonly employeeId = input.required<number>();
 
   private fb = inject(FormBuilder);
   private addressSvc = inject(AddressService);
@@ -37,6 +46,7 @@ export class EmployeeAddressesComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   successMsg = signal<string | null>(null);
+  private readonly showSuccess = timedMessage(this.successMsg, this.destroyRef);
   showModal = signal(false);
   isEditMode = signal(false);
   editingId = signal<number | null>(null);
@@ -54,31 +64,26 @@ export class EmployeeAddressesComponent implements OnInit {
   readonly activeAddresses = computed(() => this.addresses().filter((a) => a.isActive));
   readonly inactiveAddresses = computed(() => this.addresses().filter((a) => !a.isActive));
 
-  form!: FormGroup;
+  readonly form = this.fb.nonNullable.group({
+    addressType: ['', Validators.required],
+    addressLine1: ['', [Validators.required, Validators.maxLength(300)]],
+    addressLine2: ['', Validators.maxLength(300)],
+    city: ['', [Validators.required, Validators.maxLength(100)]],
+    stateProvince: ['', Validators.maxLength(100)],
+    country: ['Oman', [Validators.required, Validators.maxLength(100)]],
+    postalCode: ['', Validators.maxLength(20)],
+    isPrimary: [false],
+  });
 
   ngOnInit(): void {
-    this.buildForm();
     this.loadAddresses();
-  }
-
-  private buildForm(): void {
-    this.form = this.fb.group({
-      addressType: ['', Validators.required],
-      addressLine1: ['', [Validators.required, Validators.maxLength(300)]],
-      addressLine2: ['', Validators.maxLength(300)],
-      city: ['', [Validators.required, Validators.maxLength(100)]],
-      stateProvince: ['', Validators.maxLength(100)],
-      country: ['Oman', [Validators.required, Validators.maxLength(100)]],
-      postalCode: ['', Validators.maxLength(20)],
-      isPrimary: [false],
-    });
   }
 
   // ── Load ──────────────────────────────────────────────────
   loadAddresses(): void {
     this.loading.set(true);
     this.addressSvc
-      .getAll(this.employeeId)
+      .getAll(this.employeeId())
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -87,9 +92,9 @@ export class EmployeeAddressesComponent implements OnInit {
         next: (res) => {
           if (res.success) this.addresses.set(res.data);
         },
-        error: (err: any) =>
+        error: (err: unknown) =>
           this.error.set(
-            err?.error?.message || this.translate.instant('employee.addresses.errors.loadFailed'),
+            serverMessage(err) || this.translate.instant('employee.addresses.errors.loadFailed'),
           ),
       });
   }
@@ -109,7 +114,7 @@ export class EmployeeAddressesComponent implements OnInit {
       isPrimary: this.activeAddresses().length === 0,
     });
     // Disable already-used types in add mode
-    this.form.get('addressType')?.enable();
+    this.form.controls.addressType.enable();
     this.showModal.set(true);
   }
 
@@ -143,7 +148,7 @@ export class EmployeeAddressesComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
-    const v = this.form.value;
+    const v = this.form.getRawValue();
     const payload = {
       addressType: v.addressType,
       addressLine1: v.addressLine1.trim(),
@@ -156,10 +161,15 @@ export class EmployeeAddressesComponent implements OnInit {
     };
 
     const call = this.isEditMode()
-      ? this.addressSvc.update(this.employeeId, this.editingId()!, payload)
-      : this.addressSvc.add(this.employeeId, payload);
+      ? this.addressSvc.update(this.employeeId(), this.editingId()!, payload)
+      : this.addressSvc.add(this.employeeId(), payload);
 
-    call.pipe(finalize(() => this.saving.set(false))).subscribe({
+    call
+      .pipe(
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
       next: (res) => {
         if (res.success) {
           this.showSuccess(
@@ -174,8 +184,8 @@ export class EmployeeAddressesComponent implements OnInit {
         } else this.error.set(res.message);
       },
 
-      error: (err: any) =>
-        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed')),
+      error: (err: unknown) =>
+        this.error.set(serverMessage(err) || this.translate.instant('common.httpErrors.actionFailed')),
     });
   }
 
@@ -204,10 +214,10 @@ export class EmployeeAddressesComponent implements OnInit {
 
     const call =
       this.confirmType() === 'primary'
-        ? this.addressSvc.setPrimary(this.employeeId, addr.employeeAddressesId)
-        : this.addressSvc.remove(this.employeeId, addr.employeeAddressesId);
+        ? this.addressSvc.setPrimary(this.employeeId(), addr.employeeAddressesId)
+        : this.addressSvc.remove(this.employeeId(), addr.employeeAddressesId);
 
-    call.subscribe({
+    call.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.showSuccess(
           this.translate.instant(
@@ -220,8 +230,8 @@ export class EmployeeAddressesComponent implements OnInit {
         this.cancelConfirm();
         this.loadAddresses();
       },
-      error: (err: any) => {
-        this.error.set(err?.error?.message || this.translate.instant('common.httpErrors.actionFailed'));
+      error: (err: unknown) => {
+        this.error.set(serverMessage(err) || this.translate.instant('common.httpErrors.actionFailed'));
         this.cancelConfirm();
       },
     });
@@ -276,8 +286,4 @@ export class EmployeeAddressesComponent implements OnInit {
     return map[type] ?? 'location_on';
   }
 
-  private showSuccess(msg: string): void {
-    this.successMsg.set(msg);
-    setTimeout(() => this.successMsg.set(null), 3000);
-  }
 }

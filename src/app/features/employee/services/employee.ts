@@ -46,8 +46,8 @@ export class EmployeeService {
   }
 
   // ── GET single employee ───────────────────────────────────
-  getEmployee(id: number): Observable<ApiResponse<Employee>> {
-    return this.http.get<ApiResponse<Employee>>(`${this.baseUrl}/${id}`);
+  getEmployee(id: number): Observable<ApiResponse<EmployeeDetailData>> {
+    return this.http.get<ApiResponse<EmployeeDetailData>>(`${this.baseUrl}/${id}`);
   }
 
   // ── Create employee + auth user ───────────────────────────

@@ -1,5 +1,5 @@
 // src/app/features/employee/pages/employee-form/employee-form.ts
-import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
 import {
   FormBuilder,
   Validators,
@@ -8,15 +8,13 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { finalize, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { EmployeeService } from '../../services/employee';
 import {
   CreateEmployeePayload,
-  EmployeeDetailData,
   UpdateEmployeePayload,
 } from '../../models/employee';
 import { Auth } from '../../../../core/auth/auth';
@@ -51,10 +49,10 @@ type CommonFormValue = {
 
 @Component({
   selector: 'app-employee-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-form.html',
   styleUrl: './employee-form.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeForm implements OnInit {
   private fb = inject(FormBuilder);
@@ -230,7 +228,7 @@ export class EmployeeForm implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
-            const e = res.data as unknown as EmployeeDetailData;
+            const e = res.data;
 
             if (!e.isActive) {
               // The backend refuses edits to a deactivated employee; say why up front.
@@ -388,18 +386,28 @@ export class EmployeeForm implements OnInit {
 
     this.empService
       .createEmployee(payload)
-      .pipe(finalize(() => this.loading.set(false)))
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (res) => {
           if (res.success) {
             this.success.set(true);
-            setTimeout(() => this.router.navigateByUrl('/app/employee/list'), 1500);
+            this.navigateAfterSave(() => this.router.navigateByUrl('/app/employee/list'));
           } else {
             this.error.set(res.message || this.translate.instant('employee.form.errors.createFailed'));
           }
         },
         error: (err: unknown) => this.handleError(err),
       });
+  }
+
+  /** Leaves the form after the success banner has been visible for a moment. */
+  private navigateAfterSave(navigate: () => unknown): void {
+    timer(1500)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => navigate());
   }
 
   private submitUpdate(): void {
@@ -414,12 +422,15 @@ export class EmployeeForm implements OnInit {
 
     this.empService
       .updateEmployee(this.empId()!, payload)
-      .pipe(finalize(() => this.loading.set(false)))
+      .pipe(
+        finalize(() => this.loading.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (res) => {
           if (res.success) {
             this.success.set(true);
-            setTimeout(() => this.router.navigate(['/app/employee/detail', this.empId()]), 1500);
+            this.navigateAfterSave(() => this.router.navigate(['/app/employee/detail', this.empId()]));
           } else {
             this.error.set(res.message || this.translate.instant('employee.form.errors.updateFailed'));
           }

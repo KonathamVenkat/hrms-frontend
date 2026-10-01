@@ -7,13 +7,13 @@ import { TranslateService } from '@ngx-translate/core';
  */
 export function getHttpErrorMessage(
   translate: TranslateService,
-  err: any,
+  err: unknown,
   overrides: Partial<Record<number, string>> = {},
 ): string {
-  const status: number = err?.status;
-
-  if (status != null && overrides[status]) {
-    return overrides[status]!;
+  const status = (err as { status?: number } | null)?.status;
+  const override = status != null ? overrides[status] : undefined;
+  if (override) {
+    return override;
   }
 
   switch (status) {
@@ -24,12 +24,18 @@ export function getHttpErrorMessage(
     case 404:
       return translate.instant('common.httpErrors.notFound');
     case 409:
-      return err?.error?.message || translate.instant('common.httpErrors.conflict');
+      return serverMessage(err) || translate.instant('common.httpErrors.conflict');
     case 400:
-      return err?.error?.message || translate.instant('common.httpErrors.badRequest');
+      return serverMessage(err) || translate.instant('common.httpErrors.badRequest');
     case 0:
       return translate.instant('common.httpErrors.offline');
     default:
-      return err?.error?.message || translate.instant('common.httpErrors.unexpected');
+      return serverMessage(err) || translate.instant('common.httpErrors.unexpected');
   }
+}
+
+/** The `message` the backend put in an error response, if there is one. */
+export function serverMessage(err: unknown): string | undefined {
+  const message = (err as { error?: { message?: unknown } } | null)?.error?.message;
+  return typeof message === 'string' && message ? message : undefined;
 }

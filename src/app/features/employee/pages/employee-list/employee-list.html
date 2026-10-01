@@ -71,7 +71,7 @@
     >
       <option value="">{{ 'employee.list.allTypes' | translate }}</option>
       @for (t of employmentTypes; track t) {
-        <option [value]="t">{{ t.replace('_', ' ') }}</option>
+        <option [value]="t">{{ 'common.enums.employmentType.' + t | translate }}</option>
       }
     </select>
 
@@ -87,7 +87,7 @@
     >
       <option value="">{{ 'employee.list.allStatus' | translate }}</option>
       @for (s of statuses; track s) {
-        <option [value]="s">{{ s.replace('_', ' ') }}</option>
+        <option [value]="s">{{ 'common.enums.employmentStatus.' + s | translate }}</option>
       }
     </select>
 
@@ -177,17 +177,17 @@
               <td>{{ emp.designationTitle || '—' }}</td>
 
               <td>
-                <span class="type-badge" [ngClass]="getTypeClass(emp.employmentType)">
-                  {{ emp.employmentType.replace('_', ' ') }}
+                <span class="type-badge" [class]="getTypeClass(emp.employmentType)">
+                  {{ 'common.enums.employmentType.' + emp.employmentType | translate }}
                 </span>
               </td>
 
               <td>{{ emp.hireDate | date: 'dd MMM yyyy' }}</td>
 
               <td>
-                <span class="status-badge" [ngClass]="getStatusClass(emp.employmentStatus)">
+                <span class="status-badge" [class]="getStatusClass(emp.employmentStatus)">
                   <span class="status-dot"></span>
-                  {{ emp.employmentStatus }}
+                  {{ 'common.enums.employmentStatus.' + emp.employmentStatus | translate }}
                 </span>
               </td>
 

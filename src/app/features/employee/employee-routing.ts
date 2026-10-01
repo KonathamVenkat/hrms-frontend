@@ -7,23 +7,23 @@ export const EMPLOYEE_ROUTES: Routes = [
   {
     path: 'list',
     loadComponent: () => import('./pages/employee-list/employee-list').then((m) => m.EmployeeList),
-    title: 'Employees · EHRMS',
+    title: 'employee.routes.list',
   },
   {
     path: 'create',
     loadComponent: () => import('./pages/employee-form/employee-form').then((m) => m.EmployeeForm),
-    title: 'Create Employee · EHRMS',
+    title: 'employee.routes.create',
   },
   {
     path: 'edit/:id',
     loadComponent: () => import('./pages/employee-form/employee-form').then((m) => m.EmployeeForm),
-    title: 'Edit Employee · EHRMS',
+    title: 'employee.routes.edit',
   },
   {
     path: 'detail/:id', // ← ADD THIS
     loadComponent: () =>
       import('./pages/employee-detail/employee-detail').then((m) => m.EmployeeDetail),
-    title: 'Employee Detail · EHRMS',
+    title: 'employee.routes.detail',
   },
   {
     path: '',

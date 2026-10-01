@@ -1,27 +1,40 @@
-import { Component, OnInit, Input, signal, computed, inject, DestroyRef } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  input,
+  signal,
+  computed,
+  inject,
+  DestroyRef,
+} from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { IdentityService } from '../../services/identity.service';
 import { IdentityInfo } from '../../models/identity.model';
+import { formatDisplayDate } from '../../../../core/utils/display-date';
+import { serverMessage } from '../../../../core/utils/http-error-message';
+import { timedMessage } from '../../../../core/utils/timed-message';
+import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-employee-identity',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './employee-identity.html',
   styleUrl: './employee-identity.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmployeeIdentityComponent implements OnInit {
-  @Input() employeeId!: number;
+  readonly employeeId = input.required<number>();
 
   private fb = inject(FormBuilder);
   private identitySvc = inject(IdentityService);
   private destroyRef = inject(DestroyRef);
   private translate = inject(TranslateService);
+  private language = inject(LanguageService);
 
   // ── State ─────────────────────────────────────────────────
   identity = signal<IdentityInfo | null>(null);
@@ -29,6 +42,7 @@ export class EmployeeIdentityComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   successMsg = signal<string | null>(null);
+  private readonly showSuccess = timedMessage(this.successMsg, this.destroyRef);
   editMode = signal(false);
   hasData = signal(false);
   // The backend masks identity numbers for everyone except HR_ADMIN and the employee themself.
@@ -40,35 +54,30 @@ export class EmployeeIdentityComponent implements OnInit {
   private readonly maskedFields = ['nationalId', 'socialSecurityNumber', 'biometricId'] as const;
   private revealed = signal<ReadonlySet<string>>(new Set());
 
-  form!: FormGroup;
+  readonly form = this.fb.nonNullable.group({
+    // National Identity
+    nationalId: [''],
+    // Passport
+    passportNumber: [''],
+    // Tax & Social Security
+    taxId: [''],
+    socialSecurityNumber: [''],
+    // Driving License
+    drivingLicenseNumber: [''],
+    // Visa
+    visaNumber: [''],
+    visaType: [''],
+    visaIssueDate: [''],
+    visaExpiryDate: [''],
+    // Work Permit
+    workPermitNumber: [''],
+    workPermitExpiry: [''],
+    // Biometric
+    biometricId: [''],
+  });
 
   ngOnInit(): void {
-    this.buildForm();
     this.loadIdentity();
-  }
-
-  private buildForm(): void {
-    this.form = this.fb.group({
-      // National Identity
-      nationalId: [''],
-      // Passport
-      passportNumber: [''],
-      // Tax & Social Security
-      taxId: [''],
-      socialSecurityNumber: [''],
-      // Driving License
-      drivingLicenseNumber: [''],
-      // Visa
-      visaNumber: [''],
-      visaType: [''],
-      visaIssueDate: [''],
-      visaExpiryDate: [''],
-      // Work Permit
-      workPermitNumber: [''],
-      workPermitExpiry: [''],
-      // Biometric
-      biometricId: [''],
-    });
   }
 
   // ── Load ──────────────────────────────────────────────────
@@ -77,7 +86,7 @@ export class EmployeeIdentityComponent implements OnInit {
     this.error.set(null);
 
     this.identitySvc
-      .get(this.employeeId)
+      .get(this.employeeId())
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -90,9 +99,9 @@ export class EmployeeIdentityComponent implements OnInit {
             this.hasData.set(!!res.data?.employeeIdentityId);
           }
         },
-        error: (err: any) =>
+        error: (err: unknown) =>
           this.error.set(
-            err?.error?.message || this.translate.instant('employee.identity.errors.loadFailed'),
+            serverMessage(err) || this.translate.instant('employee.identity.errors.loadFailed'),
           ),
       });
   }
@@ -131,7 +140,7 @@ export class EmployeeIdentityComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
-    const v = this.form.value;
+    const v = this.form.getRawValue();
     const payload = {
       nationalId: v.nationalId || undefined,
       passportNumber: v.passportNumber || undefined,
@@ -148,8 +157,11 @@ export class EmployeeIdentityComponent implements OnInit {
     };
 
     this.identitySvc
-      .save(this.employeeId, payload)
-      .pipe(finalize(() => this.saving.set(false)))
+      .save(this.employeeId(), payload)
+      .pipe(
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (res) => {
           if (res.success) {
@@ -162,9 +174,9 @@ export class EmployeeIdentityComponent implements OnInit {
             this.error.set(res.message);
           }
         },
-        error: (err: any) =>
+        error: (err: unknown) =>
           this.error.set(
-            err?.error?.message || this.translate.instant('employee.identity.errors.saveFailed'),
+            serverMessage(err) || this.translate.instant('employee.identity.errors.saveFailed'),
           ),
       });
   }
@@ -172,11 +184,6 @@ export class EmployeeIdentityComponent implements OnInit {
   // ── Helpers ───────────────────────────────────────────────
   ctrl(name: string): AbstractControl {
     return this.form.get(name)!;
-  }
-
-  private showSuccess(msg: string): void {
-    this.successMsg.set(msg);
-    setTimeout(() => this.successMsg.set(null), 3000);
   }
 
   isExpired(dateStr?: string): boolean {
@@ -189,16 +196,7 @@ export class EmployeeIdentityComponent implements OnInit {
   }
 
   formatDate(dateStr?: string): string {
-    if (!dateStr) return '—';
-    try {
-      return new Date(dateStr).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
+    return formatDisplayDate(dateStr, this.language.currentLang());
   }
 
   getValue(val?: string): string {

@@ -44,6 +44,43 @@
       "october": "October",
       "november": "November",
       "december": "December"
+    },
+    "enums": {
+      "employmentStatus": {
+        "ACTIVE": "Active",
+        "PROBATION": "Probation",
+        "NOTICE_PERIOD": "Notice Period",
+        "TERMINATED": "Terminated",
+        "RESIGNED": "Resigned",
+        "RETIRED": "Retired",
+        "ON_HOLD": "On Hold",
+        "ABSCONDED": "Absconded"
+      },
+      "employmentType": {
+        "FULL_TIME": "Full Time",
+        "PART_TIME": "Part Time",
+        "CONTRACT": "Contract",
+        "INTERN": "Intern",
+        "CONSULTANT": "Consultant"
+      },
+      "gender": {
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "OTHER": "Other",
+        "PREFER_NOT_TO_SAY": "Prefer not to say"
+      },
+      "maritalStatus": {
+        "SINGLE": "Single",
+        "MARRIED": "Married",
+        "DIVORCED": "Divorced",
+        "WIDOWED": "Widowed",
+        "SEPARATED": "Separated"
+      },
+      "role": {
+        "HR_ADMIN": "HR Admin",
+        "HR_MANAGER": "HR Manager",
+        "EMPLOYEE": "Employee"
+      }
     }
   },
   "employee": {
@@ -461,7 +498,14 @@
       "clearSelection": "Clear selection",
       "searching": "Searching...",
       "typeMoreChars": "Type at least 2 characters",
-      "noMatches": "No matches"
+      "noMatches": "No matches",
+      "placeholder": "Search by name or code..."
+    },
+    "routes": {
+      "list": "Employees",
+      "create": "Create Employee",
+      "edit": "Edit Employee",
+      "detail": "Employee Detail"
     }
   },
   "layout": {

@@ -54,34 +54,53 @@ export interface UpdateEmployeePayload
   role?: string;
 }
 
-/** What GET /employees/{id} returns — the fields the edit form reads. */
+/**
+ * What GET /employees/{id} returns (EmployeeDetailResponse). The backend omits null fields,
+ * so anything that can be empty is optional here.
+ */
 export interface EmployeeDetailData {
-  employeeCode?: string;
-  workEmail?: string;
-  firstName?: string;
-  firstNameAr?: string;
+  employeeId: number;
+  employeeCode: string;
+  firstName: string;
+  firstNameAr: string;
   middleName?: string;
   middleNameAr?: string;
-  lastName?: string;
-  lastNameAr?: string;
-  dateOfBirth?: string;
-  gender?: string;
+  lastName: string;
+  lastNameAr: string;
+  fullNameEn: string;
+  fullNameAr: string;
+  dateOfBirth: string;
+  gender: string;
   bloodGroup?: string;
   maritalStatus?: string;
   nationality?: string;
   religion?: string;
   profilePhotoUrl?: string;
-  personalEmail?: string;
+  personalEmail: string;
+  workEmail: string;
   personalPhone?: string;
   workPhone?: string;
-  hireDate?: string;
+  hireDate: string;
   probationEndDate?: string;
   confirmationDate?: string;
-  employmentType?: string;
-  employmentStatus?: string;
+  employmentStatus: string;
+  employmentType: string;
   isActive: boolean;
+  departmentId?: number;
+  departmentName?: string;
+  departmentCode?: string;
+  departmentNameAr?: string;
+  designationId?: number;
+  designationTitle?: string;
+  designationTitleAr?: string;
+  designationCode?: string;
+  gradeLevel?: string;
   /** The linked login's role; absent when the employee has no login. */
   role?: string;
+  createdBy?: string;
+  createdAt?: string;
+  updatedBy?: string;
+  updatedAt?: string;
 }
 
 export interface EmployeeQueryParams {
@@ -108,17 +127,17 @@ export interface Employee {
   lastNameAr: string;
   gender: string;
   workEmail: string;
-  workPhone: string;
-  personalPhone: string;
+  workPhone?: string;
+  personalPhone?: string;
   profilePhotoUrl?: string;
   employmentStatus: string;
   employmentType: string;
-  nationality: string;
+  nationality?: string;
   hireDate: string;
   isActive: boolean;
-  departmentId: number;
-  departmentName: string;
-  departmentCode: string;
+  departmentId?: number;
+  departmentName?: string;
+  departmentCode?: string;
   designationId?: number;
   designationTitle?: string;
   gradeLevel?: string;

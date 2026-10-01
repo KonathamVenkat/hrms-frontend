@@ -102,7 +102,7 @@
               <span class="ext-badge">{{ doc.fileExtension }}</span>
             </div>
             <div class="doc-badges">
-              <span class="cat-badge" [ngClass]="getCategoryBadge(doc.category)">
+              <span class="cat-badge" [class]="getCategoryBadge(doc.category)">
                 {{ doc.category }}
               </span>
               @if (doc.isVerified) {

@@ -1,21 +1,15 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
-  Input,
-  ViewChild,
+  input,
+  viewChild,
   signal,
   inject,
   computed,
   DestroyRef,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-  AbstractControl,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { finalize } from 'rxjs';
@@ -26,6 +20,7 @@ import { JobDetailsService } from '../../services/job-details.service';
 import { EmployeeService } from '../../services/employee';
 import { JobDetails } from '../../models/job-details.model';
 import { DepartmentLookup, DesignationLookup } from '../../models/employee';
+import { timedMessage } from '../../../../core/utils/timed-message';
 
 // Import Phase 1 admin lookups
 import { WorkShiftService } from '../../../admin/work-shifts/services/work-shift';
@@ -36,9 +31,7 @@ import { EmployeeSearchSelect } from '../../components/employee-search-select/em
 
 @Component({
   selector: 'app-job-details',
-  standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     EmployeeSearchSelect,
     TranslatePipe,
@@ -47,12 +40,14 @@ import { EmployeeSearchSelect } from '../../components/employee-search-select/em
   ],
   templateUrl: './job-details.html',
   styleUrl: './job-details.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JobDetailsComponent implements OnInit {
-  @Input() employeeId!: number; // passed from employee-detail
+  /** Passed from employee-detail. */
+  readonly employeeId = input.required<number>();
 
-  @ViewChild('reportingManagerPicker') reportingManagerPicker?: EmployeeSearchSelect;
-  @ViewChild('functionalManagerPicker') functionalManagerPicker?: EmployeeSearchSelect;
+  private readonly reportingManagerPicker = viewChild<EmployeeSearchSelect>('reportingManagerPicker');
+  private readonly functionalManagerPicker = viewChild<EmployeeSearchSelect>('functionalManagerPicker');
 
   private fb = inject(FormBuilder);
   private jobSvc = inject(JobDetailsService);
@@ -69,6 +64,7 @@ export class JobDetailsComponent implements OnInit {
   saving = signal(false);
   error = signal<string | null>(null);
   successMsg = signal<string | null>(null);
+  private readonly showSuccess = timedMessage(this.successMsg, this.destroyRef);
 
   // ── View mode ─────────────────────────────────────────────
   activeTab = signal<'current' | 'history'>('current');
@@ -88,35 +84,31 @@ export class JobDetailsComponent implements OnInit {
   readonly historyCount = computed(() => this.history().length);
 
   // ── Form ──────────────────────────────────────────────────
-  form!: FormGroup;
+  readonly form = this.fb.group({
+    departmentId: this.fb.control<number | null>(null, Validators.required),
+    designationId: this.fb.control<number | null>(null, Validators.required),
+    jobPositionId: this.fb.nonNullable.control('', Validators.maxLength(20)),
+    reportingManagerId: this.fb.control<number | null>(null),
+    functionalManagerId: this.fb.control<number | null>(null),
+    locationId: this.fb.control<number | null>(null, Validators.required),
+    shiftId: this.fb.control<number | null>(null),
+    workMode: this.fb.nonNullable.control('ON_SITE', Validators.required),
+    effectiveFrom: this.fb.nonNullable.control('', Validators.required),
+    remarks: this.fb.nonNullable.control('', Validators.maxLength(500)),
+  });
 
   ngOnInit(): void {
-    this.buildForm();
+    this.watchDepartment();
     this.loadCurrentJob();
     this.loadLookups();
   }
 
-  // ── Build form ────────────────────────────────────────────
-  private buildForm(): void {
-    this.form = this.fb.group({
-      departmentId: [null, Validators.required],
-      designationId: [null, Validators.required],
-      jobPositionId: ['', Validators.maxLength(20)],
-      reportingManagerId: [null],
-      functionalManagerId: [null],
-      locationId: [null, Validators.required],
-      shiftId: [null],
-      workMode: ['ON_SITE', Validators.required],
-      effectiveFrom: ['', Validators.required],
-      remarks: ['', Validators.maxLength(500)],
-    });
-
-    // Cascade designations by department
-    this.form
-      .get('departmentId')
-      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+  /** Cascades the designation list from the chosen department. */
+  private watchDepartment(): void {
+    this.form.controls.departmentId.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((deptId) => {
-        this.form.get('designationId')?.setValue(null);
+        this.form.controls.designationId.setValue(null);
         if (deptId) {
           this.filteredDesignations.set(
             this.designations().filter((d) => d.departmentId === +deptId),
@@ -133,7 +125,7 @@ export class JobDetailsComponent implements OnInit {
     this.error.set(null);
 
     this.jobSvc
-      .getCurrentJob(this.employeeId)
+      .getCurrentJob(this.employeeId())
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -156,7 +148,7 @@ export class JobDetailsComponent implements OnInit {
   // ── Load job history ──────────────────────────────────────
   loadHistory(): void {
     this.jobSvc
-      .getJobHistory(this.employeeId)
+      .getJobHistory(this.employeeId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
@@ -221,8 +213,8 @@ export class JobDetailsComponent implements OnInit {
   // ── Open modal ────────────────────────────────────────────
   openNewAssignment(): void {
     this.isNewAssignment.set(true);
-    this.form.get('effectiveFrom')?.setValidators([Validators.required]);
-    this.form.get('effectiveFrom')?.updateValueAndValidity();
+    this.form.controls.effectiveFrom.setValidators([Validators.required]);
+    this.form.controls.effectiveFrom.updateValueAndValidity();
     this.setManagersEditable(true);
     this.form.reset({
       departmentId: null,
@@ -244,8 +236,8 @@ export class JobDetailsComponent implements OnInit {
     if (!job) return;
 
     this.isNewAssignment.set(false);
-    this.form.get('effectiveFrom')?.clearValidators();
-    this.form.get('effectiveFrom')?.updateValueAndValidity();
+    this.form.controls.effectiveFrom.clearValidators();
+    this.form.controls.effectiveFrom.updateValueAndValidity();
     // Managers are history-bearing like department/designation/location: the backend only
     // lets this update change shift, work mode and remarks, so don't offer them here.
     this.setManagersEditable(false);
@@ -266,12 +258,12 @@ export class JobDetailsComponent implements OnInit {
     // patchValue already cleared the pickers' display text via writeValue(null)
     // where there's no manager — only set a label where one exists.
     if (job.reportingManagerName) {
-      this.reportingManagerPicker?.setInitialLabel(
+      this.reportingManagerPicker()?.setInitialLabel(
         `${job.reportingManagerName} (${job.reportingManagerCode})`,
       );
     }
     if (job.functionalManagerName) {
-      this.functionalManagerPicker?.setInitialLabel(
+      this.functionalManagerPicker()?.setInitialLabel(
         `${job.functionalManagerName} (${job.functionalManagerCode})`,
       );
     }
@@ -285,12 +277,11 @@ export class JobDetailsComponent implements OnInit {
   }
 
   private setManagersEditable(editable: boolean): void {
-    for (const name of ['reportingManagerId', 'functionalManagerId']) {
-      const control = this.form.get(name);
+    for (const control of [this.form.controls.reportingManagerId, this.form.controls.functionalManagerId]) {
       if (editable) {
-        control?.enable();
+        control.enable();
       } else {
-        control?.disable();
+        control.disable();
       }
     }
   }
@@ -309,23 +300,28 @@ export class JobDetailsComponent implements OnInit {
     // backend compares them against the stored values, so they must still be sent as they are.
     const v = this.form.getRawValue();
     const payload = {
-      departmentId: +v.departmentId,
-      designationId: +v.designationId,
+      departmentId: Number(v.departmentId),
+      designationId: Number(v.designationId),
       jobPositionId: v.jobPositionId || undefined,
       reportingManagerId: v.reportingManagerId ? +v.reportingManagerId : undefined,
       functionalManagerId: v.functionalManagerId ? +v.functionalManagerId : undefined,
-      locationId: +v.locationId,
+      locationId: Number(v.locationId),
       shiftId: v.shiftId ? +v.shiftId : undefined,
       workMode: v.workMode,
-      effectiveFrom: v.effectiveFrom || undefined,
+      effectiveFrom: v.effectiveFrom,
       remarks: v.remarks || undefined,
     };
 
     const call = this.isNewAssignment()
-      ? this.jobSvc.assignJob(this.employeeId, payload)
-      : this.jobSvc.updateCurrentJob(this.employeeId, payload);
+      ? this.jobSvc.assignJob(this.employeeId(), payload)
+      : this.jobSvc.updateCurrentJob(this.employeeId(), payload);
 
-    call.pipe(finalize(() => this.saving.set(false))).subscribe({
+    call
+      .pipe(
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
       next: (res) => {
         if (res.success) {
           this.currentJob.set(res.data);
@@ -369,11 +365,6 @@ export class JobDetailsComponent implements OnInit {
       });
     }
     return this.translate.instant('common.validation.invalid');
-  }
-
-  private showSuccess(msg: string): void {
-    this.successMsg.set(msg);
-    setTimeout(() => this.successMsg.set(null), 3000);
   }
 
   getWorkModeBadge(mode: string): string {

@@ -110,7 +110,7 @@
               <select id="ef-gender" formControlName="gender">
                 <option value="">{{ 'employee.form.selectGender' | translate }}</option>
                 @for (g of genders; track g) {
-                  <option [value]="g">{{ g.replace('_', ' ') }}</option>
+                  <option [value]="g">{{ 'common.enums.gender.' + g | translate }}</option>
                 }
               </select>
               @if (isInvalid('gender')) {
@@ -134,7 +134,7 @@
               <select id="ef-marital-status" formControlName="maritalStatus">
                 <option value="">{{ 'employee.form.selectMaritalStatus' | translate }}</option>
                 @for (m of maritalStatuses; track m) {
-                  <option [value]="m">{{ m }}</option>
+                  <option [value]="m">{{ 'common.enums.maritalStatus.' + m | translate }}</option>
                 }
               </select>
             </div>
@@ -272,7 +272,7 @@
               <label for="ef-employment-type">{{ 'employee.form.employmentType' | translate }} <span class="req">*</span></label>
               <select id="ef-employment-type" formControlName="employmentType">
                 @for (t of empTypes; track t) {
-                  <option [value]="t">{{ t.replace('_', ' ') }}</option>
+                  <option [value]="t">{{ 'common.enums.employmentType.' + t | translate }}</option>
                 }
               </select>
             </div>
@@ -280,7 +280,7 @@
               <label for="ef-employment-status">{{ 'employee.form.employmentStatus' | translate }} <span class="req">*</span></label>
               <select id="ef-employment-status" formControlName="employmentStatus">
                 @for (s of statusOptions; track s) {
-                  <option [value]="s">{{ s.replace('_', ' ') }}</option>
+                  <option [value]="s">{{ 'common.enums.employmentStatus.' + s | translate }}</option>
                 }
               </select>
             </div>
@@ -334,7 +334,7 @@
               <label for="ef-role">{{ 'employee.form.role' | translate }} <span class="req">*</span></label>
               <select id="ef-role" formControlName="role">
                 @for (r of roles; track r) {
-                  <option [value]="r">{{ r.replace('_', ' ') }}</option>
+                  <option [value]="r">{{ 'common.enums.role.' + r | translate }}</option>
                 }
               </select>
               @if (isEdit() && !hasLogin()) {

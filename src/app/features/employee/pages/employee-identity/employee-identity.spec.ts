@@ -18,7 +18,7 @@ function setup(identity: IdentityInfo) {
   });
 
   const fixture = TestBed.createComponent(EmployeeIdentityComponent);
-  fixture.componentInstance.employeeId = identity.employeeId;
+  fixture.componentRef.setInput('employeeId', identity.employeeId);
   fixture.detectChanges();
   return { fixture, component: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
 }
