@@ -48,7 +48,7 @@
       <!-- ══════════════════════════════════════════════════ -->
       <div class="card full-width">
         <div class="card-header">
-          <span class="material-icons">person</span>
+          <span class="material-icons" aria-hidden="true">person</span>
           {{ 'employee.form.personalInfoTitle' | translate }}
         </div>
         <div class="card-body">
@@ -57,14 +57,14 @@
               <label for="ef-first-name">{{ 'employee.form.firstName' | translate }} <span class="req">*</span></label>
               <input id="ef-first-name" formControlName="firstName" placeholder="e.g. Ahmed" />
               @if (isInvalid('firstName')) {
-                <span class="field-error">{{ getError('firstName') }}</span>
+                <span class="field-error" id="fe-firstName">{{ getError('firstName') }}</span>
               }
             </div>
             <div class="field">
               <label for="ef-first-name-ar">{{ 'employee.form.firstNameAr' | translate }} <span class="req">*</span></label>
               <input id="ef-first-name-ar" formControlName="firstNameAr" placeholder="e.g. أحمد" dir="rtl" />
               @if (isInvalid('firstNameAr')) {
-                <span class="field-error">{{ getError('firstNameAr') }}</span>
+                <span class="field-error" id="fe-firstNameAr">{{ getError('firstNameAr') }}</span>
               }
             </div>
           </div>
@@ -85,14 +85,14 @@
               <label for="ef-last-name">{{ 'employee.form.lastName' | translate }} <span class="req">*</span></label>
               <input id="ef-last-name" formControlName="lastName" placeholder="e.g. Al-Rashidi" />
               @if (isInvalid('lastName')) {
-                <span class="field-error">{{ getError('lastName') }}</span>
+                <span class="field-error" id="fe-lastName">{{ getError('lastName') }}</span>
               }
             </div>
             <div class="field">
               <label for="ef-last-name-ar">{{ 'employee.form.lastNameAr' | translate }} <span class="req">*</span></label>
               <input id="ef-last-name-ar" formControlName="lastNameAr" placeholder="e.g. الراشدي" dir="rtl" />
               @if (isInvalid('lastNameAr')) {
-                <span class="field-error">{{ getError('lastNameAr') }}</span>
+                <span class="field-error" id="fe-lastNameAr">{{ getError('lastNameAr') }}</span>
               }
             </div>
           </div>
@@ -102,7 +102,7 @@
               <label for="ef-date-of-birth">{{ 'employee.form.dateOfBirth' | translate }} <span class="req">*</span></label>
               <input id="ef-date-of-birth" type="date" formControlName="dateOfBirth" />
               @if (isInvalid('dateOfBirth')) {
-                <span class="field-error">{{ getError('dateOfBirth') }}</span>
+                <span class="field-error" id="fe-dateOfBirth">{{ getError('dateOfBirth') }}</span>
               }
             </div>
             <div class="field">
@@ -114,7 +114,7 @@
                 }
               </select>
               @if (isInvalid('gender')) {
-                <span class="field-error">{{ getError('gender') }}</span>
+                <span class="field-error" id="fe-gender">{{ getError('gender') }}</span>
               }
             </div>
           </div>
@@ -165,7 +165,7 @@
       <!-- ══════════════════════════════════════════════════ -->
       <div class="card">
         <div class="card-header">
-          <span class="material-icons">contact_phone</span>
+          <span class="material-icons" aria-hidden="true">contact_phone</span>
           {{ 'employee.form.contactDetailsTitle' | translate }}
         </div>
         <div class="card-body">
@@ -175,13 +175,13 @@
             <label>{{ 'employee.form.workEmail' | translate }}</label>
             @if (isEdit()) {
               <div class="readonly-field">
-                <span class="material-icons readonly-icon">lock</span>
+                <span class="material-icons readonly-icon" aria-hidden="true">lock</span>
                 <span class="readonly-value">{{ workEmailReadOnly() }}</span>
               </div>
               <span class="field-hint">{{ 'employee.form.workEmailCannotChange' | translate }}</span>
             } @else {
               <div class="readonly-field">
-                <span class="material-icons readonly-icon">auto_awesome</span>
+                <span class="material-icons readonly-icon" aria-hidden="true">auto_awesome</span>
                 <span class="readonly-value">{{ 'employee.form.workEmailAutoGen' | translate }}</span>
               </div>
               <span class="field-hint">{{ 'employee.form.workEmailAutoGenHint' | translate }}</span>
@@ -197,7 +197,7 @@
               placeholder="personal@example.com"
             />
             @if (isInvalid('personalEmail')) {
-              <span class="field-error">{{ getError('personalEmail') }}</span>
+              <span class="field-error" id="fe-personalEmail">{{ getError('personalEmail') }}</span>
             }
           </div>
 
@@ -219,7 +219,7 @@
       <!-- ══════════════════════════════════════════════════ -->
       <div class="card">
         <div class="card-header">
-          <span class="material-icons">work</span>
+          <span class="material-icons" aria-hidden="true">work</span>
           {{ 'employee.form.employmentDetailsTitle' | translate }}
         </div>
         <div class="card-body">
@@ -240,7 +240,7 @@
               </select>
             }
             @if (isInvalid('departmentId')) {
-              <span class="field-error">{{ getError('departmentId') }}</span>
+              <span class="field-error" id="fe-departmentId">{{ getError('departmentId') }}</span>
             }
           </div>
           -->
@@ -290,7 +290,7 @@
             <label for="ef-hire-date">{{ 'employee.form.hireDate' | translate }} <span class="req">*</span></label>
             <input id="ef-hire-date" type="date" formControlName="hireDate" />
             @if (isInvalid('hireDate')) {
-              <span class="field-error">{{ getError('hireDate') }}</span>
+              <span class="field-error" id="fe-hireDate">{{ getError('hireDate') }}</span>
             }
           </div>
 
@@ -299,14 +299,14 @@
               <label for="ef-probation-end-date">{{ 'employee.form.probationEndDate' | translate }}</label>
               <input id="ef-probation-end-date" type="date" formControlName="probationEndDate" />
               @if (isInvalid('probationEndDate')) {
-                <span class="field-error">{{ getError('probationEndDate') }}</span>
+                <span class="field-error" id="fe-probationEndDate">{{ getError('probationEndDate') }}</span>
               }
             </div>
             <div class="field">
               <label for="ef-confirmation-date">{{ 'employee.form.confirmationDate' | translate }}</label>
               <input id="ef-confirmation-date" type="date" formControlName="confirmationDate" />
               @if (isInvalid('confirmationDate')) {
-                <span class="field-error">{{ getError('confirmationDate') }}</span>
+                <span class="field-error" id="fe-confirmationDate">{{ getError('confirmationDate') }}</span>
               }
             </div>
           </div>
@@ -319,7 +319,7 @@
       <!-- ══════════════════════════════════════════════════ -->
       <div class="card full-width">
         <div class="card-header">
-          <span class="material-icons">manage_accounts</span>
+          <span class="material-icons" aria-hidden="true">manage_accounts</span>
           {{ 'employee.form.systemAccessTitle' | translate }}
           @if (isEdit()) {
             <span class="card-hint">{{ 'employee.form.systemAccessHintEdit' | translate }}</span>
@@ -357,7 +357,7 @@
                   autocomplete="new-password"
                 />
                 @if (isInvalid('username')) {
-                  <span class="field-error">{{ getError('username') }}</span>
+                  <span class="field-error" id="fe-username">{{ getError('username') }}</span>
                 }
                 <span class="field-hint">{{ 'employee.form.usernameHint' | translate }}</span>
               </div>
@@ -390,7 +390,7 @@
                 </button>
               </div>
               @if (isInvalid('password')) {
-                <span class="field-error" role="alert">{{ getError('password') }}</span>
+                <span class="field-error" id="fe-password" role="alert">{{ getError('password') }}</span>
               }
               <span id="ef-password-hint" class="field-hint">
                 {{ 'auth.changePassword.policyHint' | translate: { count: passwordMinLength } }}
@@ -412,7 +412,7 @@
           <div class="btn-spinner"></div>
           <span>{{ (isEdit() ? 'employee.form.updating' : 'employee.form.saving') | translate }}</span>
         } @else {
-          <span class="material-icons">save</span>
+          <span class="material-icons" aria-hidden="true">save</span>
           <span>{{ (isEdit() ? 'employee.form.updateButton' : 'employee.form.createButton') | translate }}</span>
         }
       </button>

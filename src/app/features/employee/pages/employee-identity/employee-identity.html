@@ -4,14 +4,14 @@
     <div class="header-left">
       <h2 class="section-title">{{ 'employee.identity.title' | translate }}</h2>
       @if (hasData()) {
-        <span class="chip chip-saved"> <span class="material-icons">verified</span> {{ 'employee.identity.savedChip' | translate }} </span>
+        <span class="chip chip-saved"> <span class="material-icons" aria-hidden="true">verified</span> {{ 'employee.identity.savedChip' | translate }} </span>
       } @else {
         <span class="chip chip-empty">{{ 'employee.identity.notFilledChip' | translate }}</span>
       }
     </div>
     @if (!editMode() && !isMasked()) {
       <button class="btn-edit-info" (click)="openEdit()">
-        <span class="material-icons">edit</span>
+        <span class="material-icons" aria-hidden="true">edit</span>
         {{ (hasData() ? 'common.edit' : 'employee.identity.addInfoAction') | translate }}
       </button>
     }
@@ -19,8 +19,8 @@
 
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
-    <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    <div class="alert alert-success" role="status">
+      <span class="material-icons" aria-hidden="true">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (isMasked() && !loading()) {
@@ -29,14 +29,14 @@
     </div>
   }
   @if (error() && !editMode()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
     </div>
   }
 
   <!-- ── Loading ────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="loading-wrap">
+    <div class="loading-wrap" role="status">
       <div class="spinner"></div>
       <span>{{ 'employee.identity.loading' | translate }}</span>
     </div>
@@ -48,12 +48,12 @@
   @if (!loading() && !editMode()) {
     @if (!hasData()) {
       <div class="empty-state">
-        <span class="material-icons">badge</span>
+        <span class="material-icons" aria-hidden="true">badge</span>
         <p>{{ 'employee.identity.emptyTitle' | translate }}</p>
         <small>{{ 'employee.identity.emptyHint' | translate }}</small>
         @if (!isMasked()) {
           <button class="btn-add-sm" (click)="openEdit()">
-            <span class="material-icons">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}
+            <span class="material-icons" aria-hidden="true">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}
           </button>
         }
       </div>
@@ -64,7 +64,7 @@
         <!-- ── National Identity ───────────────────────── -->
         <div class="info-card">
           <div class="info-card-header">
-            <span class="material-icons">perm_identity</span>
+            <span class="material-icons" aria-hidden="true">perm_identity</span>
             {{ 'employee.identity.sections.nationalIdentity' | translate }}
           </div>
           <div class="info-card-body">
@@ -79,7 +79,7 @@
                     [attr.aria-label]="(isRevealed('nationalId') ? 'employee.identity.pii.hideNationalId' : 'employee.identity.pii.showNationalId') | translate"
                     (click)="toggleReveal('nationalId')"
                   >
-                    <span class="material-icons">{{ isRevealed('nationalId') ? 'visibility_off' : 'visibility' }}</span>
+                    <span class="material-icons" aria-hidden="true">{{ isRevealed('nationalId') ? 'visibility_off' : 'visibility' }}</span>
                   </button>
                 }
               </span>
@@ -101,7 +101,7 @@
                     [attr.aria-label]="(isRevealed('socialSecurityNumber') ? 'employee.identity.pii.hideSsn' : 'employee.identity.pii.showSsn') | translate"
                     (click)="toggleReveal('socialSecurityNumber')"
                   >
-                    <span class="material-icons">{{ isRevealed('socialSecurityNumber') ? 'visibility_off' : 'visibility' }}</span>
+                    <span class="material-icons" aria-hidden="true">{{ isRevealed('socialSecurityNumber') ? 'visibility_off' : 'visibility' }}</span>
                   </button>
                 }
               </span>
@@ -117,7 +117,7 @@
                     [attr.aria-label]="(isRevealed('biometricId') ? 'employee.identity.pii.hideBiometricId' : 'employee.identity.pii.showBiometricId') | translate"
                     (click)="toggleReveal('biometricId')"
                   >
-                    <span class="material-icons">{{ isRevealed('biometricId') ? 'visibility_off' : 'visibility' }}</span>
+                    <span class="material-icons" aria-hidden="true">{{ isRevealed('biometricId') ? 'visibility_off' : 'visibility' }}</span>
                   </button>
                 }
               </span>
@@ -128,7 +128,7 @@
         <!-- ── Passport ────────────────────────────────── -->
         <div class="info-card">
           <div class="info-card-header">
-            <span class="material-icons">book</span>
+            <span class="material-icons" aria-hidden="true">book</span>
             {{ 'employee.identity.sections.passport' | translate }}
           </div>
           <div class="info-card-body">
@@ -154,7 +154,7 @@
           [class.card-danger]="isExpired(identity()!.visaExpiryDate)"
         >
           <div class="info-card-header">
-            <span class="material-icons">flight_takeoff</span>
+            <span class="material-icons" aria-hidden="true">flight_takeoff</span>
             {{ 'employee.identity.sections.visa' | translate }}
             @if (isExpired(identity()!.visaExpiryDate)) {
               <span class="expiry-tag tag-expired">{{ 'employee.identity.expiredTag' | translate }}</span>
@@ -203,7 +203,7 @@
           [class.card-danger]="isExpired(identity()!.workPermitExpiry)"
         >
           <div class="info-card-header">
-            <span class="material-icons">assignment</span>
+            <span class="material-icons" aria-hidden="true">assignment</span>
             {{ 'employee.identity.sections.workPermit' | translate }}
             @if (isExpired(identity()!.workPermitExpiry)) {
               <span class="expiry-tag tag-expired">{{ 'employee.identity.expiredTag' | translate }}</span>
@@ -241,8 +241,8 @@
   <!-- ══════════════════════════════════════════════════════ -->
   @if (!loading() && editMode()) {
     @if (error()) {
-      <div class="alert alert-error">
-        <span class="material-icons">error_outline</span>{{ error() }}
+      <div class="alert alert-error" role="alert">
+        <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
       </div>
     }
 
@@ -250,7 +250,7 @@
       <!-- ── National Identity section ───────────────── -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="material-icons">perm_identity</span>
+          <span class="material-icons" aria-hidden="true">perm_identity</span>
           {{ 'employee.identity.sections.nationalIdentity' | translate }}
         </div>
         <div class="form-grid">
@@ -270,7 +270,7 @@
                 [attr.aria-label]="(isRevealed('nationalId') ? 'employee.identity.pii.hideNationalId' : 'employee.identity.pii.showNationalId') | translate"
                 (click)="toggleReveal('nationalId')"
               >
-                <span class="material-icons">{{ isRevealed('nationalId') ? 'visibility_off' : 'visibility' }}</span>
+                <span class="material-icons" aria-hidden="true">{{ isRevealed('nationalId') ? 'visibility_off' : 'visibility' }}</span>
               </button>
             </div>
           </div>
@@ -294,7 +294,7 @@
                 [attr.aria-label]="(isRevealed('socialSecurityNumber') ? 'employee.identity.pii.hideSsn' : 'employee.identity.pii.showSsn') | translate"
                 (click)="toggleReveal('socialSecurityNumber')"
               >
-                <span class="material-icons">{{ isRevealed('socialSecurityNumber') ? 'visibility_off' : 'visibility' }}</span>
+                <span class="material-icons" aria-hidden="true">{{ isRevealed('socialSecurityNumber') ? 'visibility_off' : 'visibility' }}</span>
               </button>
             </div>
           </div>
@@ -314,7 +314,7 @@
                 [attr.aria-label]="(isRevealed('biometricId') ? 'employee.identity.pii.hideBiometricId' : 'employee.identity.pii.showBiometricId') | translate"
                 (click)="toggleReveal('biometricId')"
               >
-                <span class="material-icons">{{ isRevealed('biometricId') ? 'visibility_off' : 'visibility' }}</span>
+                <span class="material-icons" aria-hidden="true">{{ isRevealed('biometricId') ? 'visibility_off' : 'visibility' }}</span>
               </button>
             </div>
           </div>
@@ -324,7 +324,7 @@
       <!-- ── Passport & License section ──────────────── -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="material-icons">book</span>
+          <span class="material-icons" aria-hidden="true">book</span>
           {{ 'employee.identity.sections.passportLicense' | translate }}
         </div>
         <div class="form-grid">
@@ -342,7 +342,7 @@
       <!-- ── Visa section ─────────────────────────────── -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="material-icons">flight_takeoff</span>
+          <span class="material-icons" aria-hidden="true">flight_takeoff</span>
           {{ 'employee.identity.sections.visa' | translate }}
         </div>
         <div class="form-grid">
@@ -368,7 +368,7 @@
       <!-- ── Work Permit section ──────────────────────── -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="material-icons">assignment</span>
+          <span class="material-icons" aria-hidden="true">assignment</span>
           {{ 'employee.identity.sections.workPermit' | translate }}
         </div>
         <div class="form-grid">
@@ -391,7 +391,7 @@
             <div class="btn-spinner"></div>
             <span>{{ 'employee.identity.saving' | translate }}</span>
           } @else {
-            <span class="material-icons">save</span>
+            <span class="material-icons" aria-hidden="true">save</span>
             <span>{{ 'employee.identity.saveIdentityInfo' | translate }}</span>
           }
         </button>

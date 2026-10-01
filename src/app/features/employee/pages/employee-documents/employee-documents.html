@@ -7,37 +7,37 @@
         <span class="stat-chip chip-total"> {{ 'employee.documents.uploadedCount' | translate: { count: documents().length } }} </span>
         @if (expiredCount() > 0) {
           <span class="stat-chip chip-expired">
-            <span class="material-icons">warning</span>
+            <span class="material-icons" aria-hidden="true">warning</span>
             {{ 'employee.documents.expiredCount' | translate: { count: expiredCount() } }}
           </span>
         }
         @if (expiringSoonCount() > 0) {
           <span class="stat-chip chip-expiring">
-            <span class="material-icons">schedule</span>
+            <span class="material-icons" aria-hidden="true">schedule</span>
             {{ 'employee.documents.expiringSoonCount' | translate: { count: expiringSoonCount() } }}
           </span>
         }
         <span class="stat-chip chip-verified">
-          <span class="material-icons">verified</span>
+          <span class="material-icons" aria-hidden="true">verified</span>
           {{ 'employee.documents.verifiedCount' | translate: { count: verifiedCount() } }}
         </span>
       </div>
     </div>
     <button class="btn-upload" (click)="openUpload()">
-      <span class="material-icons">upload_file</span>
+      <span class="material-icons" aria-hidden="true">upload_file</span>
       {{ 'employee.documents.uploadDocument' | translate }}
     </button>
   </div>
 
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
-    <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    <div class="alert alert-success" role="status">
+      <span class="material-icons" aria-hidden="true">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal() && !showConfirm()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
     </div>
   }
 
@@ -65,7 +65,7 @@
 
   <!-- ── Loading ────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="loading-wrap">
+    <div class="loading-wrap" role="status">
       <div class="spinner"></div>
       <span>{{ 'employee.documents.loading' | translate }}</span>
     </div>
@@ -74,11 +74,11 @@
   <!-- ── Empty state ────────────────────────────────────── -->
   @if (!loading() && documents().length === 0) {
     <div class="empty-state">
-      <span class="material-icons">folder_open</span>
+      <span class="material-icons" aria-hidden="true">folder_open</span>
       <p>{{ 'employee.documents.emptyTitle' | translate }}</p>
       <small>{{ 'employee.documents.emptyHint' | translate }}</small>
       <button class="btn-upload-sm" (click)="openUpload()">
-        <span class="material-icons">upload_file</span>
+        <span class="material-icons" aria-hidden="true">upload_file</span>
         {{ 'employee.documents.uploadDocument' | translate }}
       </button>
     </div>
@@ -96,7 +96,7 @@
           <!-- File icon + type -->
           <div class="doc-card-top">
             <div class="file-icon-wrap" [style.color]="getFileIconColor(doc.fileExtension)">
-              <span class="material-icons file-icon">
+              <span class="material-icons file-icon" aria-hidden="true">
                 {{ getFileIcon(doc.fileExtension) }}
               </span>
               <span class="ext-badge">{{ doc.fileExtension }}</span>
@@ -107,7 +107,7 @@
               </span>
               @if (doc.isVerified) {
                 <span class="verified-badge">
-                  <span class="material-icons">verified</span>
+                  <span class="material-icons" aria-hidden="true">verified</span>
                 </span>
               }
               @if (doc.isExpired) {
@@ -140,7 +140,7 @@
             <p class="doc-type">{{ doc.docTypeName }}</p>
             @if (doc.documentNumber) {
               <p class="doc-number">
-                <span class="material-icons">tag</span>
+                <span class="material-icons" aria-hidden="true">tag</span>
                 {{ doc.documentNumber }}
               </p>
             }
@@ -229,7 +229,7 @@
               (keydown.space)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
             >
               @if (!selectedFile()) {
-                <span class="material-icons drop-icon">upload_file</span>
+                <span class="material-icons drop-icon" aria-hidden="true">upload_file</span>
                 <p class="drop-text">{{ 'employee.documents.dropzone.text' | translate }}</p>
                 <small class="drop-hint">{{ 'employee.documents.dropzone.hint' | translate }}</small>
               } @else {
@@ -276,14 +276,14 @@
                 }
               </select>
               @if (isInvalid('docTypeId')) {
-                <span class="field-error">{{ getError('docTypeId') }}</span>
+                <span class="field-error" id="fe-docTypeId">{{ getError('docTypeId') }}</span>
               }
             </div>
             <div class="field">
               <label for="doc-name">{{ 'employee.documents.fields.documentName' | translate }} <span class="req">*</span></label>
               <input id="doc-name" formControlName="documentName" [placeholder]="'employee.documents.fields.documentNamePlaceholder' | translate" />
               @if (isInvalid('documentName')) {
-                <span class="field-error">{{ getError('documentName') }}</span>
+                <span class="field-error" id="fe-documentName">{{ getError('documentName') }}</span>
               }
             </div>
           </div>
@@ -326,7 +326,7 @@
               <div class="btn-spinner"></div>
               <span>{{ (isEditMode() ? 'employee.documents.saving' : 'employee.documents.uploading') | translate }}</span>
             } @else {
-              <span class="material-icons">
+              <span class="material-icons" aria-hidden="true">
                 {{ isEditMode() ? 'save' : 'upload_file' }}
               </span>
               <span>{{ (isEditMode() ? 'employee.documents.saveChanges' : 'employee.documents.upload') | translate }}</span>

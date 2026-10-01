@@ -29,12 +29,12 @@
     <div class="header-actions">
       @if (currentJob()) {
         <button class="btn-minor" (click)="openEditCurrent()">
-          <span class="material-icons">edit</span>
+          <span class="material-icons" aria-hidden="true">edit</span>
           {{ 'employee.jobDetails.editCurrent' | translate }}
         </button>
       }
       <button class="btn-assign" (click)="openNewAssignment()">
-        <span class="material-icons">work</span>
+        <span class="material-icons" aria-hidden="true">work</span>
         {{ (currentJob() ? 'employee.jobDetails.newAssignment' : 'employee.jobDetails.assignJob') | translate }}
       </button>
     </div>
@@ -42,13 +42,13 @@
 
   <!-- ── Alerts ─────────────────────────────────────────────── -->
   @if (successMsg()) {
-    <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    <div class="alert alert-success" role="status">
+      <span class="material-icons" aria-hidden="true">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
     </div>
   }
 
@@ -57,7 +57,7 @@
   <!-- ══════════════════════════════════════════════════════ -->
   @if (activeTab() === 'current') {
     @if (loading()) {
-      <div class="loading-wrap">
+      <div class="loading-wrap" role="status">
         <div class="spinner"></div>
         <span>{{ 'employee.jobDetails.loading' | translate }}</span>
       </div>
@@ -65,11 +65,11 @@
 
     @if (!loading() && !currentJob()) {
       <div class="empty-job">
-        <span class="material-icons">work_off</span>
+        <span class="material-icons" aria-hidden="true">work_off</span>
         <p>{{ 'employee.jobDetails.emptyTitle' | translate }}</p>
         <small>{{ 'employee.jobDetails.emptyHint' | translate }}</small>
         <button class="btn-assign-sm" (click)="openNewAssignment()">
-          <span class="material-icons">add</span> {{ 'employee.jobDetails.assignJob' | translate }}
+          <span class="material-icons" aria-hidden="true">add</span> {{ 'employee.jobDetails.assignJob' | translate }}
         </button>
       </div>
     }
@@ -79,7 +79,7 @@
         <!-- ── Org card ──────────────────────────────────── -->
         <div class="job-card">
           <div class="job-card-header">
-            <span class="material-icons">corporate_fare</span>
+            <span class="material-icons" aria-hidden="true">corporate_fare</span>
             {{ 'employee.jobDetails.sections.organisation' | translate }}
           </div>
           <div class="job-card-body">
@@ -113,7 +113,7 @@
         <!-- ── Managers card ──────────────────────────────── -->
         <div class="job-card">
           <div class="job-card-header">
-            <span class="material-icons">supervisor_account</span>
+            <span class="material-icons" aria-hidden="true">supervisor_account</span>
             {{ 'employee.jobDetails.sections.managers' | translate }}
           </div>
           <div class="job-card-body">
@@ -145,7 +145,7 @@
         <!-- ── Work location card ────────────────────────── -->
         <div class="job-card">
           <div class="job-card-header">
-            <span class="material-icons">location_on</span>
+            <span class="material-icons" aria-hidden="true">location_on</span>
             {{ 'employee.jobDetails.sections.workLocation' | translate }}
           </div>
           <div class="job-card-body">
@@ -169,7 +169,7 @@
         <!-- ── Shift card ─────────────────────────────────── -->
         <div class="job-card">
           <div class="job-card-header">
-            <span class="material-icons">schedule</span>
+            <span class="material-icons" aria-hidden="true">schedule</span>
             {{ 'employee.jobDetails.sections.shiftEffectiveDate' | translate }}
           </div>
           <div class="job-card-body">
@@ -210,7 +210,7 @@
   <!-- ══════════════════════════════════════════════════════ -->
   @if (activeTab() === 'history') {
     @if (history().length === 0) {
-      <div class="loading-wrap">
+      <div class="loading-wrap" role="status">
         <div class="spinner"></div>
         <span>{{ 'employee.jobDetails.loadingHistory' | translate }}</span>
       </div>
@@ -222,9 +222,9 @@
             <!-- Timeline dot -->
             <div class="timeline-dot">
               @if (job.isCurrent) {
-                <span class="material-icons dot-current">radio_button_checked</span>
+                <span class="material-icons dot-current" aria-hidden="true">radio_button_checked</span>
               } @else {
-                <span class="material-icons dot-past">radio_button_unchecked</span>
+                <span class="material-icons dot-past" aria-hidden="true">radio_button_unchecked</span>
               }
             </div>
 
@@ -344,7 +344,7 @@
                 }
               </select>
               @if (isInvalid('departmentId')) {
-                <span class="field-error">{{ getError('departmentId') }}</span>
+                <span class="field-error" id="fe-departmentId">{{ getError('departmentId') }}</span>
               }
             </div>
             <div class="field">
@@ -365,7 +365,7 @@
                 }
               </select>
               @if (isInvalid('designationId')) {
-                <span class="field-error">{{ getError('designationId') }}</span>
+                <span class="field-error" id="fe-designationId">{{ getError('designationId') }}</span>
               }
             </div>
           </div>
@@ -425,7 +425,7 @@
                 }
               </select>
               @if (isInvalid('locationId')) {
-                <span class="field-error">{{ getError('locationId') }}</span>
+                <span class="field-error" id="fe-locationId">{{ getError('locationId') }}</span>
               }
             </div>
             <div class="field">
@@ -457,7 +457,7 @@
               <label for="jd-effective-from">{{ 'employee.jobDetails.formFields.effectiveFromLabel' | translate }} <span class="req">*</span></label>
               <input id="jd-effective-from" type="date" formControlName="effectiveFrom" />
               @if (isInvalid('effectiveFrom')) {
-                <span class="field-error">{{ getError('effectiveFrom') }}</span>
+                <span class="field-error" id="fe-effectiveFrom">{{ getError('effectiveFrom') }}</span>
               }
               <span class="field-hint">
                 {{ 'employee.jobDetails.formFields.effectiveFromHint' | translate }}
@@ -485,7 +485,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'employee.jobDetails.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span>
+              <span class="material-icons" aria-hidden="true">save</span>
               <span>{{ (isNewAssignment() ? 'employee.jobDetails.assignJob' : 'employee.jobDetails.update') | translate }}</span>
             }
           </button>

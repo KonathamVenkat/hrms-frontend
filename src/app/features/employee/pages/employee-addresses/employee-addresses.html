@@ -6,26 +6,26 @@
       <span class="addr-count">{{ 'employee.addresses.countOfTypes' | translate: { count: activeAddresses().length } }}</span>
     </div>
     <button class="btn-add" (click)="openAdd()" [disabled]="activeAddresses().length >= 4">
-      <span class="material-icons">add</span>
+      <span class="material-icons" aria-hidden="true">add</span>
       {{ 'employee.addresses.addAddress' | translate }}
     </button>
   </div>
 
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
-    <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+    <div class="alert alert-success" role="status">
+      <span class="material-icons" aria-hidden="true">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal() && !showConfirm()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
     </div>
   }
 
   <!-- ── Loading ────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="loading-wrap">
+    <div class="loading-wrap" role="status">
       <div class="spinner"></div>
       <span>{{ 'employee.addresses.loading' | translate }}</span>
     </div>
@@ -34,11 +34,11 @@
   <!-- ── Empty state ────────────────────────────────────── -->
   @if (!loading() && activeAddresses().length === 0) {
     <div class="empty-state">
-      <span class="material-icons">location_off</span>
+      <span class="material-icons" aria-hidden="true">location_off</span>
       <p>{{ 'employee.addresses.emptyTitle' | translate }}</p>
       <small>{{ 'employee.addresses.emptyHint' | translate }}</small>
       <button class="btn-add-sm" (click)="openAdd()">
-        <span class="material-icons">add</span> {{ 'employee.addresses.addAddress' | translate }}
+        <span class="material-icons" aria-hidden="true">add</span> {{ 'employee.addresses.addAddress' | translate }}
       </button>
     </div>
   }
@@ -51,13 +51,13 @@
           <!-- Card header -->
           <div class="addr-card-header">
             <div class="addr-type-wrap">
-              <span class="material-icons type-icon">{{ getTypeIcon(addr.addressType) }}</span>
+              <span class="material-icons type-icon" aria-hidden="true">{{ getTypeIcon(addr.addressType) }}</span>
               <span class="addr-type-badge" [class]="getTypeBadge(addr.addressType)">
                 {{ addr.addressType }}
               </span>
               @if (addr.isPrimary) {
                 <span class="primary-badge">
-                  <span class="material-icons">star</span>
+                  <span class="material-icons" aria-hidden="true">star</span>
                   {{ 'employee.addresses.primaryBadge' | translate }}
                 </span>
               }
@@ -99,7 +99,7 @@
               }
             </div>
             <div class="addr-line country-line">
-              <span class="material-icons country-icon">flag</span>
+              <span class="material-icons country-icon" aria-hidden="true">flag</span>
               {{ addr.country }}
             </div>
           </div>
@@ -112,7 +112,7 @@
   @if (!loading() && inactiveAddresses().length > 0) {
     <div class="inactive-section">
       <p class="inactive-label">
-        <span class="material-icons">history</span>
+        <span class="material-icons" aria-hidden="true">history</span>
         {{ 'employee.addresses.inactiveCount' | translate: { count: inactiveAddresses().length } }}
       </p>
     </div>
@@ -161,7 +161,7 @@
                   [disabled]="isTypeUsed(type)"
                   (click)="ctrl('addressType').setValue(type)"
                 >
-                  <span class="material-icons">{{ getTypeIcon(type) }}</span>
+                  <span class="material-icons" aria-hidden="true">{{ getTypeIcon(type) }}</span>
                   {{ type }}
                   @if (isTypeUsed(type)) {
                     <span class="used-tag">{{ 'employee.addresses.addedTag' | translate }}</span>
@@ -170,7 +170,7 @@
               }
             </div>
             @if (isInvalid('addressType')) {
-              <span class="field-error">{{ getError('addressType') }}</span>
+              <span class="field-error" id="fe-addressType">{{ getError('addressType') }}</span>
             }
           </div>
 
@@ -179,7 +179,7 @@
             <label for="addr-line1">{{ 'employee.addresses.fields.addressLine1' | translate }} <span class="req">*</span></label>
             <input id="addr-line1" formControlName="addressLine1" [placeholder]="'employee.addresses.fields.addressLine1Placeholder' | translate" />
             @if (isInvalid('addressLine1')) {
-              <span class="field-error">{{ getError('addressLine1') }}</span>
+              <span class="field-error" id="fe-addressLine1">{{ getError('addressLine1') }}</span>
             }
           </div>
 
@@ -194,7 +194,7 @@
               <label for="addr-city">{{ 'employee.addresses.fields.city' | translate }} <span class="req">*</span></label>
               <input id="addr-city" formControlName="city" [placeholder]="'employee.addresses.fields.cityPlaceholder' | translate" />
               @if (isInvalid('city')) {
-                <span class="field-error">{{ getError('city') }}</span>
+                <span class="field-error" id="fe-city">{{ getError('city') }}</span>
               }
             </div>
             <div class="field">
@@ -209,7 +209,7 @@
               <label for="addr-country">{{ 'employee.addresses.fields.country' | translate }} <span class="req">*</span></label>
               <input id="addr-country" formControlName="country" />
               @if (isInvalid('country')) {
-                <span class="field-error">{{ getError('country') }}</span>
+                <span class="field-error" id="fe-country">{{ getError('country') }}</span>
               }
             </div>
             <div class="field">
@@ -242,7 +242,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'employee.addresses.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span>
+              <span class="material-icons" aria-hidden="true">save</span>
               <span>{{ (isEditMode() ? 'employee.addresses.saveButton.update' : 'employee.addresses.saveButton.add') | translate }}</span>
             }
           </button>

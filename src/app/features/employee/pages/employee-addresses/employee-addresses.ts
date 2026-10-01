@@ -24,10 +24,11 @@ import { AddressService } from '../../services/address.service';
 import { EmployeeAddress } from '../../models/address.model';
 import { serverMessage } from '../../../../core/utils/http-error-message';
 import { timedMessage } from '../../../../core/utils/timed-message';
+import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
 
 @Component({
   selector: 'app-employee-addresses',
-  imports: [ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
+  imports: [ReactiveFormsModule, FieldA11yDirective, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-addresses.html',
   styleUrl: './employee-addresses.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,9 @@
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
   OnInit,
   input,
   signal,
@@ -19,10 +22,11 @@ import { formatDisplayDate } from '../../../../core/utils/display-date';
 import { serverMessage } from '../../../../core/utils/http-error-message';
 import { timedMessage } from '../../../../core/utils/timed-message';
 import { LanguageService } from '../../../../core/services/language.service';
+import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
 
 @Component({
   selector: 'app-employee-identity',
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, FieldA11yDirective, TranslatePipe],
   templateUrl: './employee-identity.html',
   styleUrl: './employee-identity.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +39,8 @@ export class EmployeeIdentityComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private translate = inject(TranslateService);
   private language = inject(LanguageService);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private injector = inject(Injector);
 
   // ── State ─────────────────────────────────────────────────
   identity = signal<IdentityInfo | null>(null);
@@ -127,10 +133,12 @@ export class EmployeeIdentityComponent implements OnInit {
     this.error.set(null);
     this.revealed.set(new Set());
     this.editMode.set(true);
+    this.focusAfterRender('#id-national-id');
   }
 
   cancelEdit(): void {
     this.editMode.set(false);
+    this.focusAfterRender('.btn-edit-info');
     this.error.set(null);
     this.revealed.set(new Set());
   }
@@ -168,6 +176,7 @@ export class EmployeeIdentityComponent implements OnInit {
             this.identity.set(res.data);
             this.hasData.set(true);
             this.editMode.set(false);
+            this.focusAfterRender('.btn-edit-info');
             this.revealed.set(new Set());
             this.showSuccess(this.translate.instant('employee.identity.success.saved'));
           } else {
@@ -179,6 +188,13 @@ export class EmployeeIdentityComponent implements OnInit {
             serverMessage(err) || this.translate.instant('employee.identity.errors.saveFailed'),
           ),
       });
+  }
+
+  /** The control that had focus is removed when the mode switches; move focus to the new view. */
+  private focusAfterRender(selector: string): void {
+    afterNextRender(() => this.host.nativeElement.querySelector<HTMLElement>(selector)?.focus(), {
+      injector: this.injector,
+    });
   }
 
   // ── Helpers ───────────────────────────────────────────────

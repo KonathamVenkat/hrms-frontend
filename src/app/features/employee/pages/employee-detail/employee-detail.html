@@ -1,7 +1,7 @@
 <div class="detail-page">
   <!-- ── Loading ──────────────────────────────────────────── -->
   @if (loading()) {
-    <div class="loading-wrap">
+    <div class="loading-wrap" role="status">
       <div class="spinner"></div>
       <span>{{ 'employee.detail.loading' | translate }}</span>
     </div>
@@ -9,8 +9,8 @@
 
   <!-- ── Error ─────────────────────────────────────────────── -->
   @if (error() && !loading()) {
-    <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>
+    <div class="alert alert-error" role="alert">
+      <span class="material-icons" aria-hidden="true">error_outline</span>
       <span>{{ error() }}</span>
       <button class="alert-back" (click)="goBack()">{{ 'employee.detail.goBack' | translate }}</button>
     </div>
@@ -22,8 +22,8 @@
       <!-- ── Profile card ────────────────────────────────── -->
       <div class="profile-card">
         <!-- Back button -->
-        <button class="back-btn" (click)="goBack()">
-          <span class="material-icons">arrow_back</span>
+        <button class="back-btn" type="button" [attr.aria-label]="'employee.detail.goBack' | translate" (click)="goBack()">
+          <span class="material-icons" aria-hidden="true">arrow_back</span>
         </button>
 
         <!-- Avatar + name -->
@@ -55,7 +55,7 @@
             </div>
             <div class="profile-dept">
               @if (employee()!.departmentName) {
-                <span class="material-icons dept-icon">business</span>
+                <span class="material-icons dept-icon" aria-hidden="true">business</span>
                 <span>{{ employee()!.departmentName }}</span>
               }
             </div>
@@ -81,12 +81,12 @@
                 {{ 'employee.detail.resetPassword.action' | translate }}
               </button>
               <button class="btn-deactivate" (click)="openConfirm()">
-                <span class="material-icons">block</span>
+                <span class="material-icons" aria-hidden="true">block</span>
                 {{ 'employee.detail.deactivateAction' | translate }}
               </button>
             } @else {
               <button class="btn-reactivate" (click)="openConfirm()">
-                <span class="material-icons">check_circle</span>
+                <span class="material-icons" aria-hidden="true">check_circle</span>
                 {{ 'employee.detail.reactivateAction' | translate }}
               </button>
             }
@@ -96,56 +96,43 @@
       <!-- end profile-card -->
 
       <!-- ── Tab bar ─────────────────────────────────────── -->
-      <div class="detail-tabs">
-        <button
-          class="detail-tab"
-          [class.active]="activeDetailTab() === 'profile'"
-          (click)="activeDetailTab.set('profile')"
-        >
-          <span class="material-icons">person</span>
-          {{ 'employee.detail.tabs.profile' | translate }}
-        </button>
-        <button
-          class="detail-tab"
-          [class.active]="activeDetailTab() === 'job'"
-          (click)="activeDetailTab.set('job')"
-        >
-          <span class="material-icons">work</span>
-          {{ 'employee.detail.tabs.job' | translate }}
-        </button>
-        <button
-          class="detail-tab"
-          [class.active]="activeDetailTab() === 'addresses'"
-          (click)="activeDetailTab.set('addresses')"
-        >
-          <span class="material-icons">location_on</span>
-          {{ 'employee.detail.tabs.addresses' | translate }}
-        </button>
-        <button
-          class="detail-tab"
-          [class.active]="activeDetailTab() === 'identity'"
-          (click)="activeDetailTab.set('identity')"
-        >
-          <span class="material-icons">badge</span>
-          {{ 'employee.detail.tabs.identity' | translate }}
-        </button>
-        <button
-          class="detail-tab"
-          [class.active]="activeDetailTab() === 'documents'"
-          (click)="activeDetailTab.set('documents')"
-        >
-          <span class="material-icons">folder</span> {{ 'employee.detail.tabs.documents' | translate }}
-        </button>
+      <div
+        class="detail-tabs"
+        role="tablist"
+        [attr.aria-label]="'employee.detail.tabsLabel' | translate"
+        (keydown)="onTabKeydown($event)"
+      >
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            class="detail-tab"
+            [id]="'detail-tab-' + tab.id"
+            [class.active]="activeDetailTab() === tab.id"
+            [attr.aria-selected]="activeDetailTab() === tab.id"
+            [attr.aria-controls]="'detail-panel-' + tab.id"
+            [attr.tabindex]="activeDetailTab() === tab.id ? 0 : -1"
+            (click)="activeDetailTab.set(tab.id)"
+          >
+            <span class="material-icons" aria-hidden="true">{{ tab.icon }}</span>
+            {{ tab.labelKey | translate }}
+          </button>
+        }
       </div>
       <!-- end tab bar -->
 
       <!-- ── Profile tab ─────────────────────────────────── -->
       @if (activeDetailTab() === 'profile') {
-        <div class="cards-grid">
+        <div
+          class="cards-grid"
+          role="tabpanel"
+          id="detail-panel-profile"
+          aria-labelledby="detail-tab-profile"
+        >
           <!-- ══ Personal Information ═══════════════════════ -->
           <div class="info-card">
             <div class="card-header">
-              <span class="material-icons">person</span>
+              <span class="material-icons" aria-hidden="true">person</span>
               {{ 'employee.detail.sections.personalInfo' | translate }}
             </div>
             <div class="card-body">
@@ -187,7 +174,7 @@
           <!-- ══ Contact Details ════════════════════════════ -->
           <div class="info-card">
             <div class="card-header">
-              <span class="material-icons">contact_phone</span>
+              <span class="material-icons" aria-hidden="true">contact_phone</span>
               {{ 'employee.detail.sections.contactDetails' | translate }}
             </div>
             <div class="card-body">
@@ -217,7 +204,7 @@
           <!-- ══ Employment Details ══════════════════════════ -->
           <div class="info-card">
             <div class="card-header">
-              <span class="material-icons">work</span>
+              <span class="material-icons" aria-hidden="true">work</span>
               {{ 'employee.detail.sections.employmentSummary' | translate }}
             </div>
             <div class="card-body">
@@ -273,7 +260,7 @@
           <!-- ══ Audit Information ═══════════════════════════ -->
           <div class="info-card">
             <div class="card-header">
-              <span class="material-icons">history</span>
+              <span class="material-icons" aria-hidden="true">history</span>
               {{ 'employee.detail.sections.auditInfo' | translate }}
             </div>
             <div class="card-body">
@@ -307,17 +294,37 @@
 
       <!-- ── Job Details tab ─────────────────────────────── -->
       @if (activeDetailTab() === 'job') {
-        <app-job-details [employeeId]="employee()!.employeeId" />
+        <app-job-details
+          role="tabpanel"
+          id="detail-panel-job"
+          aria-labelledby="detail-tab-job"
+          [employeeId]="employee()!.employeeId"
+        />
       }
       <!-- Tab panel — add after job tab -->
       @if (activeDetailTab() === 'addresses') {
-        <app-employee-addresses [employeeId]="employee()!.employeeId" />
+        <app-employee-addresses
+          role="tabpanel"
+          id="detail-panel-addresses"
+          aria-labelledby="detail-tab-addresses"
+          [employeeId]="employee()!.employeeId"
+        />
       }
       @if (activeDetailTab() === 'identity') {
-        <app-employee-identity [employeeId]="employee()!.employeeId" />
+        <app-employee-identity
+          role="tabpanel"
+          id="detail-panel-identity"
+          aria-labelledby="detail-tab-identity"
+          [employeeId]="employee()!.employeeId"
+        />
       }
       @if (activeDetailTab() === 'documents') {
-        <app-employee-documents [employeeId]="employee()!.employeeId" />
+        <app-employee-documents
+          role="tabpanel"
+          id="detail-panel-documents"
+          aria-labelledby="detail-tab-documents"
+          [employeeId]="employee()!.employeeId"
+        />
       }
     </div>
     <!-- end content -->

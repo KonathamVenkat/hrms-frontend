@@ -30,10 +30,11 @@ import {
 } from '../../models/document.model';
 import { serverMessage } from '../../../../core/utils/http-error-message';
 import { timedMessage } from '../../../../core/utils/timed-message';
+import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
 
 @Component({
   selector: 'app-employee-documents',
-  imports: [SlicePipe, ReactiveFormsModule, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
+  imports: [SlicePipe, ReactiveFormsModule, FieldA11yDirective, TranslatePipe, CdkTrapFocus, AccessibleDialogDirective],
   templateUrl: './employee-documents.html',
   styleUrl: './employee-documents.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

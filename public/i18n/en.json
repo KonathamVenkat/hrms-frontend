@@ -109,8 +109,8 @@
         "status": "Status",
         "actions": "Actions"
       },
-      "viewAction": "View employee",
-      "editAction": "Edit employee",
+      "viewAction": "View {{name}}",
+      "editAction": "Edit {{name}}",
       "emptyTitle": "No employees found",
       "emptyHint": "Try adjusting your filters or create a new employee",
       "showing": "Showing {{from}}–{{to}} of {{total}} employees",
@@ -120,7 +120,9 @@
       "errors": {
         "loadFailed": "Failed to load employees.",
         "forbidden": "You do not have permission to view employees."
-      }
+      },
+      "tableLabel": "Employees",
+      "paginationLabel": "Employee list pages"
     },
     "form": {
       "createTitle": "Create Employee",
@@ -235,7 +237,8 @@
         "submit": "Set temporary password",
         "submitting": "Saving...",
         "success": "Temporary password set. Give it to the employee securely."
-      }
+      },
+      "tabsLabel": "Employee sections"
     },
     "addresses": {
       "title": "Addresses",

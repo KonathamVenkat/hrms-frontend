@@ -23,6 +23,7 @@ import {
   NEW_PASSWORD_VALIDATORS,
   PASSWORD_MIN_LENGTH,
 } from '../../../../core/validators/password.validators';
+import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
 
 /** Personal/employment values shared by the create and update forms. */
 type CommonFormValue = {
@@ -49,7 +50,7 @@ type CommonFormValue = {
 
 @Component({
   selector: 'app-employee-form',
-  imports: [ReactiveFormsModule, TranslatePipe],
+  imports: [ReactiveFormsModule, FieldA11yDirective, TranslatePipe],
   templateUrl: './employee-form.html',
   styleUrl: './employee-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

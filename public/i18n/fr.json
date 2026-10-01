@@ -109,8 +109,8 @@
         "status": "Statut",
         "actions": "Actions"
       },
-      "viewAction": "Voir l'employé",
-      "editAction": "Modifier l'employé",
+      "viewAction": "Voir {{name}}",
+      "editAction": "Modifier {{name}}",
       "emptyTitle": "Aucun employé trouvé",
       "emptyHint": "Essayez d'ajuster vos filtres ou créez un nouvel employé",
       "showing": "Affichage de {{from}}–{{to}} sur {{total}} employés",
@@ -120,7 +120,9 @@
       "errors": {
         "loadFailed": "Échec du chargement des employés.",
         "forbidden": "Vous n'avez pas la permission de consulter les employés."
-      }
+      },
+      "tableLabel": "Employés",
+      "paginationLabel": "Pages de la liste des employés"
     },
     "form": {
       "createTitle": "Créer un employé",
@@ -235,7 +237,8 @@
         "submit": "Définir le mot de passe temporaire",
         "submitting": "Enregistrement...",
         "success": "Mot de passe temporaire défini. Communiquez-le à l'employé de façon sécurisée."
-      }
+      },
+      "tabsLabel": "Sections de l'employé"
     },
     "addresses": {
       "title": "Adresses",

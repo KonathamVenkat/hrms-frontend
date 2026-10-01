@@ -25,6 +25,8 @@ import { getHttpErrorMessage } from '../../../../core/utils/http-error-message';
 import { formatDisplayDate } from '../../../../core/utils/display-date';
 import { LanguageService } from '../../../../core/services/language.service';
 
+type DetailTab = 'profile' | 'job' | 'addresses' | 'identity' | 'documents';
+
 @Component({
   selector: 'app-employee-detail',
   imports: [
@@ -58,7 +60,15 @@ export class EmployeeDetail implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
 
-  activeDetailTab = signal<'profile' | 'job' | 'addresses' | 'identity' | 'documents'>('profile');
+  activeDetailTab = signal<DetailTab>('profile');
+
+  readonly tabs: readonly { id: DetailTab; icon: string; labelKey: string }[] = [
+    { id: 'profile', icon: 'person', labelKey: 'employee.detail.tabs.profile' },
+    { id: 'job', icon: 'work', labelKey: 'employee.detail.tabs.job' },
+    { id: 'addresses', icon: 'location_on', labelKey: 'employee.detail.tabs.addresses' },
+    { id: 'identity', icon: 'badge', labelKey: 'employee.detail.tabs.identity' },
+    { id: 'documents', icon: 'folder', labelKey: 'employee.detail.tabs.documents' },
+  ];
 
   // ── Deactivate / Reactivate (HR_ADMIN only) ────────────────
   isHrAdmin = signal(false);
@@ -244,6 +254,30 @@ export class EmployeeDetail implements OnInit {
       ON_HOLD: 'status-inactive',
     };
     return map[status] ?? 'status-inactive';
+  }
+
+  /** Arrow keys, Home and End move between tabs (the arrows follow the reading direction). */
+  onTabKeydown(event: KeyboardEvent): void {
+    const rtl = this.language.direction() === 'rtl';
+    const step: Record<string, number> = {
+      ArrowRight: rtl ? -1 : 1,
+      ArrowLeft: rtl ? 1 : -1,
+    };
+    const current = this.tabs.findIndex((tab) => tab.id === this.activeDetailTab());
+    let next: number;
+    if (event.key in step) {
+      next = (current + step[event.key] + this.tabs.length) % this.tabs.length;
+    } else if (event.key === 'Home') {
+      next = 0;
+    } else if (event.key === 'End') {
+      next = this.tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    const tab = this.tabs[next];
+    this.activeDetailTab.set(tab.id);
+    (event.currentTarget as HTMLElement).querySelector<HTMLElement>('#detail-tab-' + tab.id)?.focus();
   }
 
   formatDate(dateStr?: string): string {

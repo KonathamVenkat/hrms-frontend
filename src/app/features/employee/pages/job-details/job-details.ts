@@ -16,6 +16,7 @@ import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
+import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
 import { JobDetailsService } from '../../services/job-details.service';
 import { EmployeeService } from '../../services/employee';
 import { JobDetails } from '../../models/job-details.model';
@@ -33,6 +34,7 @@ import { EmployeeSearchSelect } from '../../components/employee-search-select/em
   selector: 'app-job-details',
   imports: [
     ReactiveFormsModule,
+    FieldA11yDirective,
     EmployeeSearchSelect,
     TranslatePipe,
     CdkTrapFocus,

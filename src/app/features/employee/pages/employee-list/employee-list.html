@@ -8,7 +8,7 @@
       }
     </div>
     <button class="btn-create" (click)="createEmployee()">
-      <span class="material-icons">add</span>
+      <span class="material-icons" aria-hidden="true">add</span>
       {{ 'employee.list.createButton' | translate }}
     </button>
   </div>
@@ -17,7 +17,7 @@
   <div class="filter-bar">
     <!-- Search -->
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span class="material-icons" aria-hidden="true">search</span>
       <input
         type="text"
         [attr.aria-label]="'employee.list.searchLabel' | translate"
@@ -32,7 +32,7 @@
           [attr.aria-label]="'employee.list.clearSearch' | translate"
           (click)="filter.update((f) => ({ ...f, search: '' })); onSearch()"
         >
-          <span class="material-icons">close</span>
+          <span class="material-icons" aria-hidden="true">close</span>
         </button>
       }
     </div>
@@ -106,7 +106,7 @@
     <!-- Clear filters -->
     @if (hasNonDefaultFilters()) {
       <button class="btn-clear" (click)="clearFilters()">
-        <span class="material-icons">filter_alt_off</span>
+        <span class="material-icons" aria-hidden="true">filter_alt_off</span>
         {{ 'employee.list.clearFilters' | translate }}
       </button>
     }
@@ -115,23 +115,23 @@
   <!-- ── Table Card ───────────────────────────────────────── -->
   <div class="table-card">
     @if (loading()) {
-      <div class="loading-overlay">
+      <div class="loading-overlay" role="status">
         <div class="spinner"></div>
         <span>{{ 'common.loading' | translate }}</span>
       </div>
     }
 
     <div class="table-wrap">
-      <table class="emp-table">
+      <table class="emp-table" [attr.aria-label]="'employee.list.tableLabel' | translate">
         <thead>
           <tr>
-            <th>{{ 'employee.list.columns.employee' | translate }}</th>
-            <th>{{ 'employee.list.columns.department' | translate }}</th>
-            <th>{{ 'employee.list.columns.designation' | translate }}</th>
-            <th>{{ 'employee.list.columns.type' | translate }}</th>
-            <th>{{ 'employee.list.columns.hireDate' | translate }}</th>
-            <th>{{ 'employee.list.columns.status' | translate }}</th>
-            <th>{{ 'employee.list.columns.actions' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.employee' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.department' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.designation' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.type' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.hireDate' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.status' | translate }}</th>
+            <th scope="col">{{ 'employee.list.columns.actions' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -139,11 +139,11 @@
             <tr>
               <td colspan="7">
                 <div class="empty-state">
-                  <span class="material-icons">people_outline</span>
+                  <span class="material-icons" aria-hidden="true">people_outline</span>
                   <p>{{ 'employee.list.emptyTitle' | translate }}</p>
                   <small>{{ 'employee.list.emptyHint' | translate }}</small>
                   <button class="btn-create-sm" (click)="createEmployee()">
-                    <span class="material-icons">add</span>
+                    <span class="material-icons" aria-hidden="true">add</span>
                     {{ 'employee.list.createButton' | translate }}
                   </button>
                 </div>
@@ -196,19 +196,19 @@
                 <div class="action-wrap">
                   <button
                     class="act-btn view"
-                    [attr.aria-label]="'employee.list.viewAction' | translate"
+                    [attr.aria-label]="'employee.list.viewAction' | translate: { name: emp.fullNameEn }"
                     [title]="'common.view' | translate"
                     (click)="viewEmployee(emp.employeeId)"
                   >
-                    <span class="material-icons">visibility</span>
+                    <span class="material-icons" aria-hidden="true">visibility</span>
                   </button>
                   <button
                     class="act-btn edit"
-                    [attr.aria-label]="'employee.list.editAction' | translate"
+                    [attr.aria-label]="'employee.list.editAction' | translate: { name: emp.fullNameEn }"
                     [title]="'common.edit' | translate"
                     (click)="editEmployee(emp.employeeId)"
                   >
-                    <span class="material-icons">edit</span>
+                    <span class="material-icons" aria-hidden="true">edit</span>
                   </button>
                 </div>
               </td>
@@ -220,7 +220,7 @@
 
     <!-- ── Pagination ──────────────────────────────────────── -->
     <div class="pagination">
-      <span class="pag-info">
+      <span class="pag-info" role="status">
         {{
           'employee.list.showing'
             | translate: { from: showingFrom(), to: showingTo(), total: totalElements() }
@@ -240,14 +240,14 @@
       </label>
 
       @if (totalPages() > 1) {
-        <div class="pag-btns">
+        <nav class="pag-btns" [attr.aria-label]="'employee.list.paginationLabel' | translate">
           <button
             class="pag-btn"
             [attr.aria-label]="'employee.list.prevPage' | translate"
             [disabled]="currentPage() === 0"
             (click)="onPageChange(currentPage() - 1)"
           >
-            <span class="material-icons">chevron_left</span>
+            <span class="material-icons" aria-hidden="true">chevron_left</span>
           </button>
           @for (entry of pageEntries(); track $index) {
             @if (entry === 'ellipsis') {
@@ -270,9 +270,9 @@
             [disabled]="currentPage() === totalPages() - 1"
             (click)="onPageChange(currentPage() + 1)"
           >
-            <span class="material-icons">chevron_right</span>
+            <span class="material-icons" aria-hidden="true">chevron_right</span>
           </button>
-        </div>
+        </nav>
       }
     </div>
   </div>
