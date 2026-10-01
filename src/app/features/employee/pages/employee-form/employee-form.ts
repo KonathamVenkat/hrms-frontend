@@ -24,6 +24,7 @@ import {
   PASSWORD_MIN_LENGTH,
 } from '../../../../core/validators/password.validators';
 import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
+import { fieldErrorMessage, isFieldInvalid } from '../../../../core/forms/field-errors';
 
 /** Personal/employment values shared by the create and update forms. */
 type CommonFormValue = {
@@ -294,37 +295,19 @@ export class EmployeeForm implements OnInit {
   }
 
   isInvalid(name: string): boolean {
-    const c = this.ctrl(name);
-    return c.invalid && c.touched;
+    return isFieldInvalid(this.form.get(name));
   }
 
+  /** Error codes beyond the standard validators, mapped to their translation keys. */
+  private readonly customErrors = {
+    policy: 'auth.changePassword.errors.policy',
+    hireBeforeBirth: 'employee.form.errors.hireBeforeBirth',
+    probationBeforeHire: 'employee.form.errors.probationBeforeHire',
+    confirmationBeforeProbation: 'employee.form.errors.confirmationBeforeProbation',
+  } as const;
+
   getError(name: string): string {
-    const c = this.ctrl(name);
-    if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return this.translate.instant('common.validation.required');
-    if (c.errors['email']) return this.translate.instant('common.validation.email');
-    if (c.errors['minlength']) {
-      return this.translate.instant('common.validation.minLength', {
-        count: c.errors['minlength'].requiredLength,
-      });
-    }
-    if (c.errors['maxlength']) {
-      return this.translate.instant('common.validation.maxLength', {
-        count: c.errors['maxlength'].requiredLength,
-      });
-    }
-    if (c.errors['policy']) return this.translate.instant('auth.changePassword.errors.policy');
-    if (c.errors['pattern']) return this.translate.instant('common.validation.pattern');
-    if (c.errors['hireBeforeBirth']) {
-      return this.translate.instant('employee.form.errors.hireBeforeBirth');
-    }
-    if (c.errors['probationBeforeHire']) {
-      return this.translate.instant('employee.form.errors.probationBeforeHire');
-    }
-    if (c.errors['confirmationBeforeProbation']) {
-      return this.translate.instant('employee.form.errors.confirmationBeforeProbation');
-    }
-    return this.translate.instant('common.validation.invalid');
+    return fieldErrorMessage(this.form.get(name), this.translate, this.customErrors);
   }
 
   togglePassword(): void {

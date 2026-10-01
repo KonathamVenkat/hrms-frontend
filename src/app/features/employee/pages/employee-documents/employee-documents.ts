@@ -31,6 +31,7 @@ import {
 import { serverMessage } from '../../../../core/utils/http-error-message';
 import { timedMessage } from '../../../../core/utils/timed-message';
 import { FieldA11yDirective } from '../../../../core/directives/field-a11y.directive';
+import { fieldErrorMessage, isFieldInvalid } from '../../../../core/forms/field-errors';
 
 @Component({
   selector: 'app-employee-documents',
@@ -378,20 +379,11 @@ export class EmployeeDocumentsComponent implements OnInit {
   }
 
   isInvalid(name: string): boolean {
-    const c = this.ctrl(name);
-    return c.invalid && c.touched;
+    return isFieldInvalid(this.form.get(name));
   }
 
   getError(name: string): string {
-    const c = this.ctrl(name);
-    if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return this.translate.instant('common.validation.required');
-    if (c.errors['maxlength']) {
-      return this.translate.instant('common.validation.maxLength', {
-        count: c.errors['maxlength'].requiredLength,
-      });
-    }
-    return this.translate.instant('common.validation.invalid');
+    return fieldErrorMessage(this.form.get(name), this.translate);
   }
 
   getFileIcon(ext: string): string {

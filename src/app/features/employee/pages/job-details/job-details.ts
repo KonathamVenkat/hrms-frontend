@@ -29,6 +29,7 @@ import { OfficeLocationService } from '../../../admin/office-locations/services/
 import { WorkShift } from '../../../admin/work-shifts/models/work-shift';
 import { OfficeLocation } from '../../../admin/office-locations/models/office-location';
 import { EmployeeSearchSelect } from '../../components/employee-search-select/employee-search-select';
+import { fieldErrorMessage, isFieldInvalid } from '../../../../core/forms/field-errors';
 
 @Component({
   selector: 'app-job-details',
@@ -353,20 +354,11 @@ export class JobDetailsComponent implements OnInit {
   }
 
   isInvalid(name: string): boolean {
-    const c = this.ctrl(name);
-    return c.invalid && c.touched;
+    return isFieldInvalid(this.form.get(name));
   }
 
   getError(name: string): string {
-    const c = this.ctrl(name);
-    if (!c.errors || !c.touched) return '';
-    if (c.errors['required']) return this.translate.instant('common.validation.required');
-    if (c.errors['maxlength']) {
-      return this.translate.instant('common.validation.maxLength', {
-        count: c.errors['maxlength'].requiredLength,
-      });
-    }
-    return this.translate.instant('common.validation.invalid');
+    return fieldErrorMessage(this.form.get(name), this.translate);
   }
 
   getWorkModeBadge(mode: string): string {
