@@ -55,14 +55,14 @@
           <div class="field-row">
             <div class="field">
               <label for="ef-first-name">{{ 'employee.form.firstName' | translate }} <span class="req">*</span></label>
-              <input id="ef-first-name" formControlName="firstName" placeholder="e.g. Ahmed" />
+              <input id="ef-first-name" formControlName="firstName" [placeholder]="'employee.form.placeholders.firstName' | translate" />
               @if (isInvalid('firstName')) {
                 <span class="field-error" id="fe-firstName">{{ getError('firstName') }}</span>
               }
             </div>
             <div class="field">
               <label for="ef-first-name-ar">{{ 'employee.form.firstNameAr' | translate }} <span class="req">*</span></label>
-              <input id="ef-first-name-ar" formControlName="firstNameAr" placeholder="e.g. أحمد" dir="rtl" />
+              <input id="ef-first-name-ar" formControlName="firstNameAr" [placeholder]="'employee.form.placeholders.firstNameAr' | translate" dir="rtl" />
               @if (isInvalid('firstNameAr')) {
                 <span class="field-error" id="fe-firstNameAr">{{ getError('firstNameAr') }}</span>
               }
@@ -72,25 +72,25 @@
           <div class="field-row">
             <div class="field">
               <label for="ef-middle-name">{{ 'employee.form.middleName' | translate }}</label>
-              <input id="ef-middle-name" formControlName="middleName" placeholder="Optional" />
+              <input id="ef-middle-name" formControlName="middleName" [placeholder]="'employee.form.placeholders.middleName' | translate" />
             </div>
             <div class="field">
               <label for="ef-middle-name-ar">{{ 'employee.form.middleNameAr' | translate }}</label>
-              <input id="ef-middle-name-ar" formControlName="middleNameAr" placeholder="اختياري" dir="rtl" />
+              <input id="ef-middle-name-ar" formControlName="middleNameAr" [placeholder]="'employee.form.placeholders.middleNameAr' | translate" dir="rtl" />
             </div>
           </div>
 
           <div class="field-row">
             <div class="field">
               <label for="ef-last-name">{{ 'employee.form.lastName' | translate }} <span class="req">*</span></label>
-              <input id="ef-last-name" formControlName="lastName" placeholder="e.g. Al-Rashidi" />
+              <input id="ef-last-name" formControlName="lastName" [placeholder]="'employee.form.placeholders.lastName' | translate" />
               @if (isInvalid('lastName')) {
                 <span class="field-error" id="fe-lastName">{{ getError('lastName') }}</span>
               }
             </div>
             <div class="field">
               <label for="ef-last-name-ar">{{ 'employee.form.lastNameAr' | translate }} <span class="req">*</span></label>
-              <input id="ef-last-name-ar" formControlName="lastNameAr" placeholder="e.g. الراشدي" dir="rtl" />
+              <input id="ef-last-name-ar" formControlName="lastNameAr" [placeholder]="'employee.form.placeholders.lastNameAr' | translate" dir="rtl" />
               @if (isInvalid('lastNameAr')) {
                 <span class="field-error" id="fe-lastNameAr">{{ getError('lastNameAr') }}</span>
               }
@@ -143,11 +143,11 @@
           <div class="field-row">
             <div class="field">
               <label for="ef-nationality">{{ 'employee.form.nationality' | translate }}</label>
-              <input id="ef-nationality" formControlName="nationality" placeholder="e.g. Omani" />
+              <input id="ef-nationality" formControlName="nationality" [placeholder]="'employee.form.placeholders.nationality' | translate" />
             </div>
             <div class="field">
               <label for="ef-religion">{{ 'employee.form.religion' | translate }}</label>
-              <input id="ef-religion" formControlName="religion" placeholder="e.g. Islam" />
+              <input id="ef-religion" formControlName="religion" [placeholder]="'employee.form.placeholders.religion' | translate" />
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@
               id="ef-personal-email"
               type="email"
               formControlName="personalEmail"
-              placeholder="personal@example.com"
+              [placeholder]="'employee.form.placeholders.personalEmail' | translate"
             />
             @if (isInvalid('personalEmail')) {
               <span class="field-error" id="fe-personalEmail">{{ getError('personalEmail') }}</span>
@@ -197,11 +197,11 @@
           <div class="field-row">
             <div class="field">
               <label for="ef-personal-phone">{{ 'employee.form.personalPhone' | translate }}</label>
-              <input id="ef-personal-phone" formControlName="personalPhone" placeholder="+968 9xxx xxxx" />
+              <input id="ef-personal-phone" formControlName="personalPhone" [placeholder]="'employee.form.placeholders.personalPhone' | translate" />
             </div>
             <div class="field">
               <label for="ef-work-phone">{{ 'employee.form.workPhone' | translate }}</label>
-              <input id="ef-work-phone" formControlName="workPhone" placeholder="+968 2xxx xxxx" />
+              <input id="ef-work-phone" formControlName="workPhone" [placeholder]="'employee.form.placeholders.workPhone' | translate" />
             </div>
           </div>
         </div>
@@ -346,7 +346,7 @@
                 <input
                   id="ef-username"
                   formControlName="username"
-                  placeholder="e.g. ahmed.rashidi"
+                  [placeholder]="'employee.form.placeholders.username' | translate"
                   autocomplete="new-password"
                 />
                 @if (isInvalid('username')) {

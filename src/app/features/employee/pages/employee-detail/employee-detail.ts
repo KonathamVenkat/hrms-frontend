@@ -120,7 +120,7 @@ export class EmployeeDetail implements OnInit {
           if (res.success && res.data) {
             this.employee.set(res.data);
           } else {
-            this.error.set(res.message || 'Failed to load employee.');
+            this.error.set(res.message || this.translate.instant('employee.detail.errors.loadFailed'));
           }
         },
         error: (err) => {

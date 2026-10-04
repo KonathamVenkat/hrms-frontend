@@ -146,7 +146,6 @@
       "selectMaritalStatus": "Select status",
       "nationality": "Nationality",
       "religion": "Religion",
-      "profilePhotoUrl": "Profile Photo URL",
       "contactDetailsTitle": "Contact Details",
       "workEmail": "Work Email",
       "workEmailCannotChange": "Work email cannot be changed",
@@ -171,6 +170,20 @@
       "username": "Username",
       "usernameHint": "Letters, numbers, dots, hyphens, underscores only",
       "password": "Password",
+      "placeholders": {
+        "firstName": "e.g. Ahmed",
+        "firstNameAr": "e.g. أحمد",
+        "middleName": "Optional",
+        "middleNameAr": "Optional",
+        "lastName": "e.g. Al-Rashidi",
+        "lastNameAr": "e.g. الراشدي",
+        "nationality": "e.g. Omani",
+        "religion": "e.g. Islam",
+        "personalEmail": "personal@example.com",
+        "personalPhone": "+968 9xxx xxxx",
+        "workPhone": "+968 2xxx xxxx",
+        "username": "e.g. ahmed.rashidi"
+      },
       "passwordPlaceholder": "Minimum 8 characters",
       "saving": "Saving...",
       "updating": "Updating...",
@@ -242,7 +255,8 @@
         "pleaseWait": "Please wait..."
       },
       "errors": {
-        "notFound": "Employee not found."
+        "notFound": "Employee not found.",
+        "loadFailed": "Failed to load employee."
       },
       "resetPassword": {
         "action": "Reset password",

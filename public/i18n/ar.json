@@ -146,7 +146,6 @@
       "selectMaritalStatus": "اختر الحالة",
       "nationality": "الجنسية",
       "religion": "الديانة",
-      "profilePhotoUrl": "رابط الصورة الشخصية",
       "contactDetailsTitle": "بيانات الاتصال",
       "workEmail": "البريد الإلكتروني للعمل",
       "workEmailCannotChange": "لا يمكن تغيير البريد الإلكتروني للعمل",
@@ -171,6 +170,20 @@
       "username": "اسم المستخدم",
       "usernameHint": "الأحرف والأرقام والنقاط والشرطات والشرطات السفلية فقط",
       "password": "كلمة المرور",
+      "placeholders": {
+        "firstName": "مثال: Ahmed",
+        "firstNameAr": "مثال: أحمد",
+        "middleName": "اختياري",
+        "middleNameAr": "اختياري",
+        "lastName": "مثال: Al-Rashidi",
+        "lastNameAr": "مثال: الراشدي",
+        "nationality": "مثال: عماني",
+        "religion": "مثال: الإسلام",
+        "personalEmail": "personal@example.com",
+        "personalPhone": "+968 9xxx xxxx",
+        "workPhone": "+968 2xxx xxxx",
+        "username": "مثال: ahmed.rashidi"
+      },
       "passwordPlaceholder": "8 أحرف على الأقل",
       "saving": "جارٍ الحفظ...",
       "updating": "جارٍ التحديث...",
@@ -242,7 +255,8 @@
         "pleaseWait": "يرجى الانتظار..."
       },
       "errors": {
-        "notFound": "الموظف غير موجود."
+        "notFound": "الموظف غير موجود.",
+        "loadFailed": "تعذر تحميل بيانات الموظف."
       },
       "resetPassword": {
         "action": "إعادة تعيين كلمة المرور",
