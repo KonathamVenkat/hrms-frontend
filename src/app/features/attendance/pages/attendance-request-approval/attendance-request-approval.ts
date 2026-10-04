@@ -162,7 +162,7 @@ export class AttendanceRequestApproval implements OnInit {
           this.snack.open(
             this.translate.instant('attendance.requestApproval.errors.loadFailed'),
             this.translate.instant('attendance.requestApproval.close'),
-            { duration: 3000 },
+            { panelClass: 'snack-error' },
           );
           this.loading.set(false);
         },
@@ -215,11 +215,10 @@ export class AttendanceRequestApproval implements OnInit {
       .subscribe({
         next: (updated) => {
           this.snack.open(
-            '✅ ' +
-              this.translate.instant('attendance.requestApproval.success.approved', {
-                name: request.employeeName,
-                date: request.attendanceDateFormatted,
-              }),
+            this.translate.instant('attendance.requestApproval.success.approved', {
+              name: request.employeeName,
+              date: request.attendanceDateFormatted,
+            }),
             this.translate.instant('attendance.requestApproval.close'),
             { duration: 5000, panelClass: 'snack-success' },
           );
@@ -229,9 +228,9 @@ export class AttendanceRequestApproval implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.requestApproval.errors.approveFailed')),
+            err.error?.message || this.translate.instant('attendance.requestApproval.errors.approveFailed'),
             this.translate.instant('attendance.requestApproval.close'),
-            { duration: 4000, panelClass: 'snack-error' },
+            { panelClass: 'snack-error' },
           );
           this.processingId.set(null);
         },
@@ -283,12 +282,11 @@ export class AttendanceRequestApproval implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            '❌ ' +
-              this.translate.instant('attendance.requestApproval.success.rejected', {
-                name: request.employeeName,
-              }),
+            this.translate.instant('attendance.requestApproval.success.rejected', {
+              name: request.employeeName,
+            }),
             this.translate.instant('attendance.requestApproval.close'),
-            { duration: 4000 },
+            { duration: 5000 },
           );
           this.closeRejectDialog();
           this.processingId.set(null);
@@ -297,9 +295,9 @@ export class AttendanceRequestApproval implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.requestApproval.errors.rejectFailed')),
+            err.error?.message || this.translate.instant('attendance.requestApproval.errors.rejectFailed'),
             this.translate.instant('attendance.requestApproval.close'),
-            { duration: 4000, panelClass: 'snack-error' },
+            { panelClass: 'snack-error' },
           );
           this.processingId.set(null);
         },

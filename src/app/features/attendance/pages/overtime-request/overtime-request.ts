@@ -182,9 +182,9 @@ export class OvertimeRequest implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            '✅ ' + this.translate.instant('attendance.overtimeRequest.success.submitted'),
+            this.translate.instant('attendance.overtimeRequest.success.submitted'),
             this.translate.instant('attendance.overtimeRequest.close'),
-            { duration: 4000, panelClass: 'snack-success' },
+            { duration: 5000, panelClass: 'snack-success' },
           );
           this.submitForm.reset({ otType: 'POST_FACTO' });
           this.showForm.set(false);
@@ -194,9 +194,9 @@ export class OvertimeRequest implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.submitFailed')),
+            err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.submitFailed'),
             this.translate.instant('attendance.overtimeRequest.close'),
-            { duration: 5000, panelClass: 'snack-error' },
+            { panelClass: 'snack-error' },
           );
           this.submitting.set(false);
         },
@@ -210,15 +210,15 @@ export class OvertimeRequest implements OnInit {
         this.snack.open(
           this.translate.instant('attendance.overtimeRequest.success.cancelled'),
           this.translate.instant('attendance.overtimeRequest.close'),
-          { duration: 3000 },
+          { duration: 5000 },
         );
         this.loadMyRequests();
       },
       error: (err) =>
         this.snack.open(
-          '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.cancelFailed')),
+          err.error?.message || this.translate.instant('attendance.overtimeRequest.errors.cancelFailed'),
           this.translate.instant('attendance.overtimeRequest.close'),
-          { duration: 4000 },
+          { panelClass: 'snack-error' },
         ),
     });
   }

@@ -127,18 +127,18 @@ export class AttendanceLogComponent implements OnInit {
         this.todayLog.set(log);
         const time = this.formatTime(log.checkInTime);
         this.snack.open(
-          '✅ ' + this.translate.instant('attendance.log.success.checkedIn', { time }),
+          this.translate.instant('attendance.log.success.checkedIn', { time }),
           this.translate.instant('attendance.log.close'),
-          { duration: 4000, panelClass: 'snack-success' },
+          { duration: 5000, panelClass: 'snack-success' },
         );
         this.checkingIn.set(false);
         this.loadMonthlyLogs();
       },
       error: (err) => {
         this.snack.open(
-          '❌ ' + (err.error?.message || this.translate.instant('attendance.log.errors.checkInFailed')),
+          err.error?.message || this.translate.instant('attendance.log.errors.checkInFailed'),
           this.translate.instant('attendance.log.close'),
-          { duration: 4000, panelClass: 'snack-error' },
+          { panelClass: 'snack-error' },
         );
         this.checkingIn.set(false);
       },
@@ -153,9 +153,9 @@ export class AttendanceLogComponent implements OnInit {
         this.todayLog.set(log);
         const minutes = this.formatMinutes(log.workingMinutes);
         this.snack.open(
-          '✅ ' + this.translate.instant('attendance.log.success.checkedOut', { minutes }),
+          this.translate.instant('attendance.log.success.checkedOut', { minutes }),
           this.translate.instant('attendance.log.close'),
-          { duration: 4000, panelClass: 'snack-success' },
+          { duration: 5000, panelClass: 'snack-success' },
         );
         this.checkingOut.set(false);
         this.loadMonthlyLogs();
@@ -163,9 +163,9 @@ export class AttendanceLogComponent implements OnInit {
       },
       error: (err) => {
         this.snack.open(
-          '❌ ' + (err.error?.message || this.translate.instant('attendance.log.errors.checkOutFailed')),
+          err.error?.message || this.translate.instant('attendance.log.errors.checkOutFailed'),
           this.translate.instant('attendance.log.close'),
-          { duration: 4000, panelClass: 'snack-error' },
+          { panelClass: 'snack-error' },
         );
         this.checkingOut.set(false);
       },

@@ -151,7 +151,7 @@ export class OvertimeApproval implements OnInit {
           this.snack.open(
             this.translate.instant('attendance.overtimeApproval.errors.loadFailed'),
             this.translate.instant('attendance.overtimeApproval.close'),
-            { duration: 3000 },
+            { panelClass: 'snack-error' },
           );
           this.loading.set(false);
         },
@@ -201,13 +201,12 @@ export class OvertimeApproval implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            '✅ ' +
-              this.translate.instant('attendance.overtimeApproval.success.approved', {
-                duration: req.durationFormatted,
-                name: req.employeeName,
-              }),
+            this.translate.instant('attendance.overtimeApproval.success.approved', {
+              duration: req.durationFormatted,
+              name: req.employeeName,
+            }),
             this.translate.instant('attendance.overtimeApproval.close'),
-            { duration: 4000, panelClass: 'snack-success' },
+            { duration: 5000, panelClass: 'snack-success' },
           );
           this.processingId.set(null);
           this.loadRequests();
@@ -215,9 +214,9 @@ export class OvertimeApproval implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.approveFailed')),
+            err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.approveFailed'),
             this.translate.instant('attendance.overtimeApproval.close'),
-            { duration: 4000 },
+            { panelClass: 'snack-error' },
           );
           this.processingId.set(null);
         },
@@ -269,7 +268,7 @@ export class OvertimeApproval implements OnInit {
               name: req.employeeName,
             }),
             this.translate.instant('attendance.overtimeApproval.close'),
-            { duration: 4000 },
+            { duration: 5000 },
           );
           this.closeRejectDialog();
           this.processingId.set(null);
@@ -278,9 +277,9 @@ export class OvertimeApproval implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.rejectFailed')),
+            err.error?.message || this.translate.instant('attendance.overtimeApproval.errors.rejectFailed'),
             this.translate.instant('attendance.overtimeApproval.close'),
-            { duration: 4000 },
+            { panelClass: 'snack-error' },
           );
           this.processingId.set(null);
         },

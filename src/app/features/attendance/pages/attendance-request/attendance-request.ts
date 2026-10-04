@@ -167,9 +167,9 @@ export class AttendanceRequest implements OnInit {
       .subscribe({
         next: () => {
           this.snack.open(
-            '✅ ' + this.translate.instant('attendance.request.success.submitted'),
+            this.translate.instant('attendance.request.success.submitted'),
             this.translate.instant('attendance.request.close'),
-            { duration: 4000, panelClass: 'snack-success' },
+            { duration: 5000, panelClass: 'snack-success' },
           );
           this.submitForm.reset();
           this.showForm.set(false);
@@ -179,9 +179,9 @@ export class AttendanceRequest implements OnInit {
         },
         error: (err) => {
           this.snack.open(
-            '❌ ' + (err.error?.message || this.translate.instant('attendance.request.errors.submitFailed')),
+            err.error?.message || this.translate.instant('attendance.request.errors.submitFailed'),
             this.translate.instant('attendance.request.close'),
-            { duration: 5000, panelClass: 'snack-error' },
+            { panelClass: 'snack-error' },
           );
           this.submitting.set(false);
         },
@@ -196,15 +196,15 @@ export class AttendanceRequest implements OnInit {
         this.snack.open(
           this.translate.instant('attendance.request.success.cancelled'),
           this.translate.instant('attendance.request.close'),
-          { duration: 3000 },
+          { duration: 5000 },
         );
         this.loadMyRequests();
       },
       error: (err) =>
         this.snack.open(
-          '❌ ' + (err.error?.message || this.translate.instant('attendance.request.errors.cancelFailed')),
+          err.error?.message || this.translate.instant('attendance.request.errors.cancelFailed'),
           this.translate.instant('attendance.request.close'),
-          { duration: 4000 },
+          { panelClass: 'snack-error' },
         ),
     });
   }
