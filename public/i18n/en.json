@@ -546,7 +546,6 @@
     "sidebar": {
       "logout": "Logout",
       "navLabel": "Main navigation",
-      "myProfile": "My Profile",
       "loading": "Loading menu",
       "loadFailedRetry": "The menu could not be loaded. Retry"
     },
