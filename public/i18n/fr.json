@@ -190,6 +190,21 @@
       }
     },
     "detail": {
+      "photo": {
+        "change": "Changer la photo",
+        "add": "Ajouter une photo",
+        "remove": "Supprimer la photo",
+        "removeConfirm": "Supprimer la photo de cet employé ?",
+        "removeYes": "Oui, supprimer",
+        "hint": "JPG, PNG ou WebP, 2 Mo maximum",
+        "alt": "Photo de {{name}}",
+        "errors": {
+          "type": "Choisissez une image JPG, PNG ou WebP.",
+          "size": "La photo ne doit pas dépasser 2 Mo.",
+          "uploadFailed": "La photo n'a pas pu être téléversée.",
+          "removeFailed": "La photo n'a pas pu être supprimée."
+        }
+      },
       "loading": "Chargement de l'employé...",
       "goBack": "Retour",
       "deactivateAction": "Désactiver",

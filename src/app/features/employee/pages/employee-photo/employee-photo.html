@@ -1,0 +1,46 @@
+<div class="photo">
+  @if (src()) {
+    <img class="avatar" [src]="src()" [alt]="'employee.detail.photo.alt' | translate: { name: name() }" />
+  } @else {
+    <div class="avatar avatar-text" aria-hidden="true">{{ initials() }}</div>
+  }
+
+  @if (canEdit()) {
+    <div class="controls">
+      @if (confirmingRemove()) {
+        <span class="confirm-text" role="alert">{{ 'employee.detail.photo.removeConfirm' | translate }}</span>
+        <button class="btn btn-danger" type="button" [disabled]="busy()" (click)="confirmRemove()">
+          {{ 'employee.detail.photo.removeYes' | translate }}
+        </button>
+        <button class="btn" type="button" [disabled]="busy()" (click)="cancelRemove()">
+          {{ 'common.cancel' | translate }}
+        </button>
+      } @else {
+        <input
+          #file
+          class="file-input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          tabindex="-1"
+          aria-hidden="true"
+          (change)="onFileChosen($event)"
+        />
+        <button class="btn" type="button" [disabled]="busy()" (click)="file.click()">
+          <span class="material-icons" aria-hidden="true">photo_camera</span>
+          {{ (src() ? 'employee.detail.photo.change' : 'employee.detail.photo.add') | translate }}
+        </button>
+        @if (src()) {
+          <button class="btn" type="button" [disabled]="busy()" (click)="askRemove()">
+            <span class="material-icons" aria-hidden="true">delete_outline</span>
+            {{ 'employee.detail.photo.remove' | translate }}
+          </button>
+        }
+        <small class="hint">{{ 'employee.detail.photo.hint' | translate }}</small>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+</div>

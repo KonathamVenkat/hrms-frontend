@@ -9,6 +9,7 @@ import { EmployeeDetailData } from '../../models/employee';
 import { JobDetailsComponent } from '../job-details/job-details';
 import { EmployeeAddressesComponent } from '../employee-addresses/employee-addresses';
 import { EmployeeIdentityComponent } from '../employee-identity/employee-identity';
+import { EmployeePhoto } from '../employee-photo/employee-photo';
 import { EmployeeDocumentsComponent } from '../employee-documents/employee-documents';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
@@ -34,6 +35,7 @@ type DetailTab = 'profile' | 'job' | 'addresses' | 'identity' | 'documents';
     EmployeeAddressesComponent,
     EmployeeIdentityComponent,
     EmployeeDocumentsComponent,
+    EmployeePhoto,
     TranslatePipe,
     ReactiveFormsModule,
     MatSnackBarModule,
@@ -129,6 +131,10 @@ export class EmployeeDetail implements OnInit {
           );
         },
       });
+  }
+
+  onPhotoChanged(url: string | undefined): void {
+    this.employee.update((e) => (e ? { ...e, profilePhotoUrl: url } : e));
   }
 
   // ── Navigation ────────────────────────────────────────────

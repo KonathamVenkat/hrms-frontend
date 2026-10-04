@@ -1,0 +1,82 @@
+.photo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 3px solid var(--teal-lt);
+}
+
+.avatar-text {
+  background: linear-gradient(135deg, #13c9b4, #0aa896);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-input {
+  display: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid #c4ccd6;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn .material-icons {
+  font-size: 18px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #0b57d0;
+  outline-offset: 2px;
+}
+
+.btn-danger {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
+}
+
+.confirm-text,
+.hint {
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: #b3261e;
+}

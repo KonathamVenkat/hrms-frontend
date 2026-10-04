@@ -190,6 +190,21 @@
       }
     },
     "detail": {
+      "photo": {
+        "change": "Change photo",
+        "add": "Add photo",
+        "remove": "Remove photo",
+        "removeConfirm": "Remove this employee's photo?",
+        "removeYes": "Yes, remove",
+        "hint": "JPG, PNG or WebP, up to 2 MB",
+        "alt": "Photo of {{name}}",
+        "errors": {
+          "type": "Choose a JPG, PNG or WebP image.",
+          "size": "The photo must be 2 MB or smaller.",
+          "uploadFailed": "The photo could not be uploaded.",
+          "removeFailed": "The photo could not be removed."
+        }
+      },
       "loading": "Loading employee...",
       "goBack": "Go Back",
       "deactivateAction": "Deactivate",

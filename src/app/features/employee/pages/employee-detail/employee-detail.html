@@ -28,17 +28,13 @@
 
         <!-- Avatar + name -->
         <div class="profile-identity">
-          @if (employee()!.profilePhotoUrl) {
-            <img
-              class="profile-avatar"
-              [src]="employee()!.profilePhotoUrl"
-              [alt]="employee()!.fullNameEn"
-            />
-          } @else {
-            <div class="profile-avatar-text">
-              {{ getInitials(employee()!.fullNameEn) }}
-            </div>
-          }
+          <app-employee-photo
+            [employeeId]="employee()!.employeeId"
+            [photoUrl]="employee()!.profilePhotoUrl"
+            [name]="employee()!.fullNameEn"
+            [canEdit]="employee()!.isActive"
+            (photoChanged)="onPhotoChanged($event)"
+          />
 
           <div class="profile-info">
             <h1 class="profile-name">{{ employee()!.fullNameEn }}</h1>
