@@ -19,7 +19,8 @@ export interface AttendanceLogResponse {
   lateMinutes:        number;
   earlyLeaveMinutes:  number;
   status:             AttendanceStatus;
-  punchSource:        PunchSource;
+  /** Absent for the rows the system generates for days nobody punched (ABSENT, WEEKEND, HOLIDAY, ON_LEAVE). */
+  punchSource?:       PunchSource | null;
   locationId:         number | null;
   locationName:       string | null;
   shiftName:          string | null;
