@@ -22,9 +22,11 @@
       <!-- ── Profile card ────────────────────────────────── -->
       <div class="profile-card">
         <!-- Back button -->
-        <button class="back-btn" type="button" [attr.aria-label]="'employee.detail.goBack' | translate" (click)="goBack()">
-          <span class="material-icons" aria-hidden="true">arrow_back</span>
-        </button>
+        @if (!selfMode()) {
+          <button class="back-btn" type="button" [attr.aria-label]="'employee.detail.goBack' | translate" (click)="goBack()">
+            <span class="material-icons" aria-hidden="true">arrow_back</span>
+          </button>
+        }
 
         <!-- Avatar + name -->
         <div class="profile-identity">
@@ -64,13 +66,13 @@
             <span class="status-dot"></span>
             {{ 'common.enums.employmentStatus.' + employee()!.employmentStatus | translate }}
           </span>
-          @if (employee()!.isActive) {
+          @if (employee()!.isActive && !selfMode()) {
             <button class="btn-edit" (click)="editEmployee()">
               <span class="material-icons" aria-hidden="true">edit</span>
               {{ 'common.edit' | translate }}
             </button>
           }
-          @if (isHrAdmin()) {
+          @if (isHrAdmin() && !selfMode()) {
             @if (employee()!.isActive) {
               <button class="btn-edit" (click)="openReset()">
                 <span class="material-icons" aria-hidden="true">lock_reset</span>
@@ -98,7 +100,7 @@
         [attr.aria-label]="'employee.detail.tabsLabel' | translate"
         (keydown)="onTabKeydown($event)"
       >
-        @for (tab of tabs; track tab.id) {
+        @for (tab of visibleTabs(); track tab.id) {
           <button
             type="button"
             role="tab"
@@ -312,6 +314,7 @@
           id="detail-panel-identity"
           aria-labelledby="detail-tab-identity"
           [employeeId]="employee()!.employeeId"
+          [readOnly]="identityReadOnly()"
         />
       }
       @if (activeDetailTab() === 'documents') {

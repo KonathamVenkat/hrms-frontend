@@ -161,7 +161,9 @@
               <!-- Employee name + avatar -->
               <td>
                 <div class="emp-cell">
-                  <div class="emp-avatar">{{ getInitials(emp.fullNameEn) }}</div>
+                  <div class="emp-avatar">
+                    <app-user-avatar [photoUrl]="emp.profilePhotoUrl" [name]="emp.fullNameEn" />
+                  </div>
                   <div class="emp-info">
                     <span class="emp-name">{{ emp.fullNameEn }}</span>
                     <span class="emp-code">{{ emp.employeeCode }}</span>

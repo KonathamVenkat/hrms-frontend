@@ -256,7 +256,8 @@
       },
       "errors": {
         "notFound": "Employé introuvable.",
-        "loadFailed": "Échec du chargement de l'employé."
+        "loadFailed": "Échec du chargement de l'employé.",
+        "noOwnRecord": "Votre compte n'est lié à aucun dossier employé : il n'y a pas de profil à afficher."
       },
       "resetPassword": {
         "action": "Réinitialiser le mot de passe",
@@ -537,7 +538,8 @@
       "list": "Employés",
       "create": "Créer un employé",
       "edit": "Modifier l'employé",
-      "detail": "Fiche de l'employé"
+      "detail": "Fiche de l'employé",
+      "profile": "Mon profil"
     }
   },
   "layout": {

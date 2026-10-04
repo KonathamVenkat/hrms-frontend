@@ -24,12 +24,4 @@ export class EmployeePhotoService {
   remove(employeeId: number): Observable<ApiResponse<CreatedEmployee>> {
     return this.http.delete<ApiResponse<CreatedEmployee>>(this.url(employeeId));
   }
-
-  /**
-   * The stored photo as raw bytes. It needs the signed-in session, so it cannot be used as a
-   * plain image URL; the caller turns the Blob into an object URL.
-   */
-  download(photoUrl: string): Observable<Blob> {
-    return this.http.get(`${environment.serviceUrl}${photoUrl}`, { responseType: 'blob' });
-  }
 }

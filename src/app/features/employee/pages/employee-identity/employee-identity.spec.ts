@@ -61,4 +61,18 @@ describe('EmployeeIdentityComponent masking', () => {
     // Client-side dotted masking still applies until the viewer reveals the value.
     expect(component.displayValue('123456789', 'nationalId')).toBe('•••••6789');
   });
+
+  it('shows real values but no edit controls to a viewer who may not change them', () => {
+    const real: IdentityInfo = { ...masked, nationalId: '123456789', biometricId: 'BIO12', masked: false };
+    const { fixture, component, el } = setup(real);
+
+    fixture.componentRef.setInput('readOnly', true);
+    fixture.detectChanges();
+    component.openEdit();
+
+    expect(component.canEdit()).toBe(false);
+    expect(el.querySelector('.btn-edit-info')).toBeNull();
+    expect(el.querySelector('.pii-toggle')).not.toBeNull();
+    expect(component.editMode()).toBe(false);
+  });
 });

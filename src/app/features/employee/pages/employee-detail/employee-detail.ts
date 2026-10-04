@@ -1,5 +1,5 @@
 // src/app/features/employee/pages/employee-detail/employee-detail.ts
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { finalize, Observable } from 'rxjs';
@@ -16,6 +16,8 @@ import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Auth } from '../../../../core/auth/auth';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { HR_ROLES } from '../../../../core/guards/role.guard';
+import { OwnPhoto } from '../../../../core/services/own-photo.service';
 import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
 import {
   NEW_PASSWORD_VALIDATORS,
@@ -56,6 +58,7 @@ export class EmployeeDetail implements OnInit {
   private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private language = inject(LanguageService);
+  private ownPhoto = inject(OwnPhoto);
 
   // ── State ─────────────────────────────────────────────────
   employee = signal<EmployeeDetailData | null>(null);
@@ -71,6 +74,18 @@ export class EmployeeDetail implements OnInit {
     { id: 'identity', icon: 'badge', labelKey: 'employee.detail.tabs.identity' },
     { id: 'documents', icon: 'folder', labelKey: 'employee.detail.tabs.documents' },
   ];
+
+  /** True on "My profile": the viewer's own record, without the HR actions on it. */
+  selfMode = signal(false);
+  /** Job details, addresses and documents are HR-only in the backend, so an employee sees only the rest. */
+  private readonly isHr = this.auth.hasAnyRole(...HR_ROLES);
+  readonly visibleTabs = computed(() =>
+    this.selfMode() && !this.isHr
+      ? this.tabs.filter((tab) => tab.id === 'profile' || tab.id === 'identity')
+      : this.tabs,
+  );
+  /** The identity details are read-only for everyone but an HR_ADMIN. */
+  readonly identityReadOnly = computed(() => this.selfMode() && !this.isHrAdmin());
 
   // ── Deactivate / Reactivate (HR_ADMIN only) ────────────────
   isHrAdmin = signal(false);
@@ -96,6 +111,19 @@ export class EmployeeDetail implements OnInit {
 
   ngOnInit(): void {
     this.isHrAdmin.set(this.auth.getRole() === 'HR_ADMIN');
+
+    // "My profile" (/app/profile) shows the signed-in user's own record.
+    if (this.route.snapshot.data['self']) {
+      this.selfMode.set(true);
+      const ownId = this.auth.getEmployeeId();
+      if (ownId) {
+        this.loadEmployee(ownId);
+      } else {
+        this.loading.set(false);
+        this.error.set(this.translate.instant('employee.detail.errors.noOwnRecord'));
+      }
+      return;
+    }
 
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
@@ -134,12 +162,18 @@ export class EmployeeDetail implements OnInit {
   }
 
   onPhotoChanged(url: string | undefined): void {
+    const emp = this.employee();
     this.employee.update((e) => (e ? { ...e, profilePhotoUrl: url } : e));
+    // Changing your own photo updates the toolbar too.
+    if (emp && emp.employeeId === this.auth.getEmployeeId()) {
+      this.ownPhoto.set(url);
+    }
   }
 
   // ── Navigation ────────────────────────────────────────────
   goBack(): void {
-    this.router.navigateByUrl('/app/employee/list');
+    // The employee list is HR-only, so on "My profile" the way out is the dashboard.
+    this.router.navigateByUrl(this.selfMode() ? '/app/dashboard' : '/app/employee/list');
   }
 
   editEmployee(): void {
@@ -269,19 +303,20 @@ export class EmployeeDetail implements OnInit {
       ArrowRight: rtl ? -1 : 1,
       ArrowLeft: rtl ? 1 : -1,
     };
-    const current = this.tabs.findIndex((tab) => tab.id === this.activeDetailTab());
+    const tabs = this.visibleTabs();
+    const current = tabs.findIndex((tab) => tab.id === this.activeDetailTab());
     let next: number;
     if (event.key in step) {
-      next = (current + step[event.key] + this.tabs.length) % this.tabs.length;
+      next = (current + step[event.key] + tabs.length) % tabs.length;
     } else if (event.key === 'Home') {
       next = 0;
     } else if (event.key === 'End') {
-      next = this.tabs.length - 1;
+      next = tabs.length - 1;
     } else {
       return;
     }
     event.preventDefault();
-    const tab = this.tabs[next];
+    const tab = tabs[next];
     this.activeDetailTab.set(tab.id);
     (event.currentTarget as HTMLElement).querySelector<HTMLElement>('#detail-tab-' + tab.id)?.focus();
   }

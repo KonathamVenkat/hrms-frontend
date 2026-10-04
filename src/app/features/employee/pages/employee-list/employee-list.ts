@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { UserAvatar } from '../../../../core/components/user-avatar/user-avatar';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ export type PageEntry = number | 'ellipsis';
 
 @Component({
   selector: 'app-employee-list',
-  imports: [DatePipe, FormsModule, TranslatePipe],
+  imports: [DatePipe, FormsModule, TranslatePipe, UserAvatar],
   templateUrl: './employee-list.html',
   styleUrl: './employee-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -220,15 +221,6 @@ export class EmployeeList implements OnInit {
   }
 
   // ── Helpers ───────────────────────────────────────────────
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  }
-
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       ACTIVE: 'badge-active',

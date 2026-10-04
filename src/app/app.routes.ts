@@ -28,6 +28,14 @@ export const routes: Routes = [
         title: 'Dashboard · EHRMS',
       },
       {
+        // The signed-in user's own record, open to every role (the detail page in "self" mode).
+        path: 'profile',
+        data: { self: true },
+        loadComponent: () =>
+          import('./features/employee/pages/employee-detail/employee-detail').then((m) => m.EmployeeDetail),
+        title: 'employee.routes.profile',
+      },
+      {
         path: 'employee',
         canActivate: [roleGuard(...HR_ROLES)],
         loadChildren: () =>

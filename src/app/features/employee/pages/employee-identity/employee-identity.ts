@@ -33,6 +33,8 @@ import { FieldA11yDirective } from '../../../../core/directives/field-a11y.direc
 })
 export class EmployeeIdentityComponent implements OnInit {
   readonly employeeId = input.required<number>();
+  /** True when the viewer may see the identity details but not change them (own record, not HR_ADMIN). */
+  readonly readOnly = input(false);
 
   private fb = inject(FormBuilder);
   private identitySvc = inject(IdentityService);
@@ -53,6 +55,8 @@ export class EmployeeIdentityComponent implements OnInit {
   hasData = signal(false);
   // The backend masks identity numbers for everyone except HR_ADMIN and the employee themself.
   isMasked = computed(() => this.identity()?.masked === true);
+  /** Edit and add controls show only for a viewer who sees real values and may change them. */
+  canEdit = computed(() => !this.isMasked() && !this.readOnly());
 
   // ── PII masking ─────────────────────────────────────────────
   // National ID / SSN / Biometric ID are masked by default in both view and
@@ -114,7 +118,7 @@ export class EmployeeIdentityComponent implements OnInit {
 
   // ── Open edit ─────────────────────────────────────────────
   openEdit(): void {
-    if (this.isMasked()) return;
+    if (!this.canEdit()) return;
     const info = this.identity();
     this.form.patchValue({
       nationalId: info?.nationalId ?? '',

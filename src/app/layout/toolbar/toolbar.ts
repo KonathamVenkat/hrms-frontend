@@ -12,13 +12,15 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcher } from '../../core/components/language-switcher/language-switcher';
+import { UserAvatar } from '../../core/components/user-avatar/user-avatar';
+import { OwnPhoto } from '../../core/services/own-photo.service';
 import { LanguageService } from '../../core/services/language.service';
 import { Auth, StoredUser } from '../../core/auth/auth';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-toolbar',
-  imports: [LanguageSwitcher, TranslatePipe],
+  imports: [LanguageSwitcher, TranslatePipe, UserAvatar],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +38,7 @@ export class Toolbar implements OnInit, OnDestroy {
   private languageService = inject(LanguageService);
   private auth = inject(Auth);
   private authService = inject(AuthService);
+  private ownPhoto = inject(OwnPhoto);
 
   protected readonly direction = this.languageService.direction;
 
@@ -48,6 +51,7 @@ export class Toolbar implements OnInit, OnDestroy {
   dropdownLeft = signal<number>(20);
 
   user = signal<StoredUser | null>(null);
+  protected readonly photoUrl = this.ownPhoto.url;
 
   private clockInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -55,6 +59,7 @@ export class Toolbar implements OnInit, OnDestroy {
     this.user.set(this.auth.getStoredUser());
 
     if (isPlatformBrowser(this.platformId)) {
+      this.ownPhoto.refresh();
       this.isOnline.set(navigator.onLine);
       this.tick();
       this.clockInterval = setInterval(() => this.tick(), 1000);
@@ -71,16 +76,6 @@ export class Toolbar implements OnInit, OnDestroy {
     const mm = String(now.getMinutes()).padStart(2, '0');
     const ss = String(now.getSeconds()).padStart(2, '0');
     this.currentTime.set(`${hh}:${mm}:${ss}`);
-  }
-
-  get initials(): string {
-    const name = this.user()?.fullName || 'User';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
   }
 
   get roleLabel(): string {
@@ -115,6 +110,11 @@ export class Toolbar implements OnInit, OnDestroy {
         this.elRef.nativeElement.querySelector('[role="menuitem"]')?.focus();
       });
     }
+  }
+
+  openProfile(): void {
+    this.profileOpen.set(false);
+    this.router.navigate(['/app/profile']);
   }
 
   changePassword(): void {

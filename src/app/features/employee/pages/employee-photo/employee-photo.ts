@@ -14,6 +14,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Subscription, finalize } from 'rxjs';
 import { EmployeePhotoService } from '../../services/photo.service';
+import { PhotoCache } from '../../../../core/services/photo-cache.service';
 import { getHttpErrorMessage, serverMessage } from '../../../../core/utils/http-error-message';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -22,8 +23,8 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
  * An employee's avatar with (optionally) upload and remove controls.
  *
  * An uploaded photo is stored by the backend and referenced by an app-relative path
- * (`/api/v1/employees/{id}/photo`) that only works with the signed-in session, so it is fetched
- * through HttpClient and shown from an object URL. An `http(s)` URL is used as is.
+ * (`/api/v1/employees/{id}/photo?v=...`) that only works with the signed-in session, so it is
+ * fetched through the shared {@link PhotoCache}. An `http(s)` URL is used as is.
  */
 @Component({
   selector: 'app-employee-photo',
@@ -34,6 +35,7 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 })
 export class EmployeePhoto {
   private photos = inject(EmployeePhotoService);
+  private cache = inject(PhotoCache);
   private translate = inject(TranslateService);
   private platformId = inject(PLATFORM_ID);
 
@@ -59,40 +61,21 @@ export class EmployeePhoto {
       .slice(0, 2),
   );
 
-  private objectUrl: string | null = null;
   private loadSub: Subscription | null = null;
 
   constructor() {
     effect(() => this.show(this.photoUrl()));
-    inject(DestroyRef).onDestroy(() => this.release());
+    inject(DestroyRef).onDestroy(() => this.loadSub?.unsubscribe());
   }
 
   private show(url: string | undefined): void {
-    this.release();
+    this.loadSub?.unsubscribe();
+    this.loadSub = null;
     if (!url || !isPlatformBrowser(this.platformId)) {
       this.src.set(null);
       return;
     }
-    if (/^https?:\/\//.test(url)) {
-      this.src.set(url);
-      return;
-    }
-    this.loadSub = this.photos.download(url).subscribe({
-      next: (blob) => {
-        this.objectUrl = URL.createObjectURL(blob);
-        this.src.set(this.objectUrl);
-      },
-      error: () => this.src.set(null), // fall back to the initials
-    });
-  }
-
-  private release(): void {
-    this.loadSub?.unsubscribe();
-    this.loadSub = null;
-    if (this.objectUrl) {
-      URL.revokeObjectURL(this.objectUrl);
-      this.objectUrl = null;
-    }
+    this.loadSub = this.cache.load(url).subscribe((shown) => this.src.set(shown)); // null: initials
   }
 
   onFileChosen(event: Event): void {
@@ -117,10 +100,7 @@ export class EmployeePhoto {
       .pipe(finalize(() => this.busy.set(false)))
       .subscribe({
         next: (res) => {
-          // The path is the same after a replacement, so show the new image directly.
-          this.release();
-          this.objectUrl = URL.createObjectURL(file);
-          this.src.set(this.objectUrl);
+          this.show(res.data.profilePhotoUrl);
           this.photoChanged.emit(res.data.profilePhotoUrl);
         },
         error: (err: unknown) =>
@@ -147,8 +127,7 @@ export class EmployeePhoto {
       .subscribe({
         next: () => {
           this.confirmingRemove.set(false);
-          this.release();
-          this.src.set(null);
+          this.show(undefined);
           this.photoChanged.emit(undefined);
         },
         error: (err: unknown) => {

@@ -36,13 +36,4 @@ describe('EmployeePhotoService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush({ success: true, message: '', statusCode: 200, data: { id: 5 } });
   });
-
-  it('downloads the stored photo as a blob from the backend address', () => {
-    service.download('/api/v1/employees/5/photo').subscribe();
-
-    const req = http.expectOne(url);
-    expect(req.request.method).toBe('GET');
-    expect(req.request.responseType).toBe('blob');
-    req.flush(new Blob(['img']));
-  });
 });

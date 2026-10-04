@@ -5,8 +5,10 @@ import { of, throwError } from 'rxjs';
 
 import { EmployeePhoto } from './employee-photo';
 import { EmployeePhotoService } from '../../services/photo.service';
+import { PhotoCache } from '../../../../core/services/photo-cache.service';
 
-const PHOTO_PATH = '/api/v1/employees/5/photo';
+const OLD_PATH = '/api/v1/employees/5/photo?v=1';
+const NEW_PATH = '/api/v1/employees/5/photo?v=2';
 
 function chosen(file: File): Event {
   return { target: { files: [file], value: 'x' } } as unknown as Event;
@@ -15,16 +17,20 @@ function chosen(file: File): Event {
 function setup(inputs: { photoUrl?: string; canEdit?: boolean } = {}) {
   const photos = {
     maxBytes: 2 * 1024 * 1024,
-    download: vi.fn(() => of(new Blob(['img'], { type: 'image/png' }))),
     upload: vi.fn(() =>
-      of({ success: true, message: '', statusCode: 200, data: { id: 5, profilePhotoUrl: PHOTO_PATH } }),
+      of({ success: true, message: '', statusCode: 200, data: { id: 5, profilePhotoUrl: NEW_PATH } }),
     ),
     remove: vi.fn(() => of({ success: true, message: '', statusCode: 200, data: { id: 5 } })),
   };
+  const cache = { load: vi.fn((url: string) => of(url.startsWith('http') ? url : `blob:${url}`)) };
 
   TestBed.configureTestingModule({
     imports: [EmployeePhoto],
-    providers: [provideTranslateService(), { provide: EmployeePhotoService, useValue: photos }],
+    providers: [
+      provideTranslateService(),
+      { provide: EmployeePhotoService, useValue: photos },
+      { provide: PhotoCache, useValue: cache },
+    ],
   });
 
   const fixture = TestBed.createComponent(EmployeePhoto);
@@ -37,42 +43,31 @@ function setup(inputs: { photoUrl?: string; canEdit?: boolean } = {}) {
   const component = fixture.componentInstance;
   const changed = vi.fn();
   component.photoChanged.subscribe(changed);
-  return { fixture, component, photos, changed, el: fixture.nativeElement as HTMLElement };
+  return { fixture, component, photos, cache, changed, el: fixture.nativeElement as HTMLElement };
 }
 
 describe('EmployeePhoto', () => {
-  beforeEach(() => {
-    URL.createObjectURL = vi.fn(() => 'blob:photo');
-    URL.revokeObjectURL = vi.fn();
-  });
-
   it('shows the initials when there is no photo', () => {
-    const { component, el } = setup();
+    const { component, cache, el } = setup();
 
     expect(component.initials()).toBe('SK');
+    expect(cache.load).not.toHaveBeenCalled();
     expect(el.querySelector('img')).toBeNull();
     expect(el.querySelector('.avatar-text')?.textContent).toContain('SK');
   });
 
-  it('uses an http(s) photo URL directly, without a download', () => {
-    const { photos, el } = setup({ photoUrl: 'https://cdn.example.com/a.png' });
+  it('shows an uploaded photo from the shared photo cache', () => {
+    const { cache, el } = setup({ photoUrl: OLD_PATH });
 
-    expect(photos.download).not.toHaveBeenCalled();
-    expect(el.querySelector('img')?.getAttribute('src')).toBe('https://cdn.example.com/a.png');
+    expect(cache.load).toHaveBeenCalledWith(OLD_PATH);
+    expect(el.querySelector('img')?.getAttribute('src')).toBe(`blob:${OLD_PATH}`);
   });
 
-  it('fetches an uploaded photo through the session and shows it from an object URL', () => {
-    const { photos, el } = setup({ photoUrl: PHOTO_PATH });
+  it('falls back to the initials when the photo cannot be loaded', () => {
+    const { cache, el, fixture } = setup();
+    cache.load.mockReturnValueOnce(of(null as unknown as string));
 
-    expect(photos.download).toHaveBeenCalledWith(PHOTO_PATH);
-    expect(el.querySelector('img')?.getAttribute('src')).toBe('blob:photo');
-  });
-
-  it('falls back to the initials when the photo cannot be fetched', () => {
-    const { photos, el, fixture } = setup();
-    photos.download.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 404 })));
-
-    fixture.componentRef.setInput('photoUrl', PHOTO_PATH);
+    fixture.componentRef.setInput('photoUrl', OLD_PATH);
     fixture.detectChanges();
 
     expect(el.querySelector('img')).toBeNull();
@@ -103,16 +98,17 @@ describe('EmployeePhoto', () => {
     expect(component.error()).toBe('employee.detail.photo.errors.size');
   });
 
-  it('uploads a valid photo, shows it and reports the new URL', () => {
-    const { component, photos, changed, el, fixture } = setup();
+  it('uploads a valid photo, shows the new version and reports the new URL', () => {
+    const { component, photos, cache, changed, el, fixture } = setup({ photoUrl: OLD_PATH });
     const file = new File(['img'], 'me.png', { type: 'image/png' });
 
     component.onFileChosen(chosen(file));
     fixture.detectChanges();
 
     expect(photos.upload).toHaveBeenCalledWith(5, file);
-    expect(changed).toHaveBeenCalledWith(PHOTO_PATH);
-    expect(el.querySelector('img')?.getAttribute('src')).toBe('blob:photo');
+    expect(cache.load).toHaveBeenCalledWith(NEW_PATH);
+    expect(changed).toHaveBeenCalledWith(NEW_PATH);
+    expect(el.querySelector('img')?.getAttribute('src')).toBe(`blob:${NEW_PATH}`);
     expect(component.error()).toBeNull();
   });
 
@@ -130,7 +126,7 @@ describe('EmployeePhoto', () => {
   });
 
   it('asks for confirmation before removing, and removes only after it is given', () => {
-    const { component, photos, changed } = setup({ photoUrl: PHOTO_PATH });
+    const { component, photos, changed } = setup({ photoUrl: OLD_PATH });
 
     component.askRemove();
     expect(component.confirmingRemove()).toBe(true);

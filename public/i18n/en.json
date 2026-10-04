@@ -256,7 +256,8 @@
       },
       "errors": {
         "notFound": "Employee not found.",
-        "loadFailed": "Failed to load employee."
+        "loadFailed": "Failed to load employee.",
+        "noOwnRecord": "Your account is not linked to an employee record, so there is no profile to show."
       },
       "resetPassword": {
         "action": "Reset password",
@@ -537,7 +538,8 @@
       "list": "Employees",
       "create": "Create Employee",
       "edit": "Edit Employee",
-      "detail": "Employee Detail"
+      "detail": "Employee Detail",
+      "profile": "My Profile"
     }
   },
   "layout": {

@@ -38,7 +38,9 @@
         (click)="toggleProfile($event)"
         [attr.aria-expanded]="profileOpen()"
       >
-        <div class="avatar" aria-hidden="true">{{ initials }}</div>
+        <div class="avatar" aria-hidden="true">
+          <app-user-avatar [photoUrl]="photoUrl()" [name]="user()?.fullName || ('layout.toolbar.userFallback' | translate)" />
+        </div>
         <div class="profile-info">
           <span class="profile-name">{{
             user()?.fullName || ('layout.toolbar.userFallback' | translate)
@@ -64,6 +66,10 @@
           [style.right.px]="direction() === 'rtl' ? null : dropdownRight()"
           [style.left.px]="direction() === 'rtl' ? dropdownLeft() : null"
         >
+          <button class="dropdown-item" type="button" role="menuitem" (click)="openProfile()">
+            <span class="material-icons" aria-hidden="true">person</span
+            >{{ 'layout.toolbar.myProfile' | translate }}
+          </button>
           <button class="dropdown-item" type="button" role="menuitem" (click)="changePassword()">
             <span class="material-icons" aria-hidden="true">lock</span
             >{{ 'layout.toolbar.changePassword' | translate }}

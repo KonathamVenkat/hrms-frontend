@@ -9,7 +9,7 @@
         <span class="chip chip-empty">{{ 'employee.identity.notFilledChip' | translate }}</span>
       }
     </div>
-    @if (!editMode() && !isMasked()) {
+    @if (!editMode() && canEdit()) {
       <button class="btn-edit-info" (click)="openEdit()">
         <span class="material-icons" aria-hidden="true">edit</span>
         {{ (hasData() ? 'common.edit' : 'employee.identity.addInfoAction') | translate }}
@@ -51,7 +51,7 @@
         <span class="material-icons" aria-hidden="true">badge</span>
         <p>{{ 'employee.identity.emptyTitle' | translate }}</p>
         <small>{{ 'employee.identity.emptyHint' | translate }}</small>
-        @if (!isMasked()) {
+        @if (canEdit()) {
           <button class="btn-add-sm" (click)="openEdit()">
             <span class="material-icons" aria-hidden="true">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}
           </button>
