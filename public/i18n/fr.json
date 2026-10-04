@@ -964,7 +964,8 @@
         "checkOut": "Départ",
         "reason": "Motif",
         "status": "Statut",
-        "reviewedBy": "Validé par"
+        "reviewedBy": "Validé par",
+        "actions": "Actions"
       },
       "cancelRequest": "Annuler la demande",
       "emptyTitle": "Aucune demande de régularisation trouvée",

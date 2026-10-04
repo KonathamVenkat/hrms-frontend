@@ -964,7 +964,8 @@
         "checkOut": "Check Out",
         "reason": "Reason",
         "status": "Status",
-        "reviewedBy": "Reviewed By"
+        "reviewedBy": "Reviewed By",
+        "actions": "Actions"
       },
       "cancelRequest": "Cancel Request",
       "emptyTitle": "No regularization requests found",

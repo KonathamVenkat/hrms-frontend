@@ -59,6 +59,7 @@
           </div>
           <mat-progress-bar
             [mode]="'determinate'"
+            [attr.aria-label]="'attendance.summary.attendance' | translate"
             [value]="mySummary()!.attendancePercentage"
             [color]="getProgressColor(mySummary()!.attendancePercentage)"
             class="att-bar">

@@ -38,7 +38,7 @@
 
 .subtitle {
   font-size: 13px;
-  color: #6b7280;
+  color: #5b6270;
 }
 
 .header-badges {
@@ -140,7 +140,7 @@
 
 .stat-lbl {
   font-size: 11px;
-  color: #6b7280;
+  color: #5b6270;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -167,7 +167,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6b7280;
+  color: #5b6270;
   white-space: nowrap;
 }
 
@@ -224,7 +224,7 @@
 }
 .emp-code {
   font-size: 11px;
-  color: #6b7280;
+  color: #5b6270;
 }
 
 /* ── Ref ID ──────────────────────────────────────────────── */
@@ -248,7 +248,7 @@
 
 .datetime-text {
   font-size: 12px;
-  color: #6b7280;
+  color: #5b6270;
   white-space: nowrap;
 }
 
@@ -316,7 +316,7 @@
   color: #dc2626;
 }
 .reviewer-note {
-  color: #6b7280;
+  color: #5b6270;
 }
 
 .note-icon {
@@ -352,11 +352,11 @@
 
 .acted-info .acted-at {
   font-size: 11px;
-  color: #9ca3af;
+  color: #5b6270;
 }
 
 .muted {
-  color: #9ca3af;
+  color: #5b6270;
 }
 
 /* ── Empty State ─────────────────────────────────────────── */
@@ -370,7 +370,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #9ca3af;
+  color: #5b6270;
 }
 
 .empty-state mat-icon {
@@ -397,7 +397,7 @@
   align-items: center;
   padding: 60px 0;
   gap: 12px;
-  color: #6b7280;
+  color: #5b6270;
 }
 
 /* ── Reject Dialog (inline, no mat-dialog) ───────────────── */
@@ -447,7 +447,7 @@
 }
 
 .dialog-close {
-  color: #6b7280;
+  color: #5b6270;
 }
 
 .dialog-body {
@@ -465,7 +465,7 @@
 
 .dialog-label {
   font-size: 12px;
-  color: #6b7280;
+  color: #5b6270;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
