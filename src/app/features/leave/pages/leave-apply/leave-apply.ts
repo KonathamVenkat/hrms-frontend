@@ -293,7 +293,7 @@ export class LeaveApplyPage implements OnInit {
   }
 
   // ── countWorkingDays — parses as LOCAL date to avoid UTC shift ────
-  // Weekend is Friday/Saturday (Oman) and active public holidays are excluded,
+  // Weekend is Saturday/Sunday and active public holidays are excluded,
   // matching the backend's authoritative calculateWorkingDays().
   countWorkingDays(startStr: string, endStr: string): number {
     if (!startStr || !endStr) return 0;
@@ -311,8 +311,8 @@ export class LeaveApplyPage implements OnInit {
     let count = 0;
     const cur = new Date(start);
     while (cur <= end) {
-      const dow = cur.getDay(); // 0=Sun ... 5=Fri, 6=Sat
-      const isWeekend = dow === 5 || dow === 6;
+      const dow = cur.getDay(); // 0=Sun ... 6=Sat
+      const isWeekend = dow === 0 || dow === 6;
       const isoDate = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`;
       if (!isWeekend && !holidays.has(isoDate)) count++;
       cur.setDate(cur.getDate() + 1);

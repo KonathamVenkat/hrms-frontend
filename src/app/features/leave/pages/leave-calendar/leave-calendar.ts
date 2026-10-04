@@ -76,7 +76,7 @@ export class LeaveCalendarPage implements OnInit {
   // ── Selected day for detail popup ─────────────────────────
   selectedDay = signal<CalendarDay | null>(null);
 
-  // ── Week headers — Mon–Sun (Oman: Sat-Fri work week) ──────
+  // ── Week headers — Mon–Sun (Sat/Sun weekend) ──────
   readonly weekDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
   // ── Computed calendar grid (7 cols) ───────────────────────
