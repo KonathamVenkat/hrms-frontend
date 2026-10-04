@@ -1,11 +1,11 @@
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
+  --muted: #475569;
   --red: #e11d48;
-  --green: #16a34a;
+  --green: #15803d;
   --gold: #f59e0b;
   --radius: 10px;
 }
@@ -79,7 +79,7 @@
   transition: background 0.18s;
 }
 .btn-edit-info:hover {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-edit-info .material-icons {
   font-size: 16px;
@@ -172,7 +172,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #556377;
 }
 .btn-add-sm {
   margin-top: 8px;
@@ -296,6 +296,9 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
   padding: 2px;
   flex-shrink: 0;
 }
@@ -438,7 +441,7 @@ input:focus {
   transition: background 0.18s;
 }
 .btn-save:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-save:disabled {
   opacity: 0.7;

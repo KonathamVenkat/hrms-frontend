@@ -1,12 +1,12 @@
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
+  --muted: #475569;
   --hover: #f4f7f9;
   --red: #e11d48;
-  --green: #16a34a;
+  --green: #15803d;
   --gold: #f59e0b;
   --radius: 10px;
 }
@@ -63,7 +63,7 @@
   transition: background 0.18s;
 }
 .btn-add:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-add:disabled {
   opacity: 0.5;
@@ -155,7 +155,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #556377;
 }
 .btn-add-sm {
   margin-top: 8px;
@@ -660,7 +660,7 @@ select:focus {
   transition: background 0.18s;
 }
 .btn-save:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-save:disabled {
   opacity: 0.7;

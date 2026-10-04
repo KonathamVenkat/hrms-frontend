@@ -224,7 +224,7 @@
               (click)="fileInput.click()"
               [attr.role]="selectedFile() ? null : 'button'"
               [attr.tabindex]="selectedFile() ? null : 0"
-              [attr.aria-label]="selectedFile() ? null : ('employee.documents.dropzone.text' | translate)"
+              [attr.aria-label]="selectedFile() ? null : (('employee.documents.dropzone.text' | translate) + '. ' + ('employee.documents.dropzone.hint' | translate))"
               (keydown.enter)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
               (keydown.space)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
             >

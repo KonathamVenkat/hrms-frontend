@@ -1,13 +1,13 @@
 /* employee-detail.css */
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
+  --muted: #475569;
   --hover: #f4f7f9;
   --red: #e11d48;
-  --green: #16a34a;
+  --green: #15803d;
   --radius: 10px;
 }
 
@@ -128,7 +128,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #13c9b4, #0aa896);
+  background: linear-gradient(135deg, #0a7466, #085c51);
   color: #fff;
   font-size: 24px;
   font-weight: 700;
@@ -227,7 +227,7 @@
   transition: background 0.18s;
 }
 .btn-edit:hover {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-edit .material-icons {
   font-size: 16px;
@@ -258,7 +258,7 @@
 }
 .btn-reactivate {
   border-color: #bbf7d0;
-  color: #16a34a;
+  color: #15803d;
 }
 .btn-reactivate:hover {
   background: #f0fdf4;
@@ -303,7 +303,7 @@
 }
 .confirm-icon.icon-info {
   background: #f0fdf4;
-  color: #16a34a;
+  color: #15803d;
 }
 .confirm-icon .material-icons {
   font-size: 30px;
@@ -362,7 +362,7 @@
   background: #e11d48;
 }
 .btn-confirm.btn-success {
-  background: #16a34a;
+  background: #15803d;
 }
 .btn-confirm:disabled,
 .btn-cancel:disabled {
