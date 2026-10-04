@@ -34,6 +34,32 @@
   @if (!loading() && !loadFailed()) {
     <ul class="rail-list">
 
+      <!-- My profile: pinned for every role, so it does not depend on the menu tables -->
+      <li class="rail-item" [class.active]="isProfileActive()">
+        <button
+          class="rail-btn"
+          type="button"
+          [class.active]="isProfileActive()"
+          [style.background]="getIconBg('account_circle', isProfileActive())"
+          [attr.aria-label]="'layout.sidebar.myProfile' | translate"
+          [attr.aria-current]="isProfileActive() ? 'page' : null"
+          (click)="navigate('/app/profile')">
+          <span
+            class="material-icons rail-icon"
+            aria-hidden="true"
+            [style.color]="getIconColor('account_circle', isProfileActive())">
+            account_circle
+          </span>
+          @if (isProfileActive()) {
+            <span class="active-bar"
+                  aria-hidden="true"
+                  [style.background]="getIconStyle('account_circle').activeBg">
+            </span>
+          }
+          <span class="rail-tooltip" aria-hidden="true">{{ 'layout.sidebar.myProfile' | translate }}</span>
+        </button>
+      </li>
+
       @for (item of navItems(); track item.mainMenuId) {
         <li
           class="rail-item"

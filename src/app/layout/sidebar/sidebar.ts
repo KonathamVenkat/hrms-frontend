@@ -10,6 +10,7 @@ export const ICON_COLOR_MAP: Record<string, { color: string; bg: string; activeB
   'space_dashboard':       { color: '#6366f1', bg: '#eef2ff', activeBg: '#6366f1' },
   'dashboard':             { color: '#6366f1', bg: '#eef2ff', activeBg: '#6366f1' },
   'badge':                 { color: '#3b82f6', bg: '#eff6ff', activeBg: '#3b82f6' },
+  'account_circle':        { color: '#2563eb', bg: '#eff6ff', activeBg: '#2563eb' },
   'people':                { color: '#3b82f6', bg: '#eff6ff', activeBg: '#3b82f6' },
   'people_alt':            { color: '#3b82f6', bg: '#eff6ff', activeBg: '#3b82f6' },
   'fingerprint':           { color: '#0d9488', bg: '#f0fdfa', activeBg: '#0d9488' },
@@ -136,6 +137,11 @@ export class Sidebar implements OnInit {
     if (item.route) return this.router.url.startsWith(item.route);
     return item.children?.some(c =>
       this.router.url.startsWith(c.subMenuAction)) ?? false;
+  }
+
+  /** True while "My profile" is the open page. */
+  isProfileActive(): boolean {
+    return this.router.url.startsWith('/app/profile');
   }
 
   isChildActive(route: string): boolean {

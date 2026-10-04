@@ -546,6 +546,7 @@
     "sidebar": {
       "logout": "Déconnexion",
       "navLabel": "Navigation principale",
+      "myProfile": "Mon profil",
       "loading": "Chargement du menu",
       "loadFailedRetry": "Le menu n'a pas pu être chargé. Réessayer"
     },
