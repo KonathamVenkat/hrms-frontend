@@ -11,16 +11,23 @@
   --focus: #0b57d0;
 }
 
+:host {
+  display: block;
+  width: 160px;
+  flex-shrink: 0;
+}
+
+/* Avatar on top, its controls stacked underneath and centred on it. */
 .photo {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
 }
 
 .avatar {
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -30,7 +37,7 @@
 .avatar-text {
   background: linear-gradient(135deg, var(--teal), var(--teal-dk));
   color: var(--surface);
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -40,9 +47,11 @@
 
 .controls {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  text-align: center;
 }
 
 .file-input {
@@ -52,6 +61,7 @@
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 4px 8px;
   border: 1px solid var(--border);

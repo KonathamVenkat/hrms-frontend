@@ -77,10 +77,12 @@
   border-radius: 12px;
   padding: 24px;
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 24px;
   margin-bottom: 0;
   position: relative;
+  /* Square bottom corners: the tab bar below is part of the same card, with no gap between. */
+  border-radius: 12px 12px 0 0;
 }
 
 .back-btn {
@@ -109,10 +111,11 @@
 
 .profile-identity {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 24px;
   margin-inline-start: 52px;
   flex: 1;
+  min-width: 0;
 }
 
 /* Avatar */
@@ -141,21 +144,16 @@
 
 .profile-info {
   flex: 1;
+  min-width: 0;
+  padding-top: 8px;
 }
 
 .profile-name {
   font-size: 22px;
   font-weight: 800;
   color: var(--text);
-  margin: 0 0 2px;
+  margin: 0 0 10px;
   font-family: 'Outfit', sans-serif;
-}
-.profile-name-ar {
-  font-size: 15px;
-  color: var(--muted);
-  margin: 0 0 8px;
-  direction: rtl;
-  font-family: 'Noto Naskh Arabic', sans-serif;
 }
 .profile-meta {
   display: flex;
@@ -206,13 +204,20 @@
 .profile-actions {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 10px;
+  width: 190px;
+  flex-shrink: 0;
+}
+.profile-actions .status-badge {
+  align-self: center;
+  margin-bottom: 4px;
 }
 
 .btn-edit {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   height: 38px;
   padding: 0 16px;
@@ -229,14 +234,25 @@
 .btn-edit:hover {
   background: #085c51;
 }
+
 .btn-edit .material-icons {
   font-size: 16px;
+}
+/* Secondary action (Reset password): outlined, so Edit stays the one filled button. */
+.btn-edit.btn-secondary {
+  background: #fff;
+  color: var(--teal);
+  border: 1.5px solid var(--teal);
+}
+.btn-edit.btn-secondary:hover {
+  background: var(--teal-lt);
 }
 
 .btn-deactivate,
 .btn-reactivate {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   height: 38px;
   padding: 0 16px;
@@ -488,6 +504,12 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
+  /* Soft layered shadow: a tight contact shadow plus two wider, fainter ones. overflow: hidden clips
+     the content, not the shadow. */
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.08),
+    0 4px 10px rgba(15, 23, 42, 0.08),
+    0 12px 24px rgba(8, 92, 81, 0.1);
 }
 
 .card-header {
@@ -575,9 +597,20 @@
   .profile-card {
     margin-bottom: 0;
   }
+  .profile-card {
+    flex-wrap: wrap;
+  }
   .profile-actions {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    width: 100%;
+  }
+  .profile-actions .btn-edit,
+  .profile-actions .btn-deactivate,
+  .profile-actions .btn-reactivate {
+    width: auto;
+    flex: 1 1 140px;
   }
   .detail-tabs {
     padding: 0 8px;
@@ -590,12 +623,15 @@
 }
 
 /* ── Tab bar ─────────────────────────────────────────────── */
+/* Sits flush under the profile card (its bottom border is the divider) and closes the card. */
 .detail-tabs {
   display: flex;
   background: #fff;
   border: 1px solid var(--border);
   border-top: none;
+  border-radius: 0 0 12px 12px;
   padding: 0 20px;
+  margin-top: 0;
   margin-bottom: 20px;
   border-bottom: 2px solid var(--border);
 }

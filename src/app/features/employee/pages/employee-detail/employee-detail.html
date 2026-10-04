@@ -40,7 +40,6 @@
 
           <div class="profile-info">
             <h1 class="profile-name">{{ employee()!.fullNameEn }}</h1>
-            <p class="profile-name-ar">{{ employee()!.fullNameAr }}</p>
             <div class="profile-meta">
               <span class="emp-code">{{ employee()!.employeeCode }}</span>
               @if (employee()!.designationTitle) {
@@ -74,7 +73,7 @@
           }
           @if (isHrAdmin() && !selfMode()) {
             @if (employee()!.isActive) {
-              <button class="btn-edit" (click)="openReset()">
+              <button class="btn-edit btn-secondary" (click)="openReset()">
                 <span class="material-icons" aria-hidden="true">lock_reset</span>
                 {{ 'employee.detail.resetPassword.action' | translate }}
               </button>
