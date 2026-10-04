@@ -6,7 +6,7 @@
 .header-left { display:flex; align-items:center; gap:14px; }
 .header-icon { font-size:36px; width:36px; height:36px; color:#7c3aed; }
 .page-header h2 { margin:0; font-size:22px; font-weight:700; color:#111827; }
-.subtitle { font-size:13px; color:#6b7280; }
+.subtitle { font-size:13px; color:#5b6270; }
 
 /* ── Form card ───────────────────────────────────────────── */
 .form-card { border-radius:16px !important; box-shadow:0 4px 16px rgba(124,58,237,0.10) !important; border:1px solid #ede9fe !important; }
@@ -23,7 +23,7 @@
 /* ── Items inline table ──────────────────────────────────── */
 .items-table-wrap { overflow-x:auto; border-radius:12px; border:1px solid #e5e7eb; }
 .items-table { width:100%; border-collapse:collapse; }
-.items-table th { background:#f8fafc; padding:10px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; text-align:start; border-bottom:1px solid #e5e7eb; }
+.items-table th { background:#f8fafc; padding:10px 12px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#5b6270; text-align:start; border-bottom:1px solid #e5e7eb; }
 .items-table td { padding:6px 10px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
 .items-table tr:last-child td { border-bottom:none; }
 .items-table tr:hover td { background:#fafafa; }
@@ -31,7 +31,7 @@
 .compact-field { width:100%; }
 .compact-field .mat-mdc-form-field-subscript-wrapper { display:none; }
 
-.sort-col { width:40px; text-align:center; color:#94a3b8; font-size:13px; }
+.sort-col { width:40px; text-align:center; color:#5b6270; font-size:13px; }
 .comp-col { min-width:200px; }
 .type-col { width:100px; }
 .calc-col { min-width:160px; }
@@ -40,7 +40,7 @@
 
 .type-chip,.status-chip { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
 
-.empty-items { text-align:center; color:#9ca3af; padding:24px; font-size:14px; }
+.empty-items { text-align:center; color:#5b6270; padding:24px; font-size:14px; }
 
 /* ── Accordion structures list ───────────────────────────── */
 .structures-list { display:flex; flex-direction:column; gap:12px; }
@@ -51,29 +51,29 @@
 .code-chip { font-family:monospace; font-size:12px; background:#f1f5f9; padding:3px 8px; border-radius:6px; color:#475569; font-weight:700; margin-inline-end:10px; }
 .structure-name { font-size:14px; font-weight:600; color:#111827; }
 
-mat-panel-description { display:flex !important; align-items:center; gap:16px; font-size:12px; color:#6b7280; }
+mat-panel-description { display:flex !important; align-items:center; gap:16px; font-size:12px; color:#5b6270; }
 .emp-count,.item-count { display:flex; align-items:center; gap:4px; }
 .emp-count mat-icon,.item-count mat-icon { font-size:14px !important; width:14px !important; height:14px !important; }
 
 /* ── Panel body ──────────────────────────────────────────── */
 .panel-body { padding:0 4px 12px; }
-.description { font-size:13px; color:#6b7280; margin-bottom:16px; padding:10px 12px; background:#f8fafc; border-radius:8px; }
+.description { font-size:13px; color:#5b6270; margin-bottom:16px; padding:10px 12px; background:#f8fafc; border-radius:8px; }
 
 .component-section { margin-bottom:16px; }
 
 .section-title { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px; }
 .section-title mat-icon { font-size:15px !important; width:15px !important; height:15px !important; }
-.section-title.earning   { color:#059669; }
+.section-title.earning   { color:#047857; }
 .section-title.deduction { color:#dc2626; }
 .section-title.statutory { color:#d97706; }
 
 .comp-rows { display:flex; flex-direction:column; gap:4px; }
 .comp-row { display:flex; align-items:center; gap:12px; padding:8px 12px; background:#f8fafc; border-radius:8px; }
 .comp-name { font-size:13px; font-weight:500; color:#111827; flex:1; }
-.comp-ar   { font-size:12px; color:#6b7280; direction:rtl; min-width:120px; }
-.comp-basis { font-size:12px; color:#94a3b8; min-width:100px; }
+.comp-ar   { font-size:12px; color:#5b6270; direction:rtl; min-width:120px; }
+.comp-basis { font-size:12px; color:#5b6270; min-width:100px; }
 .comp-value { font-size:14px; font-weight:700; min-width:100px; text-align:end; }
-.earning-val   { color:#059669; }
+.earning-val   { color:#047857; }
 .deduction-val { color:#dc2626; }
 .statutory-val { color:#d97706; }
 
@@ -81,7 +81,7 @@ mat-panel-description { display:flex !important; align-items:center; gap:16px; f
 
 /* ── Empty state ─────────────────────────────────────────── */
 .empty-card { border-radius:16px !important; }
-.empty-content { display:flex; flex-direction:column; align-items:center; padding:48px 24px !important; gap:12px; color:#9ca3af; }
+.empty-content { display:flex; flex-direction:column; align-items:center; padding:48px 24px !important; gap:12px; color:#5b6270; }
 .empty-content mat-icon { font-size:52px; width:52px; height:52px; }
 .empty-content p { font-size:16px; font-weight:500; color:#374151; margin:0; }
 

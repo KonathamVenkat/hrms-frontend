@@ -1223,7 +1223,8 @@
         "calcType": "Type de calcul",
         "default": "Par défaut",
         "pasi": "PASI",
-        "status": "Statut"
+        "status": "Statut",
+        "actions": "Actions"
       },
       "deactivate": "Désactiver",
       "activate": "Activer",

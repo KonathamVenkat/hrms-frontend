@@ -255,23 +255,23 @@ export class LeaveBalancePage implements OnInit {
   }
 
   getBarColor(percent: number): string {
-    if (percent >= 90) return '#e11d48';
-    if (percent >= 70) return '#f59e0b';
-    return '#13c9b4';
+    if (percent >= 90) return '#be123c';
+    if (percent >= 70) return '#92400e';
+    return '#0a7466';
   }
 
   getTypeColor(leaveType: string): string {
     const map: Record<string, string> = {
-      ANNUAL: '#13c9b4',
-      SICK: '#e11d48',
-      CASUAL: '#f59e0b',
-      MATERNITY: '#8b5cf6',
+      ANNUAL: '#0a7466',
+      SICK: '#be123c',
+      CASUAL: '#92400e',
+      MATERNITY: '#6d28d9',
       PATERNITY: '#06b6d4',
       UNPAID: '#64748b',
-      COMP_OFF: '#10b981',
-      HAJJ: '#f97316',
-      BEREAVEMENT: '#94a3b8',
-      STUDY: '#3b82f6',
+      COMP_OFF: '#047857',
+      HAJJ: '#c2410c',
+      BEREAVEMENT: '#5b6270',
+      STUDY: '#1d4ed8',
     };
     return map[leaveType] ?? '#64748b';
   }

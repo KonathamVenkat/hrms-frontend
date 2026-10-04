@@ -1,13 +1,13 @@
 /* leave-types.css */
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
+  --muted: #5b6270;
   --hover: #f4f7f9;
-  --red: #e11d48;
-  --green: #16a34a;
+  --red: #be123c;
+  --green: #15803d;
   --radius: 10px;
 }
 
@@ -87,7 +87,7 @@
     box-shadow 0.18s;
 }
 .btn-add:hover {
-  background: #0aa896;
+  background: #085c51;
   box-shadow: 0 4px 16px rgba(19, 201, 180, 0.3);
 }
 .btn-add .material-icons {
@@ -268,7 +268,7 @@
   border-bottom: none;
 }
 .data-row.inactive-row {
-  opacity: 0.65;
+  background: #f4f6f7;
 }
 .data-table td {
   padding: 13px 16px;
@@ -353,7 +353,7 @@
 }
 .badge-all {
   background: var(--teal-lt);
-  color: #0d9488;
+  color: #0a7466;
   border: 1px solid #a7f3e8;
 }
 .badge-male {
@@ -396,7 +396,7 @@
   border: 1px solid var(--border);
 }
 .status-inactive .status-dot {
-  background: #94a3b8;
+  background: #5b6270;
 }
 
 /* Actions */
@@ -461,7 +461,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 
 /* ── Modal ───────────────────────────────────────────────── */
@@ -645,7 +645,7 @@ input.readonly-inp {
 }
 .field-hint {
   font-size: 11px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 
 /* Toggles grid */
@@ -762,7 +762,7 @@ input.readonly-inp {
   transition: background 0.18s;
 }
 .btn-save:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-save:disabled {
   opacity: 0.7;

@@ -1223,7 +1223,8 @@
         "calcType": "نوع الحساب",
         "default": "الافتراضي",
         "pasi": "PASI",
-        "status": "الحالة"
+        "status": "الحالة",
+        "actions": "الإجراءات"
       },
       "deactivate": "إلغاء التفعيل",
       "activate": "تفعيل",

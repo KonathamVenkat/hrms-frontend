@@ -346,7 +346,7 @@
   border: 1px solid var(--border);
 }
 .badge-inactive .status-dot {
-  background: #94a3b8;
+  background: #5b6270;
 }
 .badge-terminated {
   background: #fef2f2;

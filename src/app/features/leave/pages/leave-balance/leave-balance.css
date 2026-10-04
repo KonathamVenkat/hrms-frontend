@@ -1,12 +1,12 @@
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
-  --red: #e11d48;
-  --green: #16a34a;
-  --gold: #f59e0b;
+  --muted: #5b6270;
+  --red: #be123c;
+  --green: #15803d;
+  --gold: #92400e;
   --blue: #3b82f6;
   --radius: 10px;
 }
@@ -220,7 +220,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 .btn-init-sm {
   margin-top: 8px;
@@ -664,7 +664,7 @@ select:focus {
 }
 .btn-initialize:hover:not(:disabled),
 .btn-adjust:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-initialize:disabled,
 .btn-adjust:disabled {

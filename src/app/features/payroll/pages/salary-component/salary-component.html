@@ -154,7 +154,7 @@
           <ng-container matColumnDef="pasi">
             <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.pasi' | translate }}</th>
             <td mat-cell *matCellDef="let r">
-              <mat-icon [style.color]="r.isPasiApplicable ? '#059669' : '#cbd5e1'">
+              <mat-icon [style.color]="r.isPasiApplicable ? '#047857' : '#cbd5e1'">
                 {{ r.isPasiApplicable ? 'check_circle' : 'remove' }}
               </mat-icon>
             </td>
@@ -172,15 +172,18 @@
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
+            <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">{{ 'payroll.salaryComponent.columns.actions' | translate }}</span></th>
             <td mat-cell *matCellDef="let r">
-              <button mat-icon-button (click)="openEdit(r)" [matTooltip]="'common.edit' | translate">
+              <button mat-icon-button (click)="openEdit(r)"
+                      [matTooltip]="'common.edit' | translate"
+                      [attr.aria-label]="'common.edit' | translate">
                 <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button
                       [color]="r.isActive ? 'warn' : 'primary'"
                       (click)="toggleActive(r)"
-                      [matTooltip]="(r.isActive ? 'payroll.salaryComponent.deactivate' : 'payroll.salaryComponent.activate') | translate">
+                      [matTooltip]="(r.isActive ? 'payroll.salaryComponent.deactivate' : 'payroll.salaryComponent.activate') | translate"
+                      [attr.aria-label]="(r.isActive ? 'payroll.salaryComponent.deactivate' : 'payroll.salaryComponent.activate') | translate">
                 <mat-icon>{{ r.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
               </button>
             </td>

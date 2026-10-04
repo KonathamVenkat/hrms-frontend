@@ -162,15 +162,15 @@ export class LeaveCalendarPage implements OnInit {
   // ── Helpers ───────────────────────────────────────────────
   getTypeColor(code: string): string {
     const map: Record<string, string> = {
-      ANNUAL: '#13c9b4',
-      SICK: '#e11d48',
-      CASUAL: '#f59e0b',
-      MATERNITY: '#8b5cf6',
+      ANNUAL: '#0a7466',
+      SICK: '#be123c',
+      CASUAL: '#92400e',
+      MATERNITY: '#6d28d9',
       PATERNITY: '#06b6d4',
-      COMP_OFF: '#10b981',
-      HAJJ: '#f97316',
-      BEREAVEMENT: '#94a3b8',
-      STUDY: '#3b82f6',
+      COMP_OFF: '#047857',
+      HAJJ: '#c2410c',
+      BEREAVEMENT: '#5b6270',
+      STUDY: '#1d4ed8',
       UNPAID: '#64748b',
     };
     return map[code] ?? '#64748b';
@@ -178,9 +178,9 @@ export class LeaveCalendarPage implements OnInit {
 
   getHolidayColor(type: string): string {
     const map: Record<string, string> = {
-      PUBLIC: '#e11d48',
-      RELIGIOUS: '#8b5cf6',
-      OPTIONAL: '#f59e0b',
+      PUBLIC: '#be123c',
+      RELIGIOUS: '#6d28d9',
+      OPTIONAL: '#92400e',
       RESTRICTED: '#06b6d4',
     };
     return map[type] ?? '#64748b';

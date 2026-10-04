@@ -1,13 +1,13 @@
 /* leave-list.css */
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
-  --red: #e11d48;
-  --green: #16a34a;
-  --gold: #f59e0b;
+  --muted: #5b6270;
+  --red: #be123c;
+  --green: #15803d;
+  --gold: #92400e;
   --radius: 10px;
 }
 
@@ -80,7 +80,7 @@
   transition: background 0.18s;
 }
 .btn-apply:hover {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-apply .material-icons {
   font-size: 16px;
@@ -215,7 +215,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 .btn-apply-sm {
   margin-top: 8px;
@@ -262,7 +262,7 @@
   border-inline-start: 4px solid var(--red);
 }
 .card-cancelled {
-  border-inline-start: 4px solid #94a3b8;
+  border-inline-start: 4px solid #5b6270;
 }
 
 .card-accent {

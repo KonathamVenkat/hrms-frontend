@@ -1,13 +1,13 @@
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
+  --muted: #5b6270;
   --hover: #f4f7f9;
-  --red: #e11d48;
-  --green: #16a34a;
-  --orange: #f59e0b;
+  --red: #be123c;
+  --green: #15803d;
+  --orange: #92400e;
   --purple: #8b5cf6;
   --radius: 10px;
 }
@@ -134,7 +134,7 @@
     box-shadow 0.18s;
 }
 .btn-add:hover {
-  background: #0aa896;
+  background: #085c51;
   box-shadow: 0 4px 16px rgba(19, 201, 180, 0.3);
 }
 .btn-add .material-icons {
@@ -317,7 +317,7 @@
 }
 .empty-card small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 .btn-add-sm {
   margin-top: 8px;
@@ -392,7 +392,7 @@
   border-bottom: none;
 }
 .holiday-row.inactive-row {
-  opacity: 0.6;
+  background: #f4f6f7;
 }
 
 /* Date block */
@@ -417,7 +417,7 @@
 .date-dow {
   font-size: 10px;
   font-weight: 600;
-  color: #0d9488;
+  color: #0a7466;
 }
 
 /* Holiday info */
@@ -532,7 +532,7 @@
   border: 1px solid var(--border);
 }
 .status-inactive .status-dot {
-  background: #94a3b8;
+  background: #5b6270;
 }
 
 /* Actions */
@@ -854,7 +854,7 @@ textarea:focus {
   transition: background 0.18s;
 }
 .btn-save:hover:not(:disabled) {
-  background: #0aa896;
+  background: #085c51;
 }
 .btn-save:disabled {
   opacity: 0.7;

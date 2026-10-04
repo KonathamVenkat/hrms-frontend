@@ -1,13 +1,13 @@
 /* leave-approval.css */
 :host {
-  --teal: #13c9b4;
+  --teal: #0a7466;
   --teal-lt: #e8faf8;
   --border: #e8edf0;
   --text: #1a2332;
-  --muted: #64748b;
-  --red: #e11d48;
-  --green: #16a34a;
-  --gold: #f59e0b;
+  --muted: #5b6270;
+  --red: #be123c;
+  --green: #15803d;
+  --gold: #92400e;
   --radius: 10px;
 }
 
@@ -195,7 +195,7 @@
 }
 .empty-state small {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5b6270;
 }
 
 /* ── Cards grid ──────────────────────────────────────────── */
@@ -229,7 +229,7 @@
   border-top: 3px solid var(--red);
 }
 .card-cancelled {
-  border-top: 3px solid #94a3b8;
+  border-top: 3px solid #5b6270;
 }
 
 /* Card header */
