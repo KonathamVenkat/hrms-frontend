@@ -140,6 +140,35 @@ export class EmployeeDocumentsComponent implements OnInit {
     return this.docTypes().find((dt) => dt.docTypeId === +id) ?? null;
   }
 
+  /** The allowed file types of the chosen document type, e.g. ["PDF", "JPG"]; empty when none is chosen. */
+  private allowedExtensions(): string[] {
+    return (this.getSelectedDocType()?.allowedExtensions ?? '')
+      .split(',')
+      .map((e) => e.trim().toUpperCase())
+      .filter(Boolean);
+  }
+
+  /** The drop-zone hint: the real limits of the chosen document type, or a prompt to choose one. */
+  dropHint(): string {
+    const type = this.getSelectedDocType();
+    const extensions = this.allowedExtensions();
+    if (!type || !extensions.length || !type.maxFileSizeMb) {
+      return this.translate.instant('employee.documents.dropzone.hintNoType');
+    }
+    return this.translate.instant('employee.documents.dropzone.hint', {
+      types: extensions.join(', '),
+      size: type.maxFileSizeMb,
+    });
+  }
+
+  /** Value for the file picker's `accept`: the chosen type's extensions, else the app-wide list. */
+  fileAccept(): string {
+    const extensions = this.allowedExtensions();
+    return extensions.length
+      ? extensions.map((e) => '.' + e.toLowerCase()).join(',')
+      : '.pdf,.jpg,.jpeg,.png,.doc,.docx';
+  }
+
   // ── File handling ─────────────────────────────────────────
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

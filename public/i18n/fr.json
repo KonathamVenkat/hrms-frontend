@@ -350,7 +350,8 @@
       },
       "dropzone": {
         "text": "Glissez-déposez ou cliquez pour parcourir",
-        "hint": "PDF, JPG, PNG, DOC — max 50 Mo",
+        "hint": "{{types}} — max {{size}} Mo",
+        "hintNoType": "Choisissez un type de document pour voir les fichiers autorisés",
         "removeFile": "Retirer le fichier sélectionné"
       },
       "fields": {

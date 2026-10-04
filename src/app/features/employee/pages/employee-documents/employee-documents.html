@@ -224,14 +224,14 @@
               (click)="fileInput.click()"
               [attr.role]="selectedFile() ? null : 'button'"
               [attr.tabindex]="selectedFile() ? null : 0"
-              [attr.aria-label]="selectedFile() ? null : (('employee.documents.dropzone.text' | translate) + '. ' + ('employee.documents.dropzone.hint' | translate))"
+              [attr.aria-label]="selectedFile() ? null : (('employee.documents.dropzone.text' | translate) + '. ' + dropHint())"
               (keydown.enter)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
               (keydown.space)="!selectedFile() && $event.preventDefault(); !selectedFile() && fileInput.click()"
             >
               @if (!selectedFile()) {
                 <span class="material-icons drop-icon" aria-hidden="true">upload_file</span>
                 <p class="drop-text">{{ 'employee.documents.dropzone.text' | translate }}</p>
-                <small class="drop-hint">{{ 'employee.documents.dropzone.hint' | translate }}</small>
+                <small class="drop-hint">{{ dropHint() }}</small>
               } @else {
                 <div class="selected-file">
                   <span
@@ -258,7 +258,7 @@
               <input
                 #fileInput
                 type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                [attr.accept]="fileAccept()"
                 style="display: none"
                 (change)="onFileSelected($event)"
               />

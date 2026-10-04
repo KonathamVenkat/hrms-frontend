@@ -37,6 +37,10 @@ export interface EmpDocTypeOption {
   category: string;
   hasExpiry: boolean;
   isActive: boolean;
+  /** Comma-separated, e.g. "PDF,JPG,PNG": what this type accepts. */
+  allowedExtensions?: string;
+  /** The largest file this type accepts, in MB. */
+  maxFileSizeMb?: number;
 }
 
 export interface ApiResponse<T> {
