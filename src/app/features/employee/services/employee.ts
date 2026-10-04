@@ -6,6 +6,7 @@ import {
   ApiResponse,
   EmployeePage,
   Employee,
+  CreatedEmployee,
   EmployeeQueryParams,
   DepartmentLookup,
   DesignationLookup,
@@ -51,8 +52,8 @@ export class EmployeeService {
   }
 
   // ── Create employee + auth user ───────────────────────────
-  createEmployee(payload: CreateEmployeePayload): Observable<ApiResponse<Employee>> {
-    return this.http.post<ApiResponse<Employee>>(this.baseUrl, payload);
+  createEmployee(payload: CreateEmployeePayload): Observable<ApiResponse<CreatedEmployee>> {
+    return this.http.post<ApiResponse<CreatedEmployee>>(this.baseUrl, payload);
   }
 
   // ── Departments lookup ────────────────────────────────────

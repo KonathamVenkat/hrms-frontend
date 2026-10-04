@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, from, switchMap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { EmployeeDocument, EmpDocTypeOption, ApiResponse } from '../models/document.model';
 
@@ -52,6 +52,36 @@ export class EmployeeDocumentService {
     return this.http.get(
       `${this.url(employeeId)}/${documentId}/download`,
       { responseType: 'blob' }, // ← key: tells HttpClient to return raw bytes
+    ).pipe(catchError((err: unknown) => this.readBlobError(err)));
+  }
+
+  /**
+   * With responseType 'blob' a JSON error body arrives as a Blob. Parse it back so callers can
+   * read `error.message` like they do for any other failed call.
+   */
+  private readBlobError(err: unknown): Observable<never> {
+    if (!(err instanceof HttpErrorResponse) || !(err.error instanceof Blob)) {
+      return throwError(() => err);
+    }
+    return from(err.error.text()).pipe(
+      switchMap((text) => {
+        let body: unknown = null;
+        try {
+          body = JSON.parse(text);
+        } catch {
+          // not JSON — keep the status only
+        }
+        return throwError(
+          () =>
+            new HttpErrorResponse({
+              error: body,
+              headers: err.headers,
+              status: err.status,
+              statusText: err.statusText,
+              url: err.url ?? undefined,
+            }),
+        );
+      }),
     );
   }
 }

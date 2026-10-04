@@ -143,6 +143,11 @@ export interface Employee {
   gradeLevel?: string;
 }
 
+/** What POST /employees returns (EmployeeResponse): the id is `id`, not `employeeId`. */
+export interface CreatedEmployee extends Omit<Employee, 'employeeId' | 'designationTitle'> {
+  id: number;
+}
+
 export interface EmployeeFilter {
   search: string;
   departmentId: number | null;
@@ -160,7 +165,6 @@ export interface EmployeePage {
   number: number;
   first: boolean;
   last: boolean;
-  empty: boolean;
 }
 
 export interface ApiResponse<T> {
