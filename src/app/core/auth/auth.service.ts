@@ -81,10 +81,11 @@ export class AuthService {
   /** Signed-in user replaces their own password; all their sessions end afterwards. */
   changePassword(currentPassword: string, newPassword: string): Observable<void> {
     return this.http
-      .post<ApiResponse<null>>(`${this.base}/auth/change-password`, {
-        currentPassword,
-        newPassword,
-      })
+      .post<ApiResponse<null>>(
+        `${this.base}/auth/change-password`,
+        { currentPassword, newPassword },
+        this.withCookie,
+      )
       .pipe(map(() => undefined));
   }
 
