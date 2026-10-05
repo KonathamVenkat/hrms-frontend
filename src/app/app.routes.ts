@@ -43,6 +43,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
+        canActivate: [roleGuard(...HR_ROLES)],
         children: [
           {
             path: 'leave-types',
@@ -151,6 +152,7 @@ export const routes: Routes = [
       },
       {
         path: 'payroll',
+        canActivate: [roleGuard(...HR_ROLES)],
         loadChildren: () =>
           import('./features/payroll/payroll-routing').then((m) => m.PAYROLL_ROUTES),
       },
