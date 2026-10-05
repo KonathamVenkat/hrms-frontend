@@ -91,3 +91,10 @@ export const STATUS_CONFIG: Record<AttendanceStatus,
   HOLIDAY:  { label: 'attendance.status.holiday',  color: '#0e7490', bg: '#cffafe', icon: 'celebration'  },
   WEEKEND:  { label: 'attendance.status.weekend',  color: '#475569', bg: '#f1f5f9', icon: 'weekend'      },
 };
+
+/** What generating the absent / weekend / holiday / leave day records changed. */
+export interface DayRecordsResult {
+  created: number;
+  corrected: number;
+  employeesRefreshed: number;
+}

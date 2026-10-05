@@ -177,4 +177,19 @@
     </mat-card-content>
   </mat-card>
 
+
+  <!-- ── HR_ADMIN: regenerate day records ─────────────────── -->
+  <mat-card class="backfill-card" *ngIf="isHrAdmin">
+    <mat-card-content class="backfill-content">
+      <div>
+        <h3>{{ 'attendance.summary.backfill.title' | translate }}</h3>
+        <p>{{ 'attendance.summary.backfill.hint' | translate }}</p>
+      </div>
+      <button mat-stroked-button (click)="regenerateDayRecords()" [disabled]="regenerating()">
+        <mat-icon>autorenew</mat-icon>
+        {{ 'attendance.summary.backfill.button' | translate }}
+      </button>
+    </mat-card-content>
+  </mat-card>
+
 </div>

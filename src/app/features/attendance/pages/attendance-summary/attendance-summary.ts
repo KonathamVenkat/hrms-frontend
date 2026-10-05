@@ -16,7 +16,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
-import { TranslatePipe } from '@ngx-translate/core';
+import { endOfMonth, format, min, startOfMonth, subDays } from 'date-fns';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { AttendanceService } from '../../services/attendance.service';
 import { AttendanceSummaryResponse } from '../../models/attendance.model';
@@ -51,6 +52,10 @@ export class AttendanceSummary implements OnInit {
   private readonly svc = inject(AttendanceService);
   private readonly auth = inject(Auth);
   private readonly snack = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+
+  readonly isHrAdmin = this.auth.hasAnyRole('HR_ADMIN');
+  readonly regenerating = signal(false);
 
   // ── State signals ──────────────────────────────────────────
   readonly mySummary = signal<AttendanceSummaryResponse | null>(null);
@@ -152,6 +157,48 @@ export class AttendanceSummary implements OnInit {
         this.loadingAll.set(false);
       },
       error: () => this.loadingAll.set(false),
+    });
+  }
+
+  // ── HR_ADMIN: regenerate day records for the selected month (up to yesterday) ──
+  regenerateDayRecords(): void {
+    const { year, month } = this.filterForm.value;
+    if (!year || !month) return;
+
+    const first = startOfMonth(new Date(year, month - 1, 1));
+    const last = min([endOfMonth(first), subDays(new Date(), 1)]);
+    const close = this.translate.instant('attendance.log.close');
+    if (first > last) {
+      this.snack.open(this.translate.instant('attendance.summary.backfill.nothing'), close, {
+        panelClass: 'snack-error',
+      });
+      return;
+    }
+
+    this.regenerating.set(true);
+    this.svc.regenerateDayRecords(format(first, 'yyyy-MM-dd'), format(last, 'yyyy-MM-dd')).subscribe({
+      next: (r) => {
+        this.regenerating.set(false);
+        this.snack.open(
+          this.translate.instant('attendance.summary.backfill.done', {
+            created: r.created,
+            corrected: r.corrected,
+            employees: r.employeesRefreshed,
+          }),
+          close,
+          { duration: 8000, panelClass: 'snack-success' },
+        );
+        this.loadMySummary();
+        this.loadYearlySummary();
+      },
+      error: (err) => {
+        this.regenerating.set(false);
+        this.snack.open(
+          err.error?.message || this.translate.instant('attendance.summary.backfill.failed'),
+          close,
+          { panelClass: 'snack-error' },
+        );
+      },
     });
   }
 

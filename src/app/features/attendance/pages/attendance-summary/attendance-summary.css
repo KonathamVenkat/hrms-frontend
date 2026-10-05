@@ -248,3 +248,8 @@
   .summary-container { padding: 12px; }
   .filter-form { flex-wrap: wrap; }
 }
+
+.backfill-card { margin-top: 24px; }
+.backfill-content { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.backfill-content h3 { margin: 0 0 4px; }
+.backfill-content p { margin: 0; }

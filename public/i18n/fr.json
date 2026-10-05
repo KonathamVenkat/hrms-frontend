@@ -934,7 +934,15 @@
       "overtime": "Heures supplémentaires",
       "yearlyTrend": "Tendance annuelle — {{year}}",
       "emptyTitle": "Aucune donnée de présence trouvée pour la période sélectionnée.",
-      "refresh": "Actualiser"
+      "refresh": "Actualiser",
+      "backfill": {
+        "title": "Régénérer les enregistrements journaliers",
+        "hint": "Renseigne les jours d'absence, de week-end, fériés et de congé du mois sélectionné (jusqu'à hier) et recalcule les récapitulatifs. Peut être relancé sans risque.",
+        "button": "Régénérer",
+        "done": "Enregistrements régénérés : {{created}} créés, {{corrected}} corrigés, {{employees}} employés actualisés.",
+        "failed": "Impossible de régénérer les enregistrements journaliers.",
+        "nothing": "Le mois sélectionné n'a pas encore de jour terminé."
+      }
     },
     "request": {
       "title": "Demande de régularisation",

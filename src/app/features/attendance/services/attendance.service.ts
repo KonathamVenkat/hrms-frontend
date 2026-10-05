@@ -10,6 +10,7 @@ import {
   AttendanceSummaryResponse,
   CheckInRequest,
   CheckOutRequest,
+  DayRecordsResult,
 } from '../models/attendance.model';
 
 interface ApiResponse<T> {
@@ -136,6 +137,14 @@ export class AttendanceService {
       .post<
         ApiResponse<AttendanceSummaryResponse>
       >(`${this.base}/summary/employee/${employeeId}/recalculate`, null, { params })
+      .pipe(map((r) => r.data));
+  }
+
+  // ── HR_ADMIN: back-fill / repair absent, weekend, holiday and leave rows ──
+  regenerateDayRecords(from: string, to: string): Observable<DayRecordsResult> {
+    const params = new HttpParams().set('from', from).set('to', to);
+    return this.http
+      .post<ApiResponse<DayRecordsResult>>(`${this.base}/admin/day-records`, null, { params })
       .pipe(map((r) => r.data));
   }
 }
