@@ -1218,7 +1218,7 @@
         "sortOrder": "Ordre de tri",
         "description": "Description",
         "taxable": "Imposable",
-        "pasiApplicable": "PASI applicable"
+        "pasiApplicable": "NSSF applicable"
       },
       "types": {
         "earning": "Gain",
@@ -1237,7 +1237,7 @@
         "type": "Type",
         "calcType": "Type de calcul",
         "default": "Par défaut",
-        "pasi": "PASI",
+        "pasi": "NSSF",
         "status": "Statut",
         "actions": "Actions"
       },
@@ -1273,7 +1273,7 @@
         "title": "Répartition estimée du salaire",
         "note": "(Montants définitifs calculés lors de l'exécution de la paie)",
         "earnings": "Gains",
-        "statutory": "Déductions statutaires (PASI)",
+        "statutory": "Déductions statutaires (NSSF)",
         "percentOfBasic": "{{percent}}% du salaire de base",
         "fixed": "Fixe",
         "basicSalaryLabel": "Salaire de base"
@@ -1346,7 +1346,7 @@
       "sections": {
         "earnings": "Gains",
         "deductions": "Déductions",
-        "statutory": "Statutaire (PASI)"
+        "statutory": "Statutaire (NSSF)"
       },
       "deactivate": "Désactiver",
       "activate": "Activer",

@@ -1218,7 +1218,7 @@
         "sortOrder": "Sort Order",
         "description": "Description",
         "taxable": "Taxable",
-        "pasiApplicable": "PASI Applicable"
+        "pasiApplicable": "NSSF Applicable"
       },
       "types": {
         "earning": "Earning",
@@ -1237,7 +1237,7 @@
         "type": "Type",
         "calcType": "Calc Type",
         "default": "Default",
-        "pasi": "PASI",
+        "pasi": "NSSF",
         "status": "Status",
         "actions": "Actions"
       },
@@ -1273,7 +1273,7 @@
         "title": "Estimated Salary Breakdown",
         "note": "(Final amounts calculated at payroll run)",
         "earnings": "Earnings",
-        "statutory": "Statutory Deductions (PASI)",
+        "statutory": "Statutory Deductions (NSSF)",
         "percentOfBasic": "{{percent}}% of Basic",
         "fixed": "Fixed",
         "basicSalaryLabel": "Basic Salary"
@@ -1346,7 +1346,7 @@
       "sections": {
         "earnings": "Earnings",
         "deductions": "Deductions",
-        "statutory": "Statutory (PASI)"
+        "statutory": "Statutory (NSSF)"
       },
       "deactivate": "Deactivate",
       "activate": "Activate",
