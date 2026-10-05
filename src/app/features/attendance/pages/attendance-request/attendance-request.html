@@ -84,8 +84,8 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-stroked-button (click)="toggleForm()" [disabled]="submitting()">{{ 'attendance.request.cancel' | translate }}</button>
-      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="submitting()">
+      <button mat-stroked-button disabledInteractive (click)="toggleForm()" [disabled]="submitting()">{{ 'attendance.request.cancel' | translate }}</button>
+      <button mat-flat-button disabledInteractive color="primary" (click)="onSubmit()" [disabled]="submitting()">
         <mat-spinner *ngIf="submitting()" diameter="18"></mat-spinner>
         <span *ngIf="!submitting()"> <mat-icon>send</mat-icon> {{ 'attendance.request.submitRequest' | translate }} </span>
       </button>

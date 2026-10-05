@@ -185,7 +185,8 @@
         <h3>{{ 'attendance.summary.backfill.title' | translate }}</h3>
         <p>{{ 'attendance.summary.backfill.hint' | translate }}</p>
       </div>
-      <button mat-stroked-button (click)="regenerateDayRecords()" [disabled]="regenerating()">
+      <!-- disabledInteractive: stays focusable while busy, so a keyboard user does not lose their place -->
+      <button mat-stroked-button disabledInteractive (click)="regenerateDayRecords()" [disabled]="regenerating()">
         <mat-icon>autorenew</mat-icon>
         {{ 'attendance.summary.backfill.button' | translate }}
       </button>

@@ -939,7 +939,7 @@
         "title": "Régénérer les enregistrements journaliers",
         "hint": "Renseigne les jours d'absence, de week-end, fériés et de congé du mois sélectionné (jusqu'à hier) et recalcule les récapitulatifs. Peut être relancé sans risque.",
         "button": "Régénérer",
-        "done": "Enregistrements régénérés : {{created}} créés, {{corrected}} corrigés, {{employees}} employés actualisés.",
+        "done": "Enregistrements régénérés. Créés : {{created}}, corrigés : {{corrected}}, employés actualisés : {{employees}}.",
         "failed": "Impossible de régénérer les enregistrements journaliers.",
         "nothing": "Le mois sélectionné n'a pas encore de jour terminé."
       }

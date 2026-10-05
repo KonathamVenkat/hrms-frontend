@@ -939,7 +939,7 @@
         "title": "Regenerate day records",
         "hint": "Fills in the absent, weekend, holiday and leave days for the selected month (up to yesterday) and recalculates the summaries. Safe to run again.",
         "button": "Regenerate",
-        "done": "Day records regenerated: {{created}} created, {{corrected}} corrected, {{employees}} employees refreshed.",
+        "done": "Day records regenerated. Created: {{created}}, corrected: {{corrected}}, employees refreshed: {{employees}}.",
         "failed": "Could not regenerate the day records.",
         "nothing": "The selected month has no completed days yet."
       }

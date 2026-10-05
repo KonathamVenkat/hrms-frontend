@@ -48,7 +48,7 @@
 /* ── Stats Grid ──────────────────────────────────────────── */
 .stats-grid {
   display: grid;
-  grid-template-columns: 240px repeat(7, 1fr);
+  grid-template-columns: 240px repeat(7, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -238,12 +238,12 @@
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .highlight-card { grid-column: span 4; }
 }
 
 @media (max-width: 640px) {
-  .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .highlight-card { grid-column: span 2; }
   .summary-container { padding: 12px; }
   .filter-form { flex-wrap: wrap; }

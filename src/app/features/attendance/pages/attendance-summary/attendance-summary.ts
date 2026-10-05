@@ -162,6 +162,7 @@ export class AttendanceSummary implements OnInit {
 
   // ── HR_ADMIN: regenerate day records for the selected month (up to yesterday) ──
   regenerateDayRecords(): void {
+    if (this.regenerating()) return; // the button stays focusable while busy, so ignore a second press
     const { year, month } = this.filterForm.value;
     if (!year || !month) return;
 

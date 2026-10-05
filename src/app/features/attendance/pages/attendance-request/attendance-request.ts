@@ -142,6 +142,7 @@ export class AttendanceRequest implements OnInit {
 
   // ── Submit ────────────────────────────────────────────────
   onSubmit(): void {
+    if (this.submitting()) return; // the button stays focusable while busy, so ignore a second press
     if (this.submitForm.invalid) {
       this.submitForm.markAllAsTouched();
       return;
