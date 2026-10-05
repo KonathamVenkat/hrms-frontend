@@ -14,7 +14,7 @@ export interface SalaryComponentResponse {
   calcTypeLabel:      string;
   defaultValue:       number;
   isTaxable:          boolean;
-  isPasiApplicable:   boolean;
+  isNssfApplicable:   boolean;
   description:        string | null;
   sortOrder:          number;
   isActive:           boolean;
@@ -87,7 +87,7 @@ export interface SalaryComponentRequest {
   calcType:          CalculationType;
   defaultValue:      number;
   isTaxable?:        boolean;
-  isPasiApplicable?: boolean;
+  isNssfApplicable?: boolean;
   description?:      string;
   sortOrder?:        number;
 }

@@ -1218,7 +1218,7 @@
         "sortOrder": "Sort Order",
         "description": "Description",
         "taxable": "Taxable",
-        "pasiApplicable": "NSSF Applicable"
+        "nssfApplicable": "NSSF Applicable"
       },
       "types": {
         "earning": "Earning",
@@ -1237,7 +1237,7 @@
         "type": "Type",
         "calcType": "Calc Type",
         "default": "Default",
-        "pasi": "NSSF",
+        "nssf": "NSSF",
         "status": "Status",
         "actions": "Actions"
       },

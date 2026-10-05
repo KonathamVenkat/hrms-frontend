@@ -79,8 +79,8 @@
           <mat-slide-toggle formControlName="isTaxable" color="primary">
             {{ 'payroll.salaryComponent.fields.taxable' | translate }}
           </mat-slide-toggle>
-          <mat-slide-toggle formControlName="isPasiApplicable" color="accent">
-            {{ 'payroll.salaryComponent.fields.pasiApplicable' | translate }}
+          <mat-slide-toggle formControlName="isNssfApplicable" color="accent">
+            {{ 'payroll.salaryComponent.fields.nssfApplicable' | translate }}
           </mat-slide-toggle>
         </div>
 
@@ -151,11 +151,11 @@
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="pasi">
-            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.pasi' | translate }}</th>
+          <ng-container matColumnDef="nssf">
+            <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.nssf' | translate }}</th>
             <td mat-cell *matCellDef="let r">
-              <mat-icon [style.color]="r.isPasiApplicable ? '#047857' : '#cbd5e1'">
-                {{ r.isPasiApplicable ? 'check_circle' : 'remove' }}
+              <mat-icon [style.color]="r.isNssfApplicable ? '#047857' : '#cbd5e1'">
+                {{ r.isNssfApplicable ? 'check_circle' : 'remove' }}
               </mat-icon>
             </td>
           </ng-container>

@@ -79,7 +79,7 @@ export class SalaryComponentComponent implements OnInit {
     'componentType',
     'calcType',
     'defaultValue',
-    'pasi',
+    'nssf',
     'isActive',
     'actions',
   ];
@@ -106,7 +106,7 @@ export class SalaryComponentComponent implements OnInit {
     calcType: new FormControl<CalculationType>('FIXED', [Validators.required]),
     defaultValue: new FormControl<number>(0, [Validators.required, Validators.min(0)]),
     isTaxable: new FormControl(false),
-    isPasiApplicable: new FormControl(false),
+    isNssfApplicable: new FormControl(false),
     description: new FormControl(''),
     sortOrder: new FormControl<number>(0),
   });
@@ -147,7 +147,7 @@ export class SalaryComponentComponent implements OnInit {
       calcType: comp.calcType,
       defaultValue: comp.defaultValue,
       isTaxable: comp.isTaxable,
-      isPasiApplicable: comp.isPasiApplicable,
+      isNssfApplicable: comp.isNssfApplicable,
       description: comp.description ?? '',
       sortOrder: comp.sortOrder,
     });
@@ -168,7 +168,7 @@ export class SalaryComponentComponent implements OnInit {
       calcType: this.form.value.calcType!,
       defaultValue: this.form.value.defaultValue ?? 0,
       isTaxable: this.form.value.isTaxable ?? false,
-      isPasiApplicable: this.form.value.isPasiApplicable ?? false,
+      isNssfApplicable: this.form.value.isNssfApplicable ?? false,
       description: this.form.value.description ?? '',
       sortOrder: this.form.value.sortOrder ?? 0,
     };
