@@ -109,13 +109,10 @@
     <div class="leaves-list">
       @for (leave of leaves(); track leave.leaveReqId) {
         <div class="leave-card" [class]="'card-' + leave.status.toLowerCase()">
-          <!-- Status color accent -->
-          <div class="card-accent" [style.background]="getTypeColor(leave.leaveTypeCode)"></div>
-
           <div class="card-content">
-            <!-- ── Top row ─────────────────────────────── -->
-            <div class="card-top">
-              <div class="card-top-left">
+            <!-- ── Main row: type, dates, days, status ─── -->
+            <div class="card-main">
+              <div class="card-type">
                 <span
                   class="type-badge"
                   [style.background]="getTypeColor(leave.leaveTypeCode) + '18'"
@@ -128,9 +125,24 @@
                   <span class="unpaid-tag">{{ 'leave.list.unpaidTag' | translate }}</span>
                 }
               </div>
+
+              <div class="card-dates">
+                <span class="visually-hidden">{{ 'leave.list.dateFrom' | translate }}</span>
+                <span class="date-val">{{ leave.startDate }}</span>
+                <span class="material-icons date-arrow" aria-hidden="true">arrow_forward</span>
+                <span class="visually-hidden">{{ 'leave.list.dateTo' | translate }}</span>
+                <span class="date-val">{{ leave.endDate }}</span>
+              </div>
+
+              <span class="days-chip">
+                <span class="material-icons" aria-hidden="true">calendar_today</span>
+                {{ leave.totalDays }}
+                {{ (leave.totalDays !== 1 ? 'leave.list.daysPlural' : 'leave.list.daySingular') | translate }}
+              </span>
+
               <div class="card-top-right">
                 <span class="status-badge" [ngClass]="getStatusClass(leave.status)">
-                  <span class="material-icons status-icon">
+                  <span class="material-icons status-icon" aria-hidden="true">
                     {{ getStatusIcon(leave.status) }}
                   </span>
                   {{ leave.status }}
@@ -141,50 +153,31 @@
                     [disabled]="cancelling() === leave.leaveReqId"
                     (click)="openCancel(leave)"
                   >
-                    <span class="material-icons">close</span>
+                    <span class="material-icons" aria-hidden="true">close</span>
                     {{ 'common.cancel' | translate }}
                   </button>
                 }
               </div>
             </div>
 
-            <!-- ── Dates ───────────────────────────────── -->
-            <div class="card-dates">
-              <div class="date-block">
-                <span class="date-label">{{ 'leave.list.dateFrom' | translate }}</span>
-                <span class="date-val">{{ leave.startDate }}</span>
-              </div>
-              <div class="date-arrow">
-                <span class="material-icons">arrow_forward</span>
-              </div>
-              <div class="date-block">
-                <span class="date-label">{{ 'leave.list.dateTo' | translate }}</span>
-                <span class="date-val">{{ leave.endDate }}</span>
-              </div>
-              <div class="days-chip">
-                <span class="material-icons">calendar_today</span>
-                {{ leave.totalDays }}
-                {{ (leave.totalDays !== 1 ? 'leave.list.daysPlural' : 'leave.list.daySingular') | translate }}
-              </div>
-            </div>
+            <!-- ── Details line: reason, decision, attachment, submitted, balance ─── -->
+            <div class="card-meta">
+              @if (leave.reason) {
+                <span class="card-reason" [attr.title]="leave.reason">{{ leave.reason }}</span>
+              }
 
-            <!-- ── Reason ──────────────────────────────── -->
-            <p class="card-reason">{{ leave.reason }}</p>
+              @if (leave.hasAttachment) {
+                <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
+                  <span class="material-icons" aria-hidden="true">attach_file</span>
+                  {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
+                </button>
+              }
 
-            @if (leave.hasAttachment) {
-              <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
-                <span class="material-icons" aria-hidden="true">attach_file</span>
-                {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
-              </button>
-            }
-
-            <!-- ── Approval / Rejection info ──────────── -->
-            @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
-              <div class="card-approval">
-                <span class="material-icons">
-                  {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
-                </span>
-                <span>
+              @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
+                <span class="card-approval">
+                  <span class="material-icons" aria-hidden="true">
+                    {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
+                  </span>
                   {{
                     (leave.status === 'APPROVED'
                       ? 'leave.list.statusApproved'
@@ -195,26 +188,25 @@
                   @if (leave.approvedAt) {
                     {{ 'leave.list.onConnector' | translate }} {{ leave.approvedAt | slice: 0 : 10 }}
                   }
-                </span>
-                <!-- remarks = rejectionReason from backend -->
-                @if (leave.remarks) {
-                  <span class="remarks-text">— "{{ leave.remarks }}"</span>
-                }
-              </div>
-            }
-
-            <!-- ── Footer ──────────────────────────────── -->
-            <div class="card-footer">
-              <span class="submitted-date">
-                {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
-              </span>
-              @if (leave.balanceAvailable != null) {
-                <span class="balance-snap">
-                  {{ 'leave.list.balanceLabel' | translate }}
-                  {{ leave.balanceAvailable | number: '1.1-1' }}
-                  {{ 'leave.list.daysPlural' | translate }}
+                  <!-- remarks = rejectionReason from backend -->
+                  @if (leave.remarks) {
+                    <span class="remarks-text">— "{{ leave.remarks }}"</span>
+                  }
                 </span>
               }
+
+              <span class="card-meta-end">
+                <span class="submitted-date">
+                  {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
+                </span>
+                @if (leave.balanceAvailable != null) {
+                  <span class="balance-snap">
+                    {{ 'leave.list.balanceLabel' | translate }}
+                    {{ leave.balanceAvailable | number: '1.1-1' }}
+                    {{ 'leave.list.daysPlural' | translate }}
+                  </span>
+                }
+              </span>
             </div>
           </div>
         </div>

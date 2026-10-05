@@ -87,125 +87,104 @@
   @if (!loading() && leaves().length > 0) {
     <div class="leaves-grid">
       @for (leave of leaves(); track leave.leaveReqId) {
-        <div
-          class="leave-card"
-          [class.card-pending]="leave.status === 'PENDING'"
-          [class.card-approved]="leave.status === 'APPROVED'"
-          [class.card-rejected]="leave.status === 'REJECTED'"
-          [class.card-cancelled]="leave.status === 'CANCELLED'"
-        >
-          <!-- ── Card header ─────────────────────────── -->
-          <div class="card-header">
-            <!-- Employee avatar -->
-            <div class="emp-avatar" [style.background]="getTypeColor(leave.leaveTypeCode)">
-              {{ getInitials(leave.employeeName) }}
-            </div>
-            <div class="emp-info">
-              <span class="emp-name">{{ leave.employeeName ?? '—' }}</span>
-              <span class="emp-code">{{ leave.employeeCode }}</span>
-            </div>
-            <span class="status-badge" [ngClass]="getStatusClass(leave.status)">
-              <span class="material-icons">{{ getStatusIcon(leave.status) }}</span>
-              {{ leave.status }}
-            </span>
-          </div>
+        <div class="leave-card" [class]="'card-' + leave.status.toLowerCase()">
+          <div class="card-content">
+            <!-- ── Main row: who, what, when, status, actions ─── -->
+            <div class="card-main">
+              <div class="card-emp">
+                <div class="emp-avatar" aria-hidden="true">{{ getInitials(leave.employeeName) }}</div>
+                <div class="emp-info">
+                  <span class="emp-name">{{ leave.employeeName ?? '—' }}</span>
+                  <span class="emp-code">{{ leave.employeeCode }}</span>
+                </div>
+              </div>
 
-          <!-- ── Leave details ───────────────────────── -->
-          <div class="card-body">
-            <!-- Type + days -->
-            <div class="leave-type-row">
-              <span class="type-dot" [style.background]="getTypeColor(leave.leaveTypeCode)"> </span>
-              <span class="type-name">{{ leave.leaveTypeName }}</span>
+              <div class="leave-type-row">
+                <span class="type-dot" aria-hidden="true" [style.background]="getTypeColor(leave.leaveTypeCode)"></span>
+                <span class="type-name">{{ leave.leaveTypeName }}</span>
+              </div>
+
+              <div class="dates-row">
+                <span class="visually-hidden">{{ 'leave.list.dateFrom' | translate }}</span>
+                <span class="date-val">{{ leave.startDate }}</span>
+                <span class="material-icons date-arrow" aria-hidden="true">arrow_forward</span>
+                <span class="visually-hidden">{{ 'leave.list.dateTo' | translate }}</span>
+                <span class="date-val">{{ leave.endDate }}</span>
+              </div>
+
               <span class="days-chip">
                 {{ leave.totalDays }}
                 {{ (leave.totalDays !== 1 ? 'leave.list.daysPlural' : 'leave.list.daySingular') | translate }}
               </span>
-            </div>
 
-            <!-- Dates -->
-            <div class="dates-row">
-              <div class="date-item">
-                <span class="date-label">{{ 'leave.list.dateFrom' | translate }}</span>
-                <span class="date-val">{{ leave.startDate }}</span>
-              </div>
-              <span class="material-icons date-arrow">arrow_forward</span>
-              <div class="date-item">
-                <span class="date-label">{{ 'leave.list.dateTo' | translate }}</span>
-                <span class="date-val">{{ leave.endDate }}</span>
-              </div>
-            </div>
-
-            <!-- Reason -->
-            <div class="reason-row">
-              <span class="material-icons reason-icon">notes</span>
-              <p class="reason-text">{{ leave.reason }}</p>
-            </div>
-
-            @if (leave.hasAttachment) {
-              <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
-                <span class="material-icons" aria-hidden="true">attach_file</span>
-                {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
-              </button>
-            }
-
-            <!-- Submitted date -->
-            <p class="submitted-date">
-              {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
-            </p>
-
-            <!-- Approval info (for non-pending) -->
-            @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
-              <div
-                class="approval-info"
-                [class.info-approved]="leave.status === 'APPROVED'"
-                [class.info-rejected]="leave.status === 'REJECTED'"
-              >
-                <span class="material-icons">
-                  {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
+              <div class="card-end">
+                <span class="status-badge" [ngClass]="getStatusClass(leave.status)">
+                  <span class="material-icons" aria-hidden="true">{{ getStatusIcon(leave.status) }}</span>
+                  {{ leave.status }}
                 </span>
-                <div>
-                  <span class="approval-by">
-                    {{
-                      (leave.status === 'APPROVED'
-                        ? 'leave.list.statusApproved'
-                        : 'leave.list.statusRejected'
-                      ) | translate
-                    }}
-                    {{ 'leave.list.byConnector' | translate }} <strong>{{ leave.approvedBy }}</strong>
+                @if (leave.status === 'PENDING') {
+                  <button
+                    class="btn-reject"
+                    [disabled]="processing() === leave.leaveReqId"
+                    [attr.aria-label]="'leave.approval.rejectFor' | translate: { type: leave.leaveTypeName, name: leave.employeeName }"
+                    (click)="openReject(leave)"
+                  >
+                    <span class="material-icons" aria-hidden="true">close</span>
+                    {{ 'leave.approval.rejectButton' | translate }}
+                  </button>
+                  <button
+                    class="btn-approve"
+                    [disabled]="processing() === leave.leaveReqId"
+                    [attr.aria-label]="'leave.approval.approveFor' | translate: { type: leave.leaveTypeName, name: leave.employeeName }"
+                    (click)="openApprove(leave)"
+                  >
+                    @if (processing() === leave.leaveReqId) {
+                      <div class="btn-spinner"></div>
+                    } @else {
+                      <span class="material-icons" aria-hidden="true">check</span>
+                    }
+                    {{ 'leave.approval.approveButton' | translate }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- ── Details line: reason, decision, attachment, submitted ─── -->
+            <div class="card-meta">
+              @if (leave.reason) {
+                <span class="reason-text" [attr.title]="leave.reason">{{ leave.reason }}</span>
+              }
+
+              @if (leave.hasAttachment) {
+                <button type="button" class="attachment-link" (click)="downloadAttachment(leave)">
+                  <span class="material-icons" aria-hidden="true">attach_file</span>
+                  {{ 'leave.list.attachment' | translate }}: {{ leave.attachmentName }}
+                </button>
+              }
+
+              @if (leave.status === 'APPROVED' || leave.status === 'REJECTED') {
+                <span class="approval-info">
+                  <span class="material-icons" aria-hidden="true">
+                    {{ leave.status === 'APPROVED' ? 'verified_user' : 'block' }}
                   </span>
+                  {{
+                    (leave.status === 'APPROVED'
+                      ? 'leave.list.statusApproved'
+                      : 'leave.list.statusRejected'
+                    ) | translate
+                  }}
+                  {{ 'leave.list.byConnector' | translate }} <strong>{{ leave.approvedBy }}</strong>
                   @if (leave.remarks) {
                     <span class="approval-remarks">— "{{ leave.remarks }}"</span>
                   }
-                </div>
-              </div>
-            }
-          </div>
+                </span>
+              }
 
-          <!-- ── Action buttons (PENDING only) ──────── -->
-          @if (leave.status === 'PENDING') {
-            <div class="card-actions">
-              <button
-                class="btn-reject"
-                [disabled]="processing() === leave.leaveReqId"
-                (click)="openReject(leave)"
-              >
-                <span class="material-icons">close</span>
-                {{ 'leave.approval.rejectButton' | translate }}
-              </button>
-              <button
-                class="btn-approve"
-                [disabled]="processing() === leave.leaveReqId"
-                (click)="openApprove(leave)"
-              >
-                @if (processing() === leave.leaveReqId) {
-                  <div class="btn-spinner"></div>
-                } @else {
-                  <span class="material-icons">check</span>
-                }
-                {{ 'leave.approval.approveButton' | translate }}
-              </button>
+              <span class="submitted-date">
+                {{ 'leave.list.submittedLabel' | translate }} {{ leave.createdAt | slice: 0 : 10 }}
+              </span>
             </div>
-          }
+          </div>
         </div>
       }
     </div>

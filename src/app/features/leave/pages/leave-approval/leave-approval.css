@@ -198,67 +198,84 @@
   color: #5b6270;
 }
 
-/* ── Cards grid ──────────────────────────────────────────── */
+/* ── Leave cards: one compact row + one details line ─────── */
 .leaves-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* ── Leave card ──────────────────────────────────────────── */
 .leave-card {
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
   transition: box-shadow 0.2s;
 }
 .leave-card:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
+/* The left edge shows the status only. */
 .card-pending {
-  border-top: 3px solid var(--gold);
+  border-inline-start: 4px solid var(--gold);
 }
 .card-approved {
-  border-top: 3px solid var(--green);
+  border-inline-start: 4px solid var(--green);
 }
 .card-rejected {
-  border-top: 3px solid var(--red);
+  border-inline-start: 4px solid var(--red);
 }
 .card-cancelled {
-  border-top: 3px solid #5b6270;
+  border-inline-start: 4px solid #5b6270;
 }
 
-/* Card header */
-.card-header {
+.card-content {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Main row */
+.card-main {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  background: #f8fafc;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.card-emp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
 }
 .emp-avatar {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--teal);
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;
   font-family: 'Outfit', sans-serif;
 }
 .emp-info {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1px;
 }
 .emp-name {
   font-size: 13px;
@@ -272,19 +289,70 @@
   font-weight: 700;
 }
 
+.leave-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 128px;
+}
+.type-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.type-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.dates-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.date-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+.date-arrow {
+  font-size: 16px;
+  color: var(--muted);
+}
+.days-chip {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--teal-lt);
+  color: var(--teal);
+  border: 1px solid #a7f3e8;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.card-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
 /* Status badges */
 .status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 12px;
   border-radius: 20px;
   white-space: nowrap;
 }
 .status-badge .material-icons {
-  font-size: 12px;
+  font-size: 14px;
 }
 .status-pending {
   background: #fffbeb;
@@ -307,144 +375,53 @@
   border: 1px solid var(--border);
 }
 
-/* Card body */
-.card-body {
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.leave-type-row {
+/* Details line */
+.card-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-.type-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.type-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  flex: 1;
-}
-.days-chip {
-  font-size: 11px;
-  font-weight: 700;
-  background: var(--teal-lt);
-  color: var(--teal);
-  border: 1px solid #a7f3e8;
-  padding: 2px 8px;
-  border-radius: 20px;
-}
-
-.dates-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.date-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.date-label {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-.date-val {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
   font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-}
-.date-arrow {
-  font-size: 16px;
   color: var(--muted);
-}
-
-.reason-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 8px 10px;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-.reason-icon {
-  font-size: 14px;
-  color: var(--muted);
-  margin-top: 1px;
-  flex-shrink: 0;
 }
 .reason-text {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 0;
-  line-height: 1.5;
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
 }
-
 .submitted-date {
-  font-size: 11px;
-  color: var(--muted);
-  margin: 0;
+  margin-inline-start: auto;
 }
-
 .approval-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 .approval-info .material-icons {
-  font-size: 15px;
-  flex-shrink: 0;
+  font-size: 16px;
 }
-.info-approved {
-  background: #f0fdf4;
-  color: var(--green);
-  border: 1px solid #bbf7d0;
-}
-.info-rejected {
-  background: #fef2f2;
-  color: var(--red);
-  border: 1px solid #fca5a5;
-}
-.approval-by strong {
-  font-weight: 700;
+.approval-info strong {
+  color: var(--text);
 }
 .approval-remarks {
-  display: block;
   font-style: italic;
-  margin-top: 2px;
 }
 
-/* Card action buttons */
-.card-actions {
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  background: #f8fafc;
-  margin-top: auto;
-}
+/* Action buttons */
 .btn-reject {
-  flex: 1;
-  height: 36px;
+  height: 32px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   border: 1.5px solid #fca5a5;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fef2f2;
   color: var(--red);
   font-size: 12px;
@@ -462,18 +439,18 @@
   cursor: not-allowed;
 }
 .btn-reject .material-icons {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .btn-approve {
-  flex: 1;
-  height: 36px;
+  height: 32px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--green);
   color: #fff;
   font-size: 12px;
@@ -490,7 +467,7 @@
   cursor: not-allowed;
 }
 .btn-approve .material-icons {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* ── Pagination ──────────────────────────────────────────── */
@@ -802,8 +779,9 @@ textarea:focus {
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .leaves-grid {
-    grid-template-columns: 1fr;
+  .card-end,
+  .submitted-date {
+    margin-inline-start: 0;
   }
 }
 
