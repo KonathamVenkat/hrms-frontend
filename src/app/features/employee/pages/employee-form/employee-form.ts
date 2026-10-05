@@ -84,6 +84,7 @@ export class EmployeeForm implements OnInit {
   /** Edit mode: false when the employee has no linked login, so there is no role to send. */
   hasLogin = signal(true);
   /** Edit mode: the status the employee currently has, kept selectable even if it is an exit status. */
+  private loadedVersion = signal<number | undefined>(undefined);
   private loadedStatus = signal<string | null>(null);
 
   readonly passwordMinLength = PASSWORD_MIN_LENGTH;
@@ -241,6 +242,7 @@ export class EmployeeForm implements OnInit {
             this.employeeCode.set(e.employeeCode ?? '');
             this.workEmailReadOnly.set(e.workEmail ?? '');
             this.loadedStatus.set(e.employmentStatus ?? null);
+            this.loadedVersion.set(e.version);
 
             // Patch all editable fields into form
             this.form.patchValue({
@@ -402,6 +404,7 @@ export class EmployeeForm implements OnInit {
       employmentStatus: v.employmentStatus,
       // Only an HR_ADMIN editing an employee who has a login sends a role at all.
       role: this.isHrAdmin() && this.hasLogin() ? v.role : undefined,
+      version: this.loadedVersion(),
     };
 
     this.empService

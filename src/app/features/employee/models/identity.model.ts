@@ -16,6 +16,9 @@ export interface IdentityInfo {
   workPermitExpiringSoon?: boolean; // computed by backend
   biometricId?: string;
   masked?: boolean; // true: numbers are masked by the backend (last 4 only); read-only view
+  version?: number;
+  createdBy?: string;
+  updatedBy?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -33,6 +36,8 @@ export interface IdentityInfoRequest {
   workPermitNumber?: string;
   workPermitExpiry?: string;
   biometricId?: string;
+  /** The version the form was opened with. */
+  version?: number;
 }
 
 export interface ApiResponse<T> {

@@ -166,6 +166,7 @@ export class EmployeeIdentityComponent implements OnInit {
       workPermitNumber: v.workPermitNumber || undefined,
       workPermitExpiry: v.workPermitExpiry || undefined,
       biometricId: v.biometricId || undefined,
+      version: this.identity()?.version,
     };
 
     this.identitySvc

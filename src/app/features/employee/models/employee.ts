@@ -52,6 +52,8 @@ export interface UpdateEmployeePayload
   profilePhotoUrl?: string;
   /** Sent only by an HR_ADMIN; the backend rejects a role change from anyone else. */
   role?: string;
+  /** The version the form was loaded with; the backend answers 409 if someone saved in between. */
+  version?: number;
 }
 
 /**
@@ -97,6 +99,8 @@ export interface EmployeeDetailData {
   gradeLevel?: string;
   /** The linked login's role; absent when the employee has no login. */
   role?: string;
+  /** Optimistic-lock version; send it back on update. */
+  version?: number;
   createdBy?: string;
   createdAt?: string;
   updatedBy?: string;

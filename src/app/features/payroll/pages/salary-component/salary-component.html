@@ -145,7 +145,7 @@
             <th mat-header-cell *matHeaderCellDef>{{ 'payroll.salaryComponent.columns.default' | translate }}</th>
             <td mat-cell *matCellDef="let r">
               <span class="amount">
-                {{ r.calcType === 'FIXED' ? (r.defaultValue | number:'1.3-3') + ' OMR'
+                {{ r.calcType === 'FIXED' ? (r.defaultValue | number:'1.2-2') + ' SSP'
                    : r.defaultValue + '%' }}
               </span>
             </td>

@@ -52,6 +52,7 @@ export class EmployeeAddressesComponent implements OnInit {
   showModal = signal(false);
   isEditMode = signal(false);
   editingId = signal<number | null>(null);
+  private editingVersion = signal<number | undefined>(undefined);
   showConfirm = signal(false);
   confirmItem = signal<EmployeeAddress | null>(null);
   confirmType = signal<'delete' | 'primary'>('delete');
@@ -72,7 +73,7 @@ export class EmployeeAddressesComponent implements OnInit {
     addressLine2: ['', Validators.maxLength(300)],
     city: ['', [Validators.required, Validators.maxLength(100)]],
     stateProvince: ['', Validators.maxLength(100)],
-    country: ['Oman', [Validators.required, Validators.maxLength(100)]],
+    country: ['South Sudan', [Validators.required, Validators.maxLength(100)]],
     postalCode: ['', Validators.maxLength(20)],
     isPrimary: [false],
   });
@@ -111,7 +112,7 @@ export class EmployeeAddressesComponent implements OnInit {
       addressLine2: '',
       city: '',
       stateProvince: '',
-      country: 'Oman',
+      country: 'South Sudan',
       postalCode: '',
       isPrimary: this.activeAddresses().length === 0,
     });
@@ -123,6 +124,7 @@ export class EmployeeAddressesComponent implements OnInit {
   openEdit(addr: EmployeeAddress): void {
     this.isEditMode.set(true);
     this.editingId.set(addr.employeeAddressesId);
+    this.editingVersion.set(addr.version);
     this.form.patchValue({
       addressType: addr.addressType,
       addressLine1: addr.addressLine1,
@@ -160,6 +162,7 @@ export class EmployeeAddressesComponent implements OnInit {
       country: v.country.trim(),
       postalCode: v.postalCode || undefined,
       isPrimary: v.isPrimary,
+      version: this.isEditMode() ? this.editingVersion() : undefined,
     };
 
     const call = this.isEditMode()

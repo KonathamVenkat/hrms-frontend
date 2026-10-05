@@ -49,8 +49,8 @@
         <mat-form-field appearance="outline">
           <mat-label>{{ 'payroll.employeeSalary.fields.basicSalary' | translate }}</mat-label>
           <input matInput type="number" formControlName="basicSalary"
-                 min="0" step="0.001" placeholder="0.000">
-          <span matTextSuffix>OMR</span>
+                 min="0" step="0.01" placeholder="0.00">
+          <span matTextSuffix>SSP</span>
           <mat-error *ngIf="form.get('basicSalary')?.hasError('required')">{{ 'common.validation.required' | translate }}</mat-error>
           <mat-error *ngIf="form.get('basicSalary')?.hasError('min')">{{ 'payroll.employeeSalary.fields.basicSalaryMin' | translate }}</mat-error>
         </mat-form-field>

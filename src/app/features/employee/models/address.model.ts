@@ -12,6 +12,9 @@ export interface EmployeeAddress {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  version?: number;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 export interface EmployeeAddressRequest {
@@ -23,6 +26,8 @@ export interface EmployeeAddressRequest {
   country: string;
   postalCode?: string;
   isPrimary?: boolean;
+  /** The version the form was opened with; omitted when adding. */
+  version?: number;
 }
 
 export interface ApiResponse<T> {

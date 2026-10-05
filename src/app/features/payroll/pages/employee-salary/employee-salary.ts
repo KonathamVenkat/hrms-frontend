@@ -219,10 +219,10 @@ export class EmployeeSalary implements OnInit {
 
   formatCurrency(val: number): string {
     return (
-      val?.toLocaleString('en-OM', {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
-      }) + ' OMR'
+      val?.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + ' SSP'
     );
   }
 
