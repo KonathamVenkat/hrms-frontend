@@ -1,6 +1,6 @@
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { AccessibleDialogDirective } from '../../../../core/directives/accessible-dialog.directive';
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, signal, computed, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -62,6 +62,13 @@ export class OvertimeApproval implements OnInit {
   readonly totalElements = signal(0);
   readonly pendingCount = signal(0);
   readonly processingId = signal<string | null>(null);
+
+  private readonly pageTitle = viewChild<ElementRef<HTMLElement>>('pageTitle');
+
+  /** A decided row disappears from the list, so park keyboard focus on the page title instead of losing it. */
+  private focusTitle(): void {
+    this.pageTitle()?.nativeElement.focus();
+  }
   readonly otTypeConfig = OT_TYPE_CONFIG;
   readonly statusConfig = OT_STATUS_CONFIG;
 
@@ -210,6 +217,7 @@ export class OvertimeApproval implements OnInit {
           );
           this.processingId.set(null);
           this.loadRequests();
+          this.focusTitle();
           this.loadPendingCount();
         },
         error: (err) => {
@@ -273,6 +281,7 @@ export class OvertimeApproval implements OnInit {
           this.closeRejectDialog();
           this.processingId.set(null);
           this.loadRequests();
+          this.focusTitle();
           this.loadPendingCount();
         },
         error: (err) => {

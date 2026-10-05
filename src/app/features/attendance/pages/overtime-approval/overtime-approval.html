@@ -4,7 +4,7 @@
     <div class="header-left">
       <mat-icon class="header-icon">fact_check</mat-icon>
       <div>
-        <h2>{{ 'attendance.overtimeApproval.title' | translate }}</h2>
+        <h2 #pageTitle tabindex="-1">{{ 'attendance.overtimeApproval.title' | translate }}</h2>
         <span class="subtitle">{{ 'attendance.overtimeApproval.subtitle' | translate }}</span>
       </div>
     </div>
@@ -223,6 +223,7 @@
               <div class="action-col" *ngIf="row.status === 'PENDING'">
                 <button
                   mat-flat-button
+                  disabledInteractive
                   color="primary"
                   class="action-btn"
                   [disabled]="isProcessing(row.otId)"
@@ -235,6 +236,7 @@
                 </button>
                 <button
                   mat-stroked-button
+                  disabledInteractive
                   color="warn"
                   class="action-btn"
                   [disabled]="isProcessing(row.otId)"
@@ -347,7 +349,8 @@
       <button mat-stroked-button (click)="closeRejectDialog()">{{ 'attendance.overtimeApproval.cancel' | translate }}</button>
       <button
         mat-flat-button
-        color="warn"
+        disabledInteractive
+                  color="warn"
         (click)="onConfirmReject()"
         [disabled]="isProcessing(rejectingRequest()?.otId ?? '')"
       >

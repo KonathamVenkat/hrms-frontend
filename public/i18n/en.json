@@ -406,6 +406,7 @@
       "emptyHint": "Add national ID, passport, visa and work permit details",
       "addIdentityInfo": "Add Identity Info",
       "maskedNotice": "Identity numbers are masked. Only HR administrators and the employee can see the full values.",
+      "readOnlyHint": "Your identity details are entered and updated by HR. Contact HR to add or correct them.",
       "sections": {
         "nationalIdentity": "National Identity",
         "passport": "Passport",

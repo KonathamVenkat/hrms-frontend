@@ -25,6 +25,7 @@
           </div>
           <button
             mat-flat-button
+            disabledInteractive
             color="primary"
             [disabled]="!canCheckIn() || checkingIn()"
             (click)="onCheckIn()"
@@ -50,6 +51,7 @@
           </div>
           <button
             mat-flat-button
+            disabledInteractive
             color="accent"
             [disabled]="!canCheckOut() || checkingOut()"
             (click)="onCheckOut()"

@@ -28,6 +28,11 @@
       <span class="material-icons" aria-hidden="true">lock</span>{{ 'employee.identity.maskedNotice' | translate }}
     </div>
   }
+  @if (readOnly() && !loading()) {
+    <div class="alert alert-info" role="status">
+      <span class="material-icons" aria-hidden="true">info</span>{{ 'employee.identity.readOnlyHint' | translate }}
+    </div>
+  }
   @if (error() && !editMode()) {
     <div class="alert alert-error" role="alert">
       <span class="material-icons" aria-hidden="true">error_outline</span>{{ error() }}
@@ -50,7 +55,9 @@
       <div class="empty-state">
         <span class="material-icons" aria-hidden="true">badge</span>
         <p>{{ 'employee.identity.emptyTitle' | translate }}</p>
-        <small>{{ 'employee.identity.emptyHint' | translate }}</small>
+        @if (canEdit()) {
+          <small>{{ 'employee.identity.emptyHint' | translate }}</small>
+        }
         @if (canEdit()) {
           <button class="btn-add-sm" (click)="openEdit()">
             <span class="material-icons" aria-hidden="true">add</span> {{ 'employee.identity.addIdentityInfo' | translate }}

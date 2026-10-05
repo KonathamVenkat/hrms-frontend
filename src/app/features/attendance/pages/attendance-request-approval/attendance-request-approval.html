@@ -4,7 +4,7 @@
     <div class="header-left">
       <mat-icon class="header-icon">fact_check</mat-icon>
       <div>
-        <h2>{{ 'attendance.requestApproval.title' | translate }}</h2>
+        <h2 #pageTitle tabindex="-1">{{ 'attendance.requestApproval.title' | translate }}</h2>
         <span class="subtitle">{{ 'attendance.requestApproval.subtitle' | translate }}</span>
       </div>
     </div>
@@ -217,6 +217,7 @@
                 <!-- Approve button -->
                 <button
                   mat-flat-button
+                  disabledInteractive
                   color="primary"
                   class="action-btn approve-btn"
                   [disabled]="isProcessing(row.regId)"
@@ -232,6 +233,7 @@
                 <!-- Reject button -->
                 <button
                   mat-stroked-button
+                  disabledInteractive
                   color="warn"
                   class="action-btn reject-btn"
                   [disabled]="isProcessing(row.regId)"
@@ -361,14 +363,16 @@
     <div class="dialog-actions">
       <button
         mat-stroked-button
-        (click)="closeRejectDialog()"
+        disabledInteractive
+                  (click)="closeRejectDialog()"
         [disabled]="isProcessing(rejectingRequest()?.regId ?? 0)"
       >
         {{ 'attendance.requestApproval.cancel' | translate }}
       </button>
       <button
         mat-flat-button
-        color="warn"
+        disabledInteractive
+                  color="warn"
         (click)="onConfirmReject()"
         [disabled]="isProcessing(rejectingRequest()?.regId ?? 0)"
       >
