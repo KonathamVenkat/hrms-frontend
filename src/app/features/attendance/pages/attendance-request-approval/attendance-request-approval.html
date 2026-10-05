@@ -222,6 +222,7 @@
                   class="action-btn approve-btn"
                   [disabled]="isProcessing(row.regId)"
                   (click)="onApprove(row)"
+                  [attr.aria-label]="'attendance.requestApproval.approveFor' | translate: { name: row.employeeName, date: row.attendanceDateFormatted }"
                   [matTooltip]="'attendance.requestApproval.approveTooltip' | translate"
                 >
                   <mat-spinner *ngIf="isProcessing(row.regId)" diameter="16"></mat-spinner>
@@ -238,6 +239,7 @@
                   class="action-btn reject-btn"
                   [disabled]="isProcessing(row.regId)"
                   (click)="openRejectDialog(row)"
+                  [attr.aria-label]="'attendance.requestApproval.rejectFor' | translate: { name: row.employeeName, date: row.attendanceDateFormatted }"
                   [matTooltip]="'attendance.requestApproval.rejectTooltip' | translate"
                 >
                   <mat-icon>close</mat-icon> {{ 'attendance.requestApproval.reject' | translate }}

@@ -228,6 +228,7 @@
                   class="action-btn"
                   [disabled]="isProcessing(row.otId)"
                   (click)="onApprove(row)"
+                  [attr.aria-label]="'attendance.overtimeApproval.approveFor' | translate: { name: row.employeeName, date: row.otDateFormatted }"
                 >
                   <mat-spinner *ngIf="isProcessing(row.otId)" diameter="16"></mat-spinner>
                   <ng-container *ngIf="!isProcessing(row.otId)">
@@ -241,6 +242,7 @@
                   class="action-btn"
                   [disabled]="isProcessing(row.otId)"
                   (click)="openRejectDialog(row)"
+                  [attr.aria-label]="'attendance.overtimeApproval.rejectFor' | translate: { name: row.employeeName, date: row.otDateFormatted }"
                 >
                   <mat-icon>close</mat-icon> {{ 'attendance.overtimeApproval.reject' | translate }}
                 </button>
