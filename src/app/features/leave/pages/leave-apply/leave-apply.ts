@@ -11,7 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { LeaveRequestService } from '../../services/leave-request.service';
@@ -53,8 +53,8 @@ export class LeaveApplyPage implements OnInit {
   startDateVal = signal<string>('');
   endDateVal = signal<string>('');
   selectedTypeCode = signal<string>('');
-  // Active public holidays (YYYY-MM-DD) for currentYear — excluded from the day count,
-  // same as the backend's calculateWorkingDays().
+  // Active PUBLIC/RELIGIOUS holidays (YYYY-MM-DD) for this and next year — excluded from the
+  // day count, same as the backend's calculateWorkingDays(). OPTIONAL/RESTRICTED still cost a day.
   holidayDates = signal<Set<string>>(new Set());
 
   // ── Computed — all depend on signals, so they react correctly
@@ -122,14 +122,19 @@ export class LeaveApplyPage implements OnInit {
   }
 
   private loadHolidays(): void {
-    this.holidaySvc
-      .getActiveByYear(this.currentYear)
+    forkJoin([
+      this.holidaySvc.getActiveByYear(this.currentYear),
+      this.holidaySvc.getActiveByYear(this.currentYear + 1),
+    ])
       .pipe(takeUntilDestroyed(this.destroy))
       .subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.holidayDates.set(new Set(res.data.map((h) => h.holidayDate)));
-          }
+        next: (results) => {
+          const dates = results
+            .filter((res) => res.success)
+            .flatMap((res) => res.data)
+            .filter((h) => h.holidayType === 'PUBLIC' || h.holidayType === 'RELIGIOUS')
+            .map((h) => h.holidayDate);
+          this.holidayDates.set(new Set(dates));
         },
         // Non-fatal: worst case the preview briefly overcounts a holiday; the
         // backend is authoritative and will exclude it regardless.

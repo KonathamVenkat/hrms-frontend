@@ -8,24 +8,24 @@
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span> {{ 'admin.officeLocations.addLocation' | translate }}
+      <span aria-hidden="true" class="material-icons">add</span> {{ 'admin.officeLocations.addLocation' | translate }}
     </button>
   </div>
 
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+      <span aria-hidden="true" class="material-icons">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span aria-hidden="true" class="material-icons">search</span>
       <input
         type="text"
         [placeholder]="'admin.officeLocations.searchPlaceholder' | translate"
@@ -81,7 +81,7 @@
     <div class="locations-grid">
       @if (filtered().length === 0) {
         <div class="empty-card">
-          <span class="material-icons">location_off</span>
+          <span aria-hidden="true" class="material-icons">location_off</span>
           <p>{{ 'admin.officeLocations.emptyTitle' | translate }}</p>
           <small>{{ 'admin.officeLocations.emptyHint' | translate }}</small>
         </div>
@@ -97,7 +97,7 @@
             </div>
             <div class="card-actions">
               <button class="act-btn btn-edit" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(loc)">
-                <span class="material-icons">edit</span>
+                <span aria-hidden="true" class="material-icons">edit</span>
               </button>
               <button
                 class="act-btn"
@@ -106,14 +106,14 @@
                 [attr.aria-label]="(loc.isActive ? 'admin.officeLocations.deactivate' : 'admin.officeLocations.activate') | translate"
                 (click)="openConfirm(loc)"
               >
-                <span class="material-icons">{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</span>
+                <span aria-hidden="true" class="material-icons">{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</span>
               </button>
             </div>
           </div>
           <h2 class="loc-name">{{ loc.locationName }}</h2>
           <p class="loc-name-ar">{{ loc.locationNameAr }}</p>
           <div class="loc-address">
-            <span class="material-icons addr-icon">location_on</span>
+            <span aria-hidden="true" class="material-icons addr-icon">location_on</span>
             <div>
               <div class="addr-line">{{ loc.addressLine1 }}</div>
               @if (loc.addressLine2) {
@@ -126,12 +126,12 @@
             <div class="loc-contact">
               @if (loc.phone) {
                 <span class="contact-item">
-                  <span class="material-icons">phone</span>{{ loc.phone }}
+                  <span aria-hidden="true" class="material-icons">phone</span>{{ loc.phone }}
                 </span>
               }
               @if (loc.email) {
                 <span class="contact-item">
-                  <span class="material-icons">email</span>{{ loc.email }}
+                  <span aria-hidden="true" class="material-icons">email</span>{{ loc.email }}
                 </span>
               }
             </div>
@@ -168,12 +168,12 @@
       <div class="modal-header">
         <h2 id="ol-modal-title" class="modal-title">{{ (isEditMode() ? 'admin.officeLocations.editTitle' : 'admin.officeLocations.addLocation') | translate }}</h2>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
       @if (error()) {
         <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+          <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
         </div>
       }
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
@@ -280,7 +280,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'admin.officeLocations.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span
+              <span aria-hidden="true" class="material-icons">save</span
               ><span>{{ (isEditMode() ? 'admin.officeLocations.update' : 'admin.officeLocations.addLocation') | translate }}</span>
             }
           </button>
@@ -305,7 +305,7 @@
         [class.icon-warn]="confirmItem()?.isActive"
         [class.icon-info]="!confirmItem()?.isActive"
       >
-        <span class="material-icons">location_on</span>
+        <span aria-hidden="true" class="material-icons">location_on</span>
       </div>
       <h3 id="ol-confirm-title" class="confirm-title">
         {{ (confirmItem()?.isActive ? 'admin.officeLocations.deactivateTitle' : 'admin.officeLocations.activateTitle') | translate }}

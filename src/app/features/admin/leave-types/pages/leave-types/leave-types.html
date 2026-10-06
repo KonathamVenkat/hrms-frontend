@@ -12,7 +12,7 @@
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span>
+      <span aria-hidden="true" class="material-icons">add</span>
       {{ 'admin.leaveTypes.addLeaveType' | translate }}
     </button>
   </div>
@@ -20,13 +20,13 @@
   <!-- ── Alerts ─────────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>
+      <span aria-hidden="true" class="material-icons">check_circle</span>
       {{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>
+      <span aria-hidden="true" class="material-icons">error_outline</span>
       {{ error() }}
     </div>
   }
@@ -34,7 +34,7 @@
   <!-- ── Filter Bar ─────────────────────────────────────────── -->
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span aria-hidden="true" class="material-icons">search</span>
       <input
         type="text"
         [placeholder]="'admin.leaveTypes.searchPlaceholder' | translate"
@@ -44,7 +44,7 @@
       />
       @if (filterText()) {
         <button class="clear-btn" (click)="filterText.set('')">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       }
     </div>
@@ -104,7 +104,7 @@
             <tr>
               <td colspan="10">
                 <div class="empty-state">
-                  <span class="material-icons">event_busy</span>
+                  <span aria-hidden="true" class="material-icons">event_busy</span>
                   <p>{{ 'admin.leaveTypes.emptyTitle' | translate }}</p>
                   <small>{{ 'admin.leaveTypes.emptyHint' | translate }}</small>
                 </div>
@@ -133,28 +133,28 @@
 
               <td class="cell-center">
                 @if (lt.isPaid) {
-                  <span class="material-icons icon-yes">check_circle</span>
+                  <span aria-hidden="true" class="material-icons icon-yes">check_circle</span>
                 } @else {
-                  <span class="material-icons icon-no">cancel</span>
+                  <span aria-hidden="true" class="material-icons icon-no">cancel</span>
                 }
               </td>
 
               <td class="cell-center">
                 @if (lt.isCarryForward) {
                   <div class="carry-info">
-                    <span class="material-icons icon-yes">check_circle</span>
+                    <span aria-hidden="true" class="material-icons icon-yes">check_circle</span>
                     <span class="carry-days">{{ 'admin.leaveTypes.maxDays' | translate: { days: lt.maxCarryDays } }}</span>
                   </div>
                 } @else {
-                  <span class="material-icons icon-no">cancel</span>
+                  <span aria-hidden="true" class="material-icons icon-no">cancel</span>
                 }
               </td>
 
               <td class="cell-center">
                 @if (lt.requiresDocument) {
-                  <span class="material-icons icon-yes">check_circle</span>
+                  <span aria-hidden="true" class="material-icons icon-yes">check_circle</span>
                 } @else {
-                  <span class="material-icons icon-no">cancel</span>
+                  <span aria-hidden="true" class="material-icons icon-no">cancel</span>
                 }
               </td>
 
@@ -178,7 +178,7 @@
               <td>
                 <div class="action-wrap">
                   <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(lt)">
-                    <span class="material-icons">edit</span>
+                    <span aria-hidden="true" class="material-icons">edit</span>
                   </button>
                   <button
                     class="act-btn"
@@ -188,7 +188,7 @@
                     [attr.aria-label]="(lt.isActive ? 'admin.leaveTypes.deactivate' : 'admin.leaveTypes.activate') | translate"
                     (click)="openConfirm(lt)"
                   >
-                    <span class="material-icons">
+                    <span aria-hidden="true" class="material-icons">
                       {{ lt.isActive ? 'toggle_off' : 'toggle_on' }}
                     </span>
                   </button>
@@ -222,14 +222,14 @@
           {{ (isEditMode() ? 'admin.leaveTypes.editTitle' : 'admin.leaveTypes.addLeaveType') | translate }}
         </h2>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
 
       <!-- Modal error -->
       @if (error()) {
         <div class="modal-alert">
-          <span class="material-icons">error_outline</span>
+          <span aria-hidden="true" class="material-icons">error_outline</span>
           {{ error() }}
         </div>
       }
@@ -407,7 +407,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'admin.leaveTypes.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span>
+              <span aria-hidden="true" class="material-icons">save</span>
               <span>{{ (isEditMode() ? 'admin.leaveTypes.update' : 'admin.leaveTypes.create') | translate }}</span>
             }
           </button>
@@ -437,7 +437,7 @@
         [class.icon-warn]="confirmTarget()?.isActive"
         [class.icon-info]="!confirmTarget()?.isActive"
       >
-        <span class="material-icons">
+        <span aria-hidden="true" class="material-icons">
           {{ confirmTarget()?.isActive ? 'toggle_off' : 'toggle_on' }}
         </span>
       </div>

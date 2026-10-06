@@ -13,7 +13,7 @@
       <!-- Year selector -->
       <div class="year-nav">
         <button class="year-btn" (click)="onYearChange(selectedYear() - 1)">
-          <span class="material-icons">chevron_left</span>
+          <span aria-hidden="true" class="material-icons">chevron_left</span>
         </button>
         <select
           class="year-select"
@@ -26,7 +26,7 @@
           }
         </select>
         <button class="year-btn" (click)="onYearChange(selectedYear() + 1)">
-          <span class="material-icons">chevron_right</span>
+          <span aria-hidden="true" class="material-icons">chevron_right</span>
         </button>
       </div>
     </div>
@@ -39,7 +39,7 @@
       [class.active]="activeTab() === 'overview'"
       (click)="activeTab.set('overview')"
     >
-      <span class="material-icons">dashboard</span>
+      <span aria-hidden="true" class="material-icons">dashboard</span>
       {{ 'leave.balance.tabOverview' | translate }}
     </button>
     <button
@@ -47,7 +47,7 @@
       [class.active]="activeTab() === 'initialize'"
       (click)="activeTab.set('initialize')"
     >
-      <span class="material-icons">playlist_add</span>
+      <span aria-hidden="true" class="material-icons">playlist_add</span>
       {{ 'leave.balance.tabInitialize' | translate }}
     </button>
     <button
@@ -55,7 +55,7 @@
       [class.active]="activeTab() === 'adjust'"
       (click)="activeTab.set('adjust')"
     >
-      <span class="material-icons">tune</span>
+      <span aria-hidden="true" class="material-icons">tune</span>
       {{ 'leave.balance.tabAdjust' | translate }}
     </button>
   </div>
@@ -63,12 +63,12 @@
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+      <span aria-hidden="true" class="material-icons">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
@@ -85,11 +85,11 @@
 
     @if (!loading() && balances().length === 0) {
       <div class="empty-state">
-        <span class="material-icons">event_busy</span>
+        <span aria-hidden="true" class="material-icons">event_busy</span>
         <p>{{ 'leave.balance.emptyTitle' | translate: { year: selectedYear() } }}</p>
         <small>{{ 'leave.balance.emptyHint' | translate }}</small>
         <button class="btn-init-sm" (click)="activeTab.set('initialize')">
-          <span class="material-icons">playlist_add</span>
+          <span aria-hidden="true" class="material-icons">playlist_add</span>
           {{ 'leave.balance.initializeNowButton' | translate }}
         </button>
       </div>
@@ -163,13 +163,13 @@
   @if (activeTab() === 'initialize') {
     <div class="form-card">
       <div class="form-card-header">
-        <span class="material-icons">playlist_add</span>
+        <span aria-hidden="true" class="material-icons">playlist_add</span>
         {{ 'leave.balance.initFormTitle' | translate }}
       </div>
 
       <div class="form-card-body">
         <div class="info-banner">
-          <span class="material-icons">info</span>
+          <span aria-hidden="true" class="material-icons">info</span>
           <div>
             <strong>{{ 'leave.balance.initInfoTitle' | translate }}</strong>
             {{ 'leave.balance.initInfoBody' | translate }}
@@ -226,7 +226,7 @@
                 <div class="btn-spinner"></div>
                 <span>{{ 'leave.balance.initializingText' | translate }}</span>
               } @else {
-                <span class="material-icons">playlist_add</span>
+                <span aria-hidden="true" class="material-icons">playlist_add</span>
                 <span>{{ 'leave.balance.initializeAllButton' | translate }}</span>
               }
             </button>
@@ -237,7 +237,7 @@
         @if (initResult()) {
           <div class="result-card" [class.result-error]="initResult()!.errorCount > 0">
             <div class="result-header">
-              <span class="material-icons">
+              <span aria-hidden="true" class="material-icons">
                 {{ initResult()!.errorCount > 0 ? 'warning' : 'check_circle' }}
               </span>
               <strong>
@@ -282,13 +282,13 @@
   @if (activeTab() === 'adjust') {
     <div class="form-card">
       <div class="form-card-header">
-        <span class="material-icons">tune</span>
+        <span aria-hidden="true" class="material-icons">tune</span>
         {{ 'leave.balance.adjustFormTitle' | translate }}
       </div>
 
       <div class="form-card-body">
         <div class="info-banner info-banner-warn">
-          <span class="material-icons">warning</span>
+          <span aria-hidden="true" class="material-icons">warning</span>
           <div>
             <strong>{{ 'leave.balance.adjustWarnTitle' | translate }}</strong>
             {{ 'leave.balance.adjustWarnBody' | translate }}
@@ -383,7 +383,7 @@
                 <div class="btn-spinner"></div>
                 <span>{{ 'leave.balance.savingText' | translate }}</span>
               } @else {
-                <span class="material-icons">tune</span>
+                <span aria-hidden="true" class="material-icons">tune</span>
                 <span>{{ 'leave.balance.applyAdjustmentButton' | translate }}</span>
               }
             </button>

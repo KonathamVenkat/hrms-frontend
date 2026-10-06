@@ -202,6 +202,7 @@ export class AttendanceRequestApproval implements OnInit {
 
   // ── Approve ───────────────────────────────────────────────
   onApprove(request: RegularizationResponse): void {
+    if (this.processingId() !== null) return;
     if (
       !confirm(
         this.translate.instant('attendance.requestApproval.confirmApprove', {
@@ -268,6 +269,7 @@ export class AttendanceRequestApproval implements OnInit {
   }
 
   onConfirmReject(): void {
+    if (this.processingId() !== null) return;
     const reason = this.rejectionReason().trim();
     const request = this.rejectingRequest();
 

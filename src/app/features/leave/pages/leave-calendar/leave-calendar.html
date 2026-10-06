@@ -7,11 +7,11 @@
     <!-- Month navigation -->
     <div class="month-nav">
       <button class="nav-btn" (click)="prevMonth()">
-        <span class="material-icons">chevron_left</span>
+        <span aria-hidden="true" class="material-icons">chevron_left</span>
       </button>
       <span class="month-label">{{ calendar()?.monthName ?? '...' }}</span>
       <button class="nav-btn" (click)="nextMonth()">
-        <span class="material-icons">chevron_right</span>
+        <span aria-hidden="true" class="material-icons">chevron_right</span>
       </button>
       <button class="today-btn" (click)="goToToday()">
         {{ 'leave.calendar.todayButton' | translate }}
@@ -23,28 +23,28 @@
   @if (calendar()) {
     <div class="stats-strip">
       <div class="stat-item">
-        <span class="material-icons stat-icon approved-icon">check_circle</span>
+        <span aria-hidden="true" class="material-icons stat-icon approved-icon">check_circle</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalApproved }}</span>
           <span class="stat-lbl">{{ 'leave.calendar.statApproved' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
-        <span class="material-icons stat-icon pending-icon">hourglass_empty</span>
+        <span aria-hidden="true" class="material-icons stat-icon pending-icon">hourglass_empty</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalPending }}</span>
           <span class="stat-lbl">{{ 'leave.calendar.statPending' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
-        <span class="material-icons stat-icon holiday-icon">celebration</span>
+        <span aria-hidden="true" class="material-icons stat-icon holiday-icon">celebration</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.totalHolidays }}</span>
           <span class="stat-lbl">{{ 'leave.calendar.statHolidays' | translate }}</span>
         </div>
       </div>
       <div class="stat-item">
-        <span class="material-icons stat-icon today-icon">person_off</span>
+        <span aria-hidden="true" class="material-icons stat-icon today-icon">person_off</span>
         <div class="stat-info">
           <span class="stat-val">{{ calendar()!.onLeaveToday }}</span>
           <span class="stat-lbl">{{ 'leave.calendar.statOnLeaveToday' | translate }}</span>
@@ -56,7 +56,7 @@
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (error()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
@@ -92,7 +92,7 @@
                 <!-- Holiday badge -->
                 @if (day.isHoliday) {
                   <div class="holiday-badge" [title]="day.holidays[0]?.holidayName">
-                    <span class="material-icons">celebration</span>
+                    <span aria-hidden="true" class="material-icons">celebration</span>
                   </div>
                 }
 
@@ -131,7 +131,7 @@
         <!-- Today on leave -->
         <div class="panel-card">
           <div class="panel-card-header">
-            <span class="material-icons">person_off</span>
+            <span aria-hidden="true" class="material-icons">person_off</span>
             {{ 'leave.calendar.statOnLeaveToday' | translate }}
             @if (calendar()!.todaysLeaves.length > 0) {
               <span class="badge">{{ calendar()!.todaysLeaves.length }}</span>
@@ -140,7 +140,7 @@
 
           @if (calendar()!.todaysLeaves.length === 0) {
             <div class="panel-empty">
-              <span class="material-icons">check_circle_outline</span>
+              <span aria-hidden="true" class="material-icons">check_circle_outline</span>
               <span>{{ 'leave.calendar.everyoneIn' | translate }}</span>
             </div>
           } @else {
@@ -163,7 +163,7 @@
         <!-- Legend -->
         <div class="panel-card">
           <div class="panel-card-header">
-            <span class="material-icons">info_outline</span>
+            <span aria-hidden="true" class="material-icons">info_outline</span>
             {{ 'leave.calendar.legendTitle' | translate }}
           </div>
           <div class="legend-list">
@@ -230,7 +230,7 @@
             }
           </div>
           <button class="popup-close" (click)="closePopup()">
-            <span class="material-icons">close</span>
+            <span aria-hidden="true" class="material-icons">close</span>
           </button>
         </div>
 
@@ -238,7 +238,7 @@
         @if (selectedDay()!.holidays.length > 0) {
           <div class="popup-section">
             <p class="popup-section-title">
-              <span class="material-icons">celebration</span>
+              <span aria-hidden="true" class="material-icons">celebration</span>
               {{ 'leave.calendar.sectionHolidays' | translate }}
             </p>
             @for (h of selectedDay()!.holidays; track h.holidayId) {
@@ -261,7 +261,7 @@
         @if (selectedDay()!.leaves.length > 0) {
           <div class="popup-section">
             <p class="popup-section-title">
-              <span class="material-icons">people</span>
+              <span aria-hidden="true" class="material-icons">people</span>
               {{
                 'leave.calendar.sectionEmployeesOnLeave'
                   | translate: { count: selectedDay()!.leaves.length }
@@ -297,7 +297,7 @@
 
         @if (selectedDay()!.leaves.length === 0 && selectedDay()!.holidays.length === 0) {
           <div class="popup-empty">
-            <span class="material-icons">event_available</span>
+            <span aria-hidden="true" class="material-icons">event_available</span>
             <span>{{ 'leave.calendar.noLeavesOrHolidays' | translate }}</span>
           </div>
         }

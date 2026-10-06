@@ -234,7 +234,7 @@
                 <small class="drop-hint">{{ dropHint() }}</small>
               } @else {
                 <div class="selected-file">
-                  <span
+                  <span aria-hidden="true"
                     class="material-icons"
                     [style.color]="getFileIconColor(selectedFile()!.name.split('.').pop()!)"
                   >

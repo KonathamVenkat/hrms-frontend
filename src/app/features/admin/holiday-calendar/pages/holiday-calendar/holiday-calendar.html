@@ -13,7 +13,7 @@
       <!-- Year selector -->
       <div class="year-nav">
         <button class="year-btn" (click)="onYearChange(selectedYear() - 1)">
-          <span class="material-icons">chevron_left</span>
+          <span aria-hidden="true" class="material-icons">chevron_left</span>
         </button>
         <select
           class="year-select"
@@ -26,11 +26,11 @@
           }
         </select>
         <button class="year-btn" (click)="onYearChange(selectedYear() + 1)">
-          <span class="material-icons">chevron_right</span>
+          <span aria-hidden="true" class="material-icons">chevron_right</span>
         </button>
       </div>
       <button class="btn-add" (click)="openCreate()">
-        <span class="material-icons">add</span>
+        <span aria-hidden="true" class="material-icons">add</span>
         {{ 'admin.holidayCalendar.addHoliday' | translate }}
       </button>
     </div>
@@ -39,13 +39,13 @@
   <!-- ── Alerts ─────────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>
+      <span aria-hidden="true" class="material-icons">check_circle</span>
       {{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>
+      <span aria-hidden="true" class="material-icons">error_outline</span>
       {{ error() }}
     </div>
   }
@@ -53,7 +53,7 @@
   <!-- ── Filter Bar ─────────────────────────────────────────── -->
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span aria-hidden="true" class="material-icons">search</span>
       <input
         type="text"
         [placeholder]="'admin.holidayCalendar.searchPlaceholder' | translate"
@@ -63,7 +63,7 @@
       />
       @if (filterText()) {
         <button class="clear-btn" (click)="filterText.set('')">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       }
     </div>
@@ -116,11 +116,11 @@
   <!-- ── Empty state ───────────────────────────────────────── -->
   @if (!loading() && filteredHolidays().length === 0) {
     <div class="empty-card">
-      <span class="material-icons">event_busy</span>
+      <span aria-hidden="true" class="material-icons">event_busy</span>
       <p>{{ 'admin.holidayCalendar.emptyTitle' | translate: { year: selectedYear() } }}</p>
       <small>{{ 'admin.holidayCalendar.emptyHint' | translate }}</small>
       <button class="btn-add-sm" (click)="openCreate()">
-        <span class="material-icons">add</span> {{ 'admin.holidayCalendar.addHoliday' | translate }}
+        <span aria-hidden="true" class="material-icons">add</span> {{ 'admin.holidayCalendar.addHoliday' | translate }}
       </button>
     </div>
   }
@@ -160,7 +160,7 @@
                     </span>
                     @if (h.isRecurring) {
                       <span class="recurring-badge">
-                        <span class="material-icons">event_repeat</span>
+                        <span aria-hidden="true" class="material-icons">event_repeat</span>
                         {{ 'admin.holidayCalendar.recurring' | translate }}
                       </span>
                     }
@@ -185,7 +185,7 @@
                 <!-- Actions -->
                 <div class="holiday-actions">
                   <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(h)">
-                    <span class="material-icons">edit</span>
+                    <span aria-hidden="true" class="material-icons">edit</span>
                   </button>
                   <button
                     class="act-btn"
@@ -194,7 +194,7 @@
                     [title]="(h.isActive ? 'admin.holidayCalendar.deactivate' : 'admin.holidayCalendar.activate') | translate"
                     (click)="openConfirm(h)"
                   >
-                    <span class="material-icons">
+                    <span aria-hidden="true" class="material-icons">
                       {{ h.isActive ? 'toggle_off' : 'toggle_on' }}
                     </span>
                   </button>
@@ -226,13 +226,13 @@
           {{ (isEditMode() ? 'admin.holidayCalendar.editTitle' : 'admin.holidayCalendar.addHoliday') | translate }}
         </h2>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
 
       @if (error()) {
         <div class="modal-alert">
-          <span class="material-icons">error_outline</span>
+          <span aria-hidden="true" class="material-icons">error_outline</span>
           {{ error() }}
         </div>
       }
@@ -322,7 +322,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'admin.holidayCalendar.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span>
+              <span aria-hidden="true" class="material-icons">save</span>
               <span>{{ (isEditMode() ? 'admin.holidayCalendar.update' : 'admin.holidayCalendar.addHoliday') | translate }}</span>
             }
           </button>
@@ -350,7 +350,7 @@
         [class.icon-warn]="confirmTarget()?.isActive"
         [class.icon-info]="!confirmTarget()?.isActive"
       >
-        <span class="material-icons">event_busy</span>
+        <span aria-hidden="true" class="material-icons">event_busy</span>
       </div>
       <h3 id="hc-confirm-title" class="confirm-title">
         {{ (confirmTarget()?.isActive ? 'admin.holidayCalendar.deactivateTitle' : 'admin.holidayCalendar.activateTitle') | translate }}

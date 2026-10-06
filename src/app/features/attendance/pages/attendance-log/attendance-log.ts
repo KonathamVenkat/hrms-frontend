@@ -121,6 +121,7 @@ export class AttendanceLogComponent implements OnInit {
 
   // ── Check-in ───────────────────────────────────────────────
   onCheckIn(): void {
+    if (this.checkingIn() || this.checkingOut()) return;
     this.checkingIn.set(true);
     this.svc.checkIn({ employeeId: this.employeeId() }).subscribe({
       next: (log) => {
@@ -147,6 +148,7 @@ export class AttendanceLogComponent implements OnInit {
 
   // ── Check-out ──────────────────────────────────────────────
   onCheckOut(): void {
+    if (this.checkingIn() || this.checkingOut()) return;
     this.checkingOut.set(true);
     this.svc.checkOut({ employeeId: this.employeeId() }).subscribe({
       next: (log) => {

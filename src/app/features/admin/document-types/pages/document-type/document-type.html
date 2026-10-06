@@ -9,24 +9,24 @@
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span> {{ 'admin.documentTypes.addDocumentType' | translate }}
+      <span aria-hidden="true" class="material-icons">add</span> {{ 'admin.documentTypes.addDocumentType' | translate }}
     </button>
   </div>
 
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+      <span aria-hidden="true" class="material-icons">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span aria-hidden="true" class="material-icons">search</span>
       <input
         type="text"
         [placeholder]="'admin.documentTypes.searchPlaceholder' | translate"
@@ -100,7 +100,7 @@
             <tr>
               <td colspan="10">
                 <div class="empty-state">
-                  <span class="material-icons">folder_open</span>
+                  <span aria-hidden="true" class="material-icons">folder_open</span>
                   <p>{{ 'admin.documentTypes.emptyTitle' | translate }}</p>
                 </div>
               </td>
@@ -125,19 +125,19 @@
               </td>
               <td class="cell-center">
                 @if (dt.isMandatory) {
-                  <span class="material-icons icon-yes">check_circle</span>
+                  <span aria-hidden="true" class="material-icons icon-yes">check_circle</span>
                 } @else {
-                  <span class="material-icons icon-no">cancel</span>
+                  <span aria-hidden="true" class="material-icons icon-no">cancel</span>
                 }
               </td>
               <td class="cell-center">
                 @if (dt.hasExpiry) {
                   <div class="expiry-info">
-                    <span class="material-icons icon-yes">check_circle</span>
+                    <span aria-hidden="true" class="material-icons icon-yes">check_circle</span>
                     <span class="expiry-days">{{ 'admin.documentTypes.daysNotice' | translate: { days: dt.expiryNoticeDays } }}</span>
                   </div>
                 } @else {
-                  <span class="material-icons icon-no">cancel</span>
+                  <span aria-hidden="true" class="material-icons icon-no">cancel</span>
                 }
               </td>
               <td>
@@ -162,7 +162,7 @@
               <td>
                 <div class="action-wrap">
                   <button class="act-btn btn-edit" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(dt)">
-                    <span class="material-icons">edit</span>
+                    <span aria-hidden="true" class="material-icons">edit</span>
                   </button>
                   <button
                     class="act-btn"
@@ -171,7 +171,7 @@
                     [attr.aria-label]="(dt.isActive ? 'admin.documentTypes.deactivate' : 'admin.documentTypes.activate') | translate"
                     (click)="openConfirm(dt)"
                   >
-                    <span class="material-icons">{{
+                    <span aria-hidden="true" class="material-icons">{{
                       dt.isActive ? 'toggle_off' : 'toggle_on'
                     }}</span>
                   </button>
@@ -199,12 +199,12 @@
       <div class="modal-header">
         <h2 id="dt-modal-title" class="modal-title">{{ (isEditMode() ? 'admin.documentTypes.editTitle' : 'admin.documentTypes.addDocumentType') | translate }}</h2>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
       @if (error()) {
         <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+          <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
         </div>
       }
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
@@ -318,7 +318,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'admin.documentTypes.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span
+              <span aria-hidden="true" class="material-icons">save</span
               ><span>{{ (isEditMode() ? 'admin.documentTypes.update' : 'admin.documentTypes.addType') | translate }}</span>
             }
           </button>
@@ -343,7 +343,7 @@
         [class.icon-warn]="confirmItem()?.isActive"
         [class.icon-info]="!confirmItem()?.isActive"
       >
-        <span class="material-icons">folder</span>
+        <span aria-hidden="true" class="material-icons">folder</span>
       </div>
       <h3 id="dt-confirm-title" class="confirm-title">
         {{ (confirmItem()?.isActive ? 'admin.documentTypes.deactivateTitle' : 'admin.documentTypes.activateTitle') | translate }}

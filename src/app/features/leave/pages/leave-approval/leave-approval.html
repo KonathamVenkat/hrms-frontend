@@ -8,7 +8,7 @@
       }
       @if (filterStatus() === 'PENDING' && pendingCount() > 0) {
         <span class="pending-chip">
-          <span class="material-icons">hourglass_empty</span>
+          <span aria-hidden="true" class="material-icons">hourglass_empty</span>
           {{ 'leave.approval.awaitingActionCount' | translate: { count: pendingCount() } }}
         </span>
       }
@@ -51,12 +51,12 @@
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+      <span aria-hidden="true" class="material-icons">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
@@ -71,7 +71,7 @@
   <!-- ── Empty ──────────────────────────────────────────── -->
   @if (!loading() && leaves().length === 0) {
     <div class="empty-state">
-      <span class="material-icons">task_alt</span>
+      <span aria-hidden="true" class="material-icons">task_alt</span>
       <p>
         @if (filterStatus() === 'PENDING') {
           {{ 'leave.approval.emptyPendingTitle' | translate }}
@@ -204,7 +204,7 @@
             [disabled]="currentPage() === 0"
             (click)="onPageChange(currentPage() - 1)"
           >
-            <span class="material-icons">chevron_left</span>
+            <span aria-hidden="true" class="material-icons">chevron_left</span>
           </button>
           @for (p of pages; track p) {
             <button
@@ -220,7 +220,7 @@
             [disabled]="currentPage() === totalPages() - 1"
             (click)="onPageChange(currentPage() + 1)"
           >
-            <span class="material-icons">chevron_right</span>
+            <span aria-hidden="true" class="material-icons">chevron_right</span>
           </button>
         </div>
       </div>
@@ -248,7 +248,7 @@
         [class.header-reject]="actionType() === 'REJECTED'"
       >
         <div class="modal-header-icon">
-          <span class="material-icons">
+          <span aria-hidden="true" class="material-icons">
             {{ actionType() === 'APPROVED' ? 'check_circle' : 'cancel' }}
           </span>
         </div>
@@ -266,7 +266,7 @@
           </p>
         </div>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
 
@@ -347,7 +347,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'leave.approval.processingText' | translate }}</span>
             } @else {
-              <span class="material-icons">
+              <span aria-hidden="true" class="material-icons">
                 {{ actionType() === 'APPROVED' ? 'check' : 'close' }}
               </span>
               <span>

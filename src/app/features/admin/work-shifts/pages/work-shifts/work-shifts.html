@@ -9,7 +9,7 @@
       </div>
     </div>
     <button class="btn-add" (click)="openCreate()">
-      <span class="material-icons">add</span>
+      <span aria-hidden="true" class="material-icons">add</span>
       {{ 'admin.workShifts.addShift' | translate }}
     </button>
   </div>
@@ -17,19 +17,19 @@
   <!-- ── Alerts ─────────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>{{ successMsg() }}
+      <span aria-hidden="true" class="material-icons">check_circle</span>{{ successMsg() }}
     </div>
   }
   @if (error() && !showModal()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>{{ error() }}
+      <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
     </div>
   }
 
   <!-- ── Filter Bar ─────────────────────────────────────────── -->
   <div class="filter-bar">
     <div class="search-wrap">
-      <span class="material-icons">search</span>
+      <span aria-hidden="true" class="material-icons">search</span>
       <input
         type="text"
         [placeholder]="'admin.workShifts.searchPlaceholder' | translate"
@@ -39,7 +39,7 @@
       />
       @if (filterText()) {
         <button class="clear-btn" (click)="filterText.set('')">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       }
     </div>
@@ -93,7 +93,7 @@
   @if (!loading()) {
     @if (filteredShifts().length === 0) {
       <div class="empty-card">
-        <span class="material-icons">schedule</span>
+        <span aria-hidden="true" class="material-icons">schedule</span>
         <p>{{ 'admin.workShifts.emptyTitle' | translate }}</p>
         <small>{{ 'admin.workShifts.emptyHint' | translate }}</small>
       </div>
@@ -111,7 +111,7 @@
               </div>
               <div class="card-actions">
                 <button class="act-btn btn-edit" [title]="'common.edit' | translate" [attr.aria-label]="'common.edit' | translate" (click)="openEdit(s)">
-                  <span class="material-icons">edit</span>
+                  <span aria-hidden="true" class="material-icons">edit</span>
                 </button>
                 <button
                   class="act-btn"
@@ -121,7 +121,7 @@
                   [attr.aria-label]="(s.isActive ? 'admin.workShifts.deactivate' : 'admin.workShifts.activate') | translate"
                   (click)="openConfirm(s)"
                 >
-                  <span class="material-icons">
+                  <span aria-hidden="true" class="material-icons">
                     {{ s.isActive ? 'toggle_off' : 'toggle_on' }}
                   </span>
                 </button>
@@ -136,7 +136,7 @@
             <div class="time-display">
               @if (s.isFlexible) {
                 <div class="time-flex">
-                  <span class="material-icons">schedule</span>
+                  <span aria-hidden="true" class="material-icons">schedule</span>
                   <span>{{ 'admin.workShifts.flexibleHoursPerDay' | translate: { hours: s.workingHours } }}</span>
                 </div>
               } @else {
@@ -146,7 +146,7 @@
                     <span class="time-val">{{ s.startTime }}</span>
                   </div>
                   <div class="time-arrow">
-                    <span class="material-icons">arrow_forward</span>
+                    <span aria-hidden="true" class="material-icons">arrow_forward</span>
                     @if (s.isOvernight) {
                       <span class="overnight-tag">+1</span>
                     }
@@ -162,17 +162,17 @@
             <!-- Stats row -->
             <div class="stats-row">
               <div class="stat-item">
-                <span class="material-icons stat-icon">timer</span>
+                <span aria-hidden="true" class="material-icons stat-icon">timer</span>
                 <span class="stat-val">{{ s.workingHours }}h</span>
                 <span class="stat-lbl">{{ 'admin.workShifts.working' | translate }}</span>
               </div>
               <div class="stat-item">
-                <span class="material-icons stat-icon">coffee</span>
+                <span aria-hidden="true" class="material-icons stat-icon">coffee</span>
                 <span class="stat-val">{{ s.breakDuration }}m</span>
                 <span class="stat-lbl">{{ 'admin.workShifts.break' | translate }}</span>
               </div>
               <div class="stat-item">
-                <span class="material-icons stat-icon">how_to_reg</span>
+                <span aria-hidden="true" class="material-icons stat-icon">how_to_reg</span>
                 <span class="stat-val">{{ s.gracePeriod }}m</span>
                 <span class="stat-lbl">{{ 'admin.workShifts.grace' | translate }}</span>
               </div>
@@ -232,13 +232,13 @@
           {{ (isEditMode() ? 'admin.workShifts.editTitle' : 'admin.workShifts.addTitle') | translate }}
         </h2>
         <button class="modal-close" [attr.aria-label]="'common.close' | translate" (click)="closeModal()">
-          <span class="material-icons">close</span>
+          <span aria-hidden="true" class="material-icons">close</span>
         </button>
       </div>
 
       @if (error()) {
         <div class="modal-alert">
-          <span class="material-icons">error_outline</span>{{ error() }}
+          <span aria-hidden="true" class="material-icons">error_outline</span>{{ error() }}
         </div>
       }
 
@@ -418,7 +418,7 @@
               <div class="btn-spinner"></div>
               <span>{{ 'admin.workShifts.saving' | translate }}</span>
             } @else {
-              <span class="material-icons">save</span>
+              <span aria-hidden="true" class="material-icons">save</span>
               <span>{{ (isEditMode() ? 'admin.workShifts.update' : 'admin.workShifts.createShift') | translate }}</span>
             }
           </button>
@@ -446,7 +446,7 @@
         [class.icon-warn]="confirmTarget()?.isActive"
         [class.icon-info]="!confirmTarget()?.isActive"
       >
-        <span class="material-icons">schedule</span>
+        <span aria-hidden="true" class="material-icons">schedule</span>
       </div>
       <h3 id="ws-confirm-title" class="confirm-title">
         {{ (confirmTarget()?.isActive ? 'admin.workShifts.deactivateTitle' : 'admin.workShifts.activateTitle') | translate }}

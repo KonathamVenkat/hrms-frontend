@@ -3,7 +3,7 @@
   <!-- ── Header ──────────────────────────────────────────── -->
   <div class="page-header">
     <button class="back-btn" (click)="onCancel()">
-      <span class="material-icons">arrow_back</span>
+      <span aria-hidden="true" class="material-icons">arrow_back</span>
     </button>
     <div>
       <h1 class="page-title">{{ 'leave.apply.title' | translate }}</h1>
@@ -14,13 +14,13 @@
   <!-- ── Alerts ─────────────────────────────────────────── -->
   @if (successMsg()) {
     <div class="alert alert-success">
-      <span class="material-icons">check_circle</span>
+      <span aria-hidden="true" class="material-icons">check_circle</span>
       {{ successMsg() }}
     </div>
   }
   @if (error()) {
     <div class="alert alert-error">
-      <span class="material-icons">error_outline</span>
+      <span aria-hidden="true" class="material-icons">error_outline</span>
       {{ error() }}
     </div>
   }
@@ -40,7 +40,7 @@
       <!-- ════════════════════════════════════════════════ -->
       <div class="form-card">
         <div class="form-card-header">
-          <span class="material-icons">event_available</span>
+          <span aria-hidden="true" class="material-icons">event_available</span>
           {{ 'leave.apply.formTitle' | translate }}
         </div>
 
@@ -51,7 +51,7 @@
 
             @if (balances().length === 0) {
               <div class="no-balance-warn">
-                <span class="material-icons">warning</span>
+                <span aria-hidden="true" class="material-icons">warning</span>
                 {{ 'leave.apply.noBalanceWarn' | translate: { year: currentYear } }}
               </div>
             } @else {
@@ -120,7 +120,7 @@
           <!-- Date range error -->
           @if (form.errors?.['dateRange'] && form.touched) {
             <div class="field-alert">
-              <span class="material-icons">warning</span>
+              <span aria-hidden="true" class="material-icons">warning</span>
               {{ form.errors?.['dateRange'] | translate }}
             </div>
           }
@@ -129,7 +129,7 @@
           @if (calculatedDays() > 0) {
             <div class="days-preview" [class.days-warn]="!isBalanceSufficient()">
               <div class="days-icon">
-                <span class="material-icons">
+                <span aria-hidden="true" class="material-icons">
                   {{ isBalanceSufficient() ? 'event_available' : 'event_busy' }}
                 </span>
               </div>
@@ -237,7 +237,7 @@
                 <div class="btn-spinner"></div>
                 <span>{{ 'leave.apply.submittingText' | translate }}</span>
               } @else {
-                <span class="material-icons">send</span>
+                <span aria-hidden="true" class="material-icons">send</span>
                 <span>{{ 'leave.apply.submitButton' | translate }}</span>
               }
             </button>
@@ -250,7 +250,7 @@
       <!-- ════════════════════════════════════════════════ -->
       <div class="balance-sidebar">
         <div class="sidebar-header">
-          <span class="material-icons">account_balance_wallet</span>
+          <span aria-hidden="true" class="material-icons">account_balance_wallet</span>
           {{ 'leave.apply.sidebarTitle' | translate: { year: currentYear } }}
         </div>
         <div class="balance-list">

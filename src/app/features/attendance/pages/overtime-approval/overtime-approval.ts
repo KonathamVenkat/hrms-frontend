@@ -189,6 +189,7 @@ export class OvertimeApproval implements OnInit {
 
   // ── Approve ────────────────────────────────────────────
   onApprove(req: OvertimeResponse): void {
+    if (this.processingId() !== null) return;
     if (
       !confirm(
         this.translate.instant('attendance.overtimeApproval.confirmApprove', {
@@ -252,6 +253,7 @@ export class OvertimeApproval implements OnInit {
   }
 
   onConfirmReject(): void {
+    if (this.processingId() !== null) return;
     const reason = this.rejectionReason().trim();
     const req = this.rejectingRequest();
     if (!req) return;
