@@ -11,14 +11,13 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { finalize, forkJoin } from 'rxjs';
+import { catchError, filter, finalize, map, merge, of, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { LeaveRequestService } from '../../services/leave-request.service';
 import { LeaveBalanceService } from '../../services/leave-balance.service';
 import { LeaveBalance } from '../../models/leave-balance.model';
 import { Auth } from '../../../../core/auth/auth';
-import { HolidayService } from '../../../admin/holiday-calendar/services/holiday-calendar';
 
 @Component({
   selector: 'app-leave-apply',
@@ -31,7 +30,6 @@ export class LeaveApplyPage implements OnInit {
   private fb = inject(FormBuilder);
   private leaveSvc = inject(LeaveRequestService);
   private balanceSvc = inject(LeaveBalanceService);
-  private holidaySvc = inject(HolidayService);
   private auth = inject(Auth);
   private router = inject(Router);
   private destroy = inject(DestroyRef);
@@ -53,9 +51,10 @@ export class LeaveApplyPage implements OnInit {
   startDateVal = signal<string>('');
   endDateVal = signal<string>('');
   selectedTypeCode = signal<string>('');
-  // Active PUBLIC/RELIGIOUS holidays (YYYY-MM-DD) for this and next year — excluded from the
-  // day count, same as the backend's calculateWorkingDays(). OPTIONAL/RESTRICTED still cost a day.
-  holidayDates = signal<Set<string>>(new Set());
+  // Leave days the range costs, asked from the backend so the employee's shift and the public
+  // holidays are applied by the one rule that also charges the balance.
+  calculatedDays = signal(0);
+  daysLoading = signal(false);
 
   // ── Computed — all depend on signals, so they react correctly
   readonly selectedBalance = computed(() => {
@@ -89,14 +88,6 @@ export class LeaveApplyPage implements OnInit {
       .join(','),
   );
 
-  readonly calculatedDays = computed(() => {
-    const start = this.startDateVal();
-    const end = this.endDateVal();
-    this.holidayDates(); // depend on holidays so this recomputes once they load
-    if (!start || !end) return 0;
-    return this.countWorkingDays(start, end);
-  });
-
   readonly isBalanceSufficient = computed(() => {
     const bal = this.selectedBalance();
     const days = this.calculatedDays();
@@ -118,27 +109,28 @@ export class LeaveApplyPage implements OnInit {
     if (user?.employeeId) this.employeeId.set(user.employeeId);
     this.buildForm();
     this.loadBalances();
-    this.loadHolidays();
+    this.watchDays();
   }
 
-  private loadHolidays(): void {
-    forkJoin([
-      this.holidaySvc.getActiveByYear(this.currentYear),
-      this.holidaySvc.getActiveByYear(this.currentYear + 1),
-    ])
-      .pipe(takeUntilDestroyed(this.destroy))
-      .subscribe({
-        next: (results) => {
-          const dates = results
-            .filter((res) => res.success)
-            .flatMap((res) => res.data)
-            .filter((h) => h.holidayType === 'PUBLIC' || h.holidayType === 'RELIGIOUS')
-            .map((h) => h.holidayDate);
-          this.holidayDates.set(new Set(dates));
-        },
-        // Non-fatal: worst case the preview briefly overcounts a holiday; the
-        // backend is authoritative and will exclude it regardless.
-        error: () => {},
+  // Re-asks the backend whenever both dates are set and in order; a newer range cancels an older call.
+  private watchDays(): void {
+    merge(this.form.get('startDate')!.valueChanges, this.form.get('endDate')!.valueChanges)
+      .pipe(
+        map(() => this.form.value as { startDate: string; endDate: string }),
+        tap(() => this.calculatedDays.set(0)),
+        filter(({ startDate, endDate }) => !!startDate && !!endDate && endDate >= startDate),
+        tap(() => this.daysLoading.set(true)),
+        switchMap(({ startDate, endDate }) =>
+          this.leaveSvc
+            .getWorkingDays(this.employeeId(), startDate, endDate)
+            .pipe(catchError(() => of(null))),
+        ),
+        takeUntilDestroyed(this.destroy),
+      )
+      .subscribe((res) => {
+        this.daysLoading.set(false);
+        // On failure the preview stays empty; the backend still charges the right number on submit.
+        this.calculatedDays.set(res?.success ? res.data.workingDays : 0);
       });
   }
 
@@ -211,12 +203,7 @@ export class LeaveApplyPage implements OnInit {
       return;
     }
 
-    // Re-compute days directly from form values as final guard
-    const start = this.form.get('startDate')!.value as string;
-    const end = this.form.get('endDate')!.value as string;
-    const days = this.countWorkingDays(start, end);
-
-    if (days <= 0) {
+    if (!this.daysLoading() && this.calculatedDays() <= 0) {
       this.error.set(this.translate.instant('leave.apply.errors.noWorkingDays'));
       return;
     }
@@ -295,34 +282,6 @@ export class LeaveApplyPage implements OnInit {
 
   onCancel(): void {
     this.router.navigate(['/app/leave/requests']);
-  }
-
-  // ── countWorkingDays — parses as LOCAL date to avoid UTC shift ────
-  // Weekend is Saturday/Sunday and active public holidays are excluded,
-  // matching the backend's authoritative calculateWorkingDays().
-  countWorkingDays(startStr: string, endStr: string): number {
-    if (!startStr || !endStr) return 0;
-
-    // Parse 'YYYY-MM-DD' as LOCAL midnight (not UTC)
-    const [sy, sm, sd] = startStr.split('-').map(Number);
-    const [ey, em, ed] = endStr.split('-').map(Number);
-
-    const start = new Date(sy, sm - 1, sd);
-    const end = new Date(ey, em - 1, ed);
-
-    if (end < start) return 0;
-
-    const holidays = this.holidayDates();
-    let count = 0;
-    const cur = new Date(start);
-    while (cur <= end) {
-      const dow = cur.getDay(); // 0=Sun ... 6=Sat
-      const isWeekend = dow === 0 || dow === 6;
-      const isoDate = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`;
-      if (!isWeekend && !holidays.has(isoDate)) count++;
-      cur.setDate(cur.getDate() + 1);
-    }
-    return count;
   }
 
   // ── Helpers ───────────────────────────────────────────────

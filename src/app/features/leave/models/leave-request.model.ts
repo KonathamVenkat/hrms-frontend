@@ -72,3 +72,8 @@ export interface ApiResponse<T> {
   data: T;
   statusCode: number;
 }
+
+// ── Matches WorkingDaysResponse.java exactly ─────────────────
+export interface WorkingDays {
+  workingDays: number;
+}

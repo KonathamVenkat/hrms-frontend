@@ -9,6 +9,7 @@ import {
   LeaveFilterParams,
   PagedResponse,
   ApiResponse,
+  WorkingDays,
 } from '../models/leave-request.model';
 import { LeaveBalance } from '../models/leave-balance.model';
 
@@ -52,6 +53,18 @@ export class LeaveRequestService {
           URL.revokeObjectURL(url);
         }),
       );
+  }
+
+  /** Leave days the range costs this employee: their shift's weekly off and public holidays are free. */
+  getWorkingDays(
+    employeeId: number,
+    startDate: string,
+    endDate: string,
+  ): Observable<ApiResponse<WorkingDays>> {
+    return this.http.get<ApiResponse<WorkingDays>>(
+      `${this.baseUrl}/api/v1/employees/${employeeId}/leave-requests/working-days`,
+      { params: new HttpParams().set('startDate', startDate).set('endDate', endDate) },
+    );
   }
 
   getMyLeaves(
