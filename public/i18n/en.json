@@ -1547,6 +1547,29 @@
         "activated": "\"{{name}}\" activated"
       }
     },
+    "auditEvents": {
+      "title": "Audit Trail",
+      "subtitle": "Who did what, to which record, and when. Read-only.",
+      "actor": "Actor",
+      "action": "Action",
+      "targetType": "Target type",
+      "targetId": "Target ID",
+      "from": "From date",
+      "to": "To date",
+      "columns": {
+        "time": "Time",
+        "actor": "Actor",
+        "action": "Action",
+        "target": "Target",
+        "detail": "Detail"
+      },
+      "emptyTitle": "No audit events found",
+      "emptyHint": "Try adjusting or clearing the filters.",
+      "errors": {
+        "loadFailed": "Could not load the audit trail. Please try again.",
+        "dateRange": "The end date cannot be before the start date."
+      }
+    },
     "documentTypes": {
       "title": "Document Types",
       "totalChip": "{{count}} Total",

@@ -1547,6 +1547,29 @@
         "activated": "« {{name}} » activé"
       }
     },
+    "auditEvents": {
+      "title": "Journal d'audit",
+      "subtitle": "Qui a fait quoi, sur quel enregistrement, et quand. Lecture seule.",
+      "actor": "Auteur",
+      "action": "Action",
+      "targetType": "Type de cible",
+      "targetId": "ID de la cible",
+      "from": "Date de début",
+      "to": "Date de fin",
+      "columns": {
+        "time": "Heure",
+        "actor": "Auteur",
+        "action": "Action",
+        "target": "Cible",
+        "detail": "Détail"
+      },
+      "emptyTitle": "Aucun événement d'audit trouvé",
+      "emptyHint": "Essayez de modifier ou d'effacer les filtres.",
+      "errors": {
+        "loadFailed": "Impossible de charger le journal d'audit. Veuillez réessayer.",
+        "dateRange": "La date de fin ne peut pas précéder la date de début."
+      }
+    },
     "documentTypes": {
       "title": "Types de documents",
       "totalChip": "{{count}} au total",

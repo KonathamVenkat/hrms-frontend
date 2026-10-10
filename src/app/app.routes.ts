@@ -86,6 +86,16 @@ export const routes: Routes = [
             title: 'Document Types · EHRMS',
           },
           {
+            // The API answers 403 to anyone but HR_ADMIN, so keep HR_MANAGER out of the screen too.
+            path: 'audit-events',
+            canActivate: [roleGuard('HR_ADMIN')],
+            loadComponent: () =>
+              import('./features/admin/audit-events/pages/audit-events/audit-events').then(
+                (m) => m.AuditEvents,
+              ),
+            title: 'Audit Trail · EHRMS',
+          },
+          {
             path: '',
             redirectTo: 'leave-types',
             pathMatch: 'full',
