@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -26,6 +27,7 @@ import { AuthService } from '../../../core/auth/auth.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
     LanguageSwitcher,
@@ -55,6 +57,15 @@ export class LoginComponent implements OnInit {
   hidePassword = signal(true);
   errorMsg = signal<string | null>(null);
   currentYear = new Date().getFullYear();
+
+  // Decorative product-tour data (no real records are shown here).
+  readonly people = [
+    { avatar: '#bccbf0', pill: '#d1fae5', w1: 56, w2: 34 },
+    { avatar: '#c7d2fe', pill: '#fde68a', w1: 64, w2: 40 },
+    { avatar: '#a5c0f5', pill: '#d1fae5', w1: 48, w2: 30 },
+  ];
+  readonly bars = [54, 84, 66, 102, 78, 120];
+  readonly cells = [0, 0, 1, 0, 0, 2, 2, 0, 1, 1, 0, 0, 2, 2, 0, 0, 0, 1, 0, 2, 2];
 
   ngOnInit(): void {
     if (this.auth.hasValidSession()) {

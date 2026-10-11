@@ -1,37 +1,148 @@
 <div class="login-shell">
-  <!-- Left Brand Panel -->
+  <!-- Left brand panel: headline + rotating product tour (decorative) -->
   <aside class="brand-panel">
+    <div class="shape s-a"></div>
+    <div class="shape s-b"></div>
+
     <div class="brand-content">
       <div class="brand-logo">
-        <span class="logo-icon">⬡</span>
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#1d4ed8"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 2l8.5 5v10L12 22 3.5 17V7z" />
+          <path d="M12 8.5l4 2.3v4.4l-4 2.3-4-2.3v-4.4z" stroke="#0b1437" />
+        </svg>
         <span class="logo-text">EHRMS</span>
       </div>
+
       <h1 class="brand-headline">
-        {{ 'auth.login.brandHeadline1' | translate }}<br />
-        {{ 'auth.login.brandHeadline2' | translate }}<br />
+        {{ 'auth.login.brandHeadline1' | translate }}
+        {{ 'auth.login.brandHeadline2' | translate }}
         {{ 'auth.login.brandHeadline3' | translate }}
       </h1>
-      <p class="brand-sub">
-        {{ 'auth.login.brandSub' | translate }}
-      </p>
-      <ul class="feature-list">
-        <li>&#128101; {{ 'auth.login.featureEmployee' | translate }}</li>
-        <li>&#128176; {{ 'auth.login.featurePayroll' | translate }}</li>
-        <li>&#128197; {{ 'auth.login.featureLeaveAttendance' | translate }}</li>
-        <li>&#128202; {{ 'auth.login.featureReports' | translate }}</li>
-      </ul>
-    </div>
-    <div class="deco d1"></div>
-    <div class="deco d2"></div>
-  </aside>
+      <p class="brand-sub">{{ 'auth.login.brandSub' | translate }}</p>
 
-  <!-- Right Form Panel -->
-  <main class="form-panel">
-    <div class="form-wrap">
-      <div class="lang-switcher-wrap">
-        <app-language-switcher />
+      <div class="tour" aria-hidden="true">
+        <div class="slide t1">
+          <div class="scard">
+            <div class="shead">
+              <div class="sicon">
+                <mat-icon>groups</mat-icon>
+              </div>
+              <div>
+                <div class="stitle">{{ 'auth.login.featureEmployee' | translate }}</div>
+                <div class="ssub">{{ 'auth.login.featureEmployeeSub' | translate }}</div>
+              </div>
+            </div>
+            <div class="people">
+              @for (p of people; track $index) {
+                <div class="person">
+                  <div class="avatar" [style.background]="p.avatar"></div>
+                  <div class="lines">
+                    <div class="skel" [style.width.%]="p.w1"></div>
+                    <div class="skel faint" [style.width.%]="p.w2"></div>
+                  </div>
+                  <div class="pill" [style.background]="p.pill"></div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="slide t2">
+          <div class="scard">
+            <div class="shead">
+              <div class="sicon">
+                <mat-icon>payments</mat-icon>
+              </div>
+              <div>
+                <div class="stitle">{{ 'auth.login.featurePayroll' | translate }}</div>
+                <div class="ssub">{{ 'auth.login.featurePayrollSub' | translate }}</div>
+              </div>
+            </div>
+            <div class="bars">
+              @for (h of bars; track $index) {
+                <div class="bar" [style.height.px]="h"></div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="slide t3">
+          <div class="scard">
+            <div class="shead">
+              <div class="sicon">
+                <mat-icon>event_available</mat-icon>
+              </div>
+              <div>
+                <div class="stitle">{{ 'auth.login.featureLeaveAttendance' | translate }}</div>
+                <div class="ssub">{{ 'auth.login.featureLeaveAttendanceSub' | translate }}</div>
+              </div>
+            </div>
+            <div class="cells">
+              @for (c of cells; track $index) {
+                <div class="cell" [class]="'cell c' + c"></div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="slide t4">
+          <div class="scard">
+            <div class="shead">
+              <div class="sicon">
+                <mat-icon>insights</mat-icon>
+              </div>
+              <div>
+                <div class="stitle">{{ 'auth.login.featureReports' | translate }}</div>
+                <div class="ssub">{{ 'auth.login.featureReportsSub' | translate }}</div>
+              </div>
+            </div>
+            <svg
+              class="chart"
+              width="100%"
+              height="130"
+              viewBox="0 0 420 130"
+              preserveAspectRatio="none"
+            >
+              <path d="M0 32H420M0 65H420M0 98H420" stroke="#e2e8f5" stroke-width="1" />
+              <path
+                class="line"
+                pathLength="1"
+                d="M0 104 C40 98 60 62 100 72 S170 108 210 72 S290 32 330 46 S390 20 420 10"
+                fill="none"
+                stroke="#1d4ed8"
+                stroke-width="3.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
 
+      <div class="dots" aria-hidden="true">
+        <span class="dot t1"></span>
+        <span class="dot t2"></span>
+        <span class="dot t3"></span>
+        <span class="dot t4"></span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right form panel -->
+  <main class="form-panel">
+    <div class="lang-switcher-wrap">
+      <app-language-switcher />
+    </div>
+
+    <div class="form-wrap">
       <div class="form-header">
         <h2>{{ 'auth.login.welcomeTitle' | translate }}</h2>
         <p>{{ 'auth.login.welcomeSub' | translate }}</p>
@@ -40,7 +151,7 @@
       <!-- Error Banner -->
       @if (errorMsg()) {
         <div class="error-banner" role="alert">
-          <span class="err-icon" aria-hidden="true">&#9888;</span>
+          <mat-icon aria-hidden="true">warning</mat-icon>
           <span>{{ errorMsg() }}</span>
         </div>
       }
@@ -49,12 +160,7 @@
         <!-- Username -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'auth.login.usernameLabel' | translate }}</mat-label>
-          <input
-            matInput
-            formControlName="username"
-            [placeholder]="'auth.login.usernamePlaceholder' | translate"
-            autocomplete="username"
-          />
+          <input matInput formControlName="username" autocomplete="username" required />
           @if (usernameCtrl.invalid && usernameCtrl.touched) {
             <mat-error>{{ getUsernameError() }}</mat-error>
           }
@@ -67,8 +173,8 @@
             matInput
             formControlName="password"
             [type]="hidePassword() ? 'password' : 'text'"
-            [placeholder]="'auth.login.passwordPlaceholder' | translate"
             autocomplete="current-password"
+            required
           />
           <button
             mat-icon-button
@@ -92,6 +198,12 @@
         <!-- Self-service password reset needs an email service; until then users ask HR. -->
         <p class="forgot-note">{{ 'auth.login.forgotPasswordNote' | translate }}</p>
 
+        <div class="track">
+          @if (loading()) {
+            <mat-progress-bar mode="indeterminate" />
+          }
+        </div>
+
         <!-- Submit -->
         <button
           mat-flat-button
@@ -102,10 +214,13 @@
         >
           @if (loading()) {
             <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
-            <span>&nbsp;{{ 'auth.login.signingIn' | translate }}</span>
+            <span>{{ 'auth.login.signingIn' | translate }}</span>
           } @else {
             <span>{{ 'auth.login.signIn' | translate }}</span>
           }
+          <mat-icon class="arrow" aria-hidden="true" [style.display]="loading() ? 'none' : null"
+            >arrow_forward</mat-icon
+          >
         </button>
       </form>
 
