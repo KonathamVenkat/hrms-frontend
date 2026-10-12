@@ -116,7 +116,12 @@ export class LeaveApplyPage implements OnInit {
   private watchDays(): void {
     merge(this.form.get('startDate')!.valueChanges, this.form.get('endDate')!.valueChanges)
       .pipe(
-        map(() => this.form.value as { startDate: string; endDate: string }),
+        // Read the controls, not form.value: the group's value is only recomputed after a child's
+        // valueChanges has fired, so inside this handler it is still the previous value.
+        map(() => ({
+          startDate: this.form.get('startDate')!.value as string,
+          endDate: this.form.get('endDate')!.value as string,
+        })),
         tap(() => this.calculatedDays.set(0)),
         filter(({ startDate, endDate }) => !!startDate && !!endDate && endDate >= startDate),
         tap(() => this.daysLoading.set(true)),
