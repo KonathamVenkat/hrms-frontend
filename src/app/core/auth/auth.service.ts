@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap, timeout } from 'rxjs/operators';
+import { catchError, finalize, map, shareReplay, tap, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Auth, LoginResponse } from './auth';
 
@@ -63,6 +63,25 @@ export class AuthService {
           return of(undefined);
         }),
       );
+  }
+
+  private refreshing$: Observable<string> | null = null;
+
+  /**
+   * Exchanges the refresh cookie for a new access token (the access token is short-lived).
+   * Concurrent callers share one request, because refresh tokens rotate and a second call
+   * with the old cookie would be rejected.
+   */
+  refreshAccessToken(): Observable<string> {
+    this.refreshing$ ??= this.http
+      .post<ApiResponse<LoginResponse>>(`${this.base}/auth/refresh`, null, this.withCookie)
+      .pipe(
+        tap((res) => this.auth.renewToken(res.data)),
+        map((res) => res.data.accessToken),
+        finalize(() => (this.refreshing$ = null)),
+        shareReplay({ bufferSize: 1, refCount: false }),
+      );
+    return this.refreshing$;
   }
 
   /**

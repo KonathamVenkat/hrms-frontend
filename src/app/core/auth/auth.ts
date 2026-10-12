@@ -177,6 +177,12 @@ export class Auth {
     this.storageSet(SESSION_HINT_KEY, '1');
   }
 
+  /** Swaps in a renewed access token for the same user (silent refresh); keeps the menu cache. */
+  renewToken(login: LoginResponse): void {
+    this.accessToken = login.accessToken;
+    this.expiresAt = Date.now() + login.expiresIn * 1000;
+  }
+
   /** True when there is an access token that hasn't passed its expiry time. */
   hasValidSession(): boolean {
     return !!this.accessToken && Date.now() < this.expiresAt;
