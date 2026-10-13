@@ -839,6 +839,7 @@
         "dateRangeInvalid": "End date must be after start date",
         "loadBalancesFailed": "Failed to load leave balances.",
         "noWorkingDays": "Selected dates contain no working days.",
+        "previewFailed": "Could not calculate working days. Please try again.",
         "insufficientBalance": "Insufficient leave balance for selected dates.",
         "submitFailed": "Failed to submit leave request.",
         "documentRequired": "A supporting document is required for this leave type.",

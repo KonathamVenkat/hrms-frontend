@@ -55,6 +55,7 @@ export class LeaveApplyPage implements OnInit {
   // holidays are applied by the one rule that also charges the balance.
   calculatedDays = signal(0);
   daysLoading = signal(false);
+  daysError = signal<string | null>(null);
 
   // ── Computed — all depend on signals, so they react correctly
   readonly selectedBalance = computed(() => {
@@ -122,13 +123,21 @@ export class LeaveApplyPage implements OnInit {
           startDate: this.form.get('startDate')!.value as string,
           endDate: this.form.get('endDate')!.value as string,
         })),
-        tap(() => this.calculatedDays.set(0)),
+        tap(() => {
+          this.calculatedDays.set(0);
+          this.daysError.set(null);
+        }),
         filter(({ startDate, endDate }) => !!startDate && !!endDate && endDate >= startDate),
         tap(() => this.daysLoading.set(true)),
         switchMap(({ startDate, endDate }) =>
-          this.leaveSvc
-            .getWorkingDays(this.employeeId(), startDate, endDate)
-            .pipe(catchError(() => of(null))),
+          this.leaveSvc.getWorkingDays(this.employeeId(), startDate, endDate).pipe(
+            catchError((err) => {
+              this.daysError.set(
+                err?.error?.message || this.translate.instant('leave.apply.errors.previewFailed'),
+              );
+              return of(null);
+            }),
+          ),
         ),
         takeUntilDestroyed(this.destroy),
       )
@@ -209,7 +218,9 @@ export class LeaveApplyPage implements OnInit {
     }
 
     if (!this.daysLoading() && this.calculatedDays() <= 0) {
-      this.error.set(this.translate.instant('leave.apply.errors.noWorkingDays'));
+      this.error.set(
+        this.daysError() ?? this.translate.instant('leave.apply.errors.noWorkingDays'),
+      );
       return;
     }
 

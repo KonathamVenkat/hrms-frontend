@@ -125,6 +125,13 @@
             </div>
           }
 
+          @if (daysError()) {
+            <div class="field-alert" role="alert">
+              <span aria-hidden="true" class="material-icons">warning</span>
+              {{ daysError() }}
+            </div>
+          }
+
           <!-- ── Working days preview ───────────────────── -->
           @if (calculatedDays() > 0) {
             <div class="days-preview" [class.days-warn]="!isBalanceSufficient()">
